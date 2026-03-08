@@ -170,3 +170,84 @@ Respect API rate limits for all external services:
 - Match the user's level of expertise after initial interactions
 - Use "you" (the researcher) and "I" (the tool) clearly
 - Never use "we" to imply shared authorship or joint intellectual contribution
+
+---
+
+## Development Status and Next Steps
+
+**Last updated:** 2026-03-08
+
+### What Has Been Built
+
+The repository scaffold is complete. All files listed below are implemented and committed:
+
+- **8 MCP servers** (Python, using `mcp` SDK + `httpx`): PubMed, OpenAlex, Semantic Scholar, Europe PMC, CrossRef, Zotero, PRISMA Tracker, Project Tracker
+- **5 custom Copilot agents** (`.agent.md`): systematic-reviewer, data-analyst, academic-writer, research-planner, project-manager
+- **6 compliance documents**: ICMJE authorship checklist, AI disclosure template, PRISMA 2020, PRISMA-ScR, MOOSE, Cochrane RoB 2
+- **9 Quarto/Markdown templates**: review protocol, review manuscript, search strategy, PRISMA flow, IMRaD manuscript, progress briefs (Quarto + markdown), meeting notes, decision log
+- **4 documentation files** in `docs/`: getting-started, api-setup-guide, database-access, architecture
+- **Configuration**: `.vscode/mcp.json`, `.vscode/settings.json`, `.env.example`, `pyproject.toml`, `.gitignore`, LICENSE (MIT)
+
+### Immediate Next Steps (Priority Order)
+
+When the developer opens this project for the first time, guide them through these steps:
+
+1. **Set up Python environment and install MCP servers**
+   - Create a virtual environment: `python -m venv .venv`
+   - Activate it: `.venv\Scripts\activate` (Windows) or `source .venv/bin/activate` (macOS/Linux)
+   - Install all servers: `pip install -e mcp-servers/pubmed-server -e mcp-servers/openalex-server -e mcp-servers/semantic-scholar-server -e mcp-servers/europe-pmc-server -e mcp-servers/crossref-server -e mcp-servers/zotero-server -e mcp-servers/prisma-tracker -e mcp-servers/project-tracker`
+
+2. **Configure API keys**
+   - Copy `.env.example` to `.env`
+   - Obtain and fill in API keys (see `docs/api-setup-guide.md`)
+   - At minimum: NCBI_API_KEY and ZOTERO_API_KEY + ZOTERO_USER_ID
+
+3. **Verify MCP servers start correctly**
+   - Open VS Code Command Palette > "MCP: List Servers"
+   - Test individual servers: `python -m pubmed_server --help`
+   - Fix any import or dependency issues
+
+4. **Write unit tests for MCP servers** (empty `tests/` directory exists)
+   - Create `tests/test_pubmed_server.py`, etc.
+   - Mock API responses with `pytest` + `pytest-asyncio`
+   - Test each tool function with representative inputs
+
+5. **Populate analysis templates** (empty `analysis-templates/R/` and `analysis-templates/python/` exist)
+   - R templates: `meta-analysis.qmd`, `descriptive-stats.qmd`, `survival-analysis.qmd`
+   - Python templates: `nlp-screening.py`, `network-analysis.py`
+
+6. **Populate remaining template directories** (empty `templates/report/` and `templates/research-protocol/` exist)
+   - `templates/report/technical-report.qmd` for general research reports
+   - `templates/research-protocol/protocol.qmd` for non-systematic-review protocols
+
+7. **Create GitHub remote and push**
+   - Create repository on GitHub
+   - `git remote add origin <url>`
+   - `git push -u origin master`
+
+8. **Set up CI/CD** (GitHub Actions)
+   - Lint with ruff
+   - Run pytest for MCP servers
+   - Type check with mypy
+
+### Future Enhancements (from original plan)
+
+- **Scopus MCP server** (requires institutional API key)
+- **Unpaywall MCP server** (free, finds open access PDFs by DOI)
+- **Quarto journal extensions** for common journal formats
+- **Cross-database deduplication** logic in the systematic-reviewer agent
+- **Tutorial documents**: "Your first systematic review with the assistant"
+- **R environment management** with renv (renv.lock)
+
+### Key Design Decisions (for context)
+
+See `docs/conversation-export.md` for the full conversation history that produced this codebase. Key decisions:
+
+- **Architecture**: MCP servers + Copilot custom agents (not a standalone app). Maximally leverages VS Code + Copilot ecosystem.
+- **MCP server language**: Python (broader API library ecosystem, MCP SDK support). R is used for analysis scripts/templates, not server infrastructure.
+- **Naming**: "research-workflow-assistant" (not PhD-specific); audience is any researcher.
+- **ICMJE compliance**: Baked into `copilot-instructions.md` globally, not just per-agent. Non-negotiable.
+- **Project management**: Full PM capabilities with phases, milestones, tasks, meeting notes, decision logging, and formatted progress briefs.
+- **Reporting standards**: User-selectable (PRISMA 2020, PRISMA-ScR, MOOSE, Cochrane RoB 2). Agent asks which applies; does not assume.
+- **License**: MIT (open source for broad adoption).
+- **All databases are free-tier**: No institutional access required for core functionality. Scopus is optional/future.
