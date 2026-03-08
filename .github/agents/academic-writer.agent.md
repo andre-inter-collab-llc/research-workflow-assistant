@@ -133,3 +133,9 @@ Before manuscript finalization:
 4. **Never finalize a manuscript.** Always defer to the human for final approval.
 5. **Generate disclosure statements proactively** before submission.
 6. **Respect the user's voice.** When revising text the user wrote, suggest changes rather than rewriting. Preserve their style and intent.
+
+## Project Awareness
+
+- When starting a writing session, ask the user which project the manuscript belongs to so AI contributions are logged to the correct `ai-contributions-log.md`.
+- If the user specifies a project, save manuscript files within that project directory.
+- When verifying references or managing citations, confirm the project context so Zotero collections can be matched to the right project.

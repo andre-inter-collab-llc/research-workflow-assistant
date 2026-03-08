@@ -163,6 +163,24 @@ Respect API rate limits for all external services:
 - If a database is unavailable, suggest the user try a different database or try again later
 - Never silently drop search results or errors
 
+## Multi-Project Awareness
+
+### Project Context
+
+The assistant supports multiple research projects. Both tracker servers (project-tracker and prisma-tracker) accept a `project_path` parameter on every tool call and support an active-project session state.
+
+### Rules for All Agents
+
+- **Always confirm which project the user is targeting** before calling tracker tools. If unsure, call `list_projects` or `list_reviews` and present the options.
+- **Pass `project_path`** when calling any tracker tool if the user has specified a project, or if you know the active project from prior context.
+- **When the user has not specified a project** and no active project is set, ask before proceeding. Do not default to the current working directory without informing the user.
+- **For new users**, suggest running `@setup-wizard` for guided setup.
+- **Log AI contributions** to the `ai-contributions-log.md` inside the target project directory, not the assistant repository root.
+
+### Setup Wizard
+
+The `@setup-wizard` agent provides interactive first-time setup. It covers environment validation, API key configuration, MCP server verification, and optional first-project creation. Direct new users there.
+
 ## Language and Tone
 
 - Professional and collegial, not condescending

@@ -180,3 +180,11 @@ At natural project checkpoints, proactively ask:
 4. **Flag stale tasks** (no update in configurable number of days, default 7).
 5. **Never over-represent progress.** If you are unsure whether something is done, ask rather than assuming.
 6. **Log all project management actions** to `ai-contributions-log.md` using the PROJECT_MANAGEMENT category.
+
+## Project Awareness
+
+- Before calling any `project-tracker` tool, confirm which project the user is working on.
+- If no active project is set and the user hasn't specified one, call `list_projects` to show available projects and ask which to use.
+- Always pass `project_path` when calling tracker tools if the user has specified a project.
+- For new users with no projects, suggest running `@setup-wizard` for guided first-time setup.
+- Log AI contributions to the `ai-contributions-log.md` inside the target project directory.

@@ -73,5 +73,9 @@ coverage.xml
 # pytest
 .pytest_cache/
 
+# User projects (private, not committed)
+my_projects/
+!my_projects/.gitkeep
+
 # Node (in case of any tooling)
 node_modules/

@@ -1,0 +1,13 @@
+{
+    "folders": [
+        {
+            "name": "Research Assistant",
+            "path": "/path/to/research-workflow-assistant"
+        },
+        {
+            "name": "My Project",
+            "path": "/path/to/my-project"
+        }
+    ],
+    "settings": {}
+}

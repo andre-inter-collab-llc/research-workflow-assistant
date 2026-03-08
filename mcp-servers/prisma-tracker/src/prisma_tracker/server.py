@@ -2,7 +2,17 @@
 
 Local file-based tracking of PRISMA 2020 systematic review flow.
 Stores data in review-tracking/prisma-flow.json within the research project directory.
+
+Supports multiple projects via:
+  - ``project_path`` parameter on every tool (explicit per-call targeting)
+  - ``set_active_review`` tool (sets a session-wide default)
+  - ``PROJECTS_ROOT`` env var (base directory for relative project paths)
+  - ``PRISMA_PROJECT_DIR`` env var (legacy single-project fallback)
+
+Storage: {project_root}/review-tracking/prisma-flow.json
 """
+
+from __future__ import annotations
 
 import json
 import os
@@ -12,9 +22,16 @@ from typing import Any
 
 from mcp.server.fastmcp import FastMCP
 
+# ---------------------------------------------------------------------------
+# Configuration
+# ---------------------------------------------------------------------------
 PROJECT_DIR = os.environ.get("PRISMA_PROJECT_DIR", ".")
+PROJECTS_ROOT = os.environ.get("PROJECTS_ROOT", "./my_projects")
 TRACKING_DIR = "review-tracking"
 FLOW_FILE = "prisma-flow.json"
+
+# Session-level active project (set via set_active_review tool)
+_active_project: str | None = None
 
 mcp = FastMCP(
     "prisma-tracker",
@@ -22,22 +39,54 @@ mcp = FastMCP(
 )
 
 
-def _flow_path() -> Path:
+# ---------------------------------------------------------------------------
+# Path resolution helpers
+# ---------------------------------------------------------------------------
+
+def _resolve_project_dir(project_path: str | None = None, *, must_exist: bool = True) -> Path:
+    """Resolve a project directory from the various possible sources.
+
+    Priority order:
+      1. Explicit ``project_path`` argument (absolute or relative to PROJECTS_ROOT)
+      2. ``_active_project`` module state (set via ``set_active_review``)
+      3. ``PRISMA_PROJECT_DIR`` env var (legacy single-project mode)
+
+    Raises ``ValueError`` when *must_exist* is True and the path does not exist.
+    """
+    raw: str | None = project_path or _active_project or None
+
+    if raw:
+        p = Path(raw)
+        if not p.is_absolute():
+            p = Path(PROJECTS_ROOT).resolve() / p
+        p = p.resolve()
+    else:
+        p = Path(PROJECT_DIR).resolve()
+
+    if must_exist and not p.exists():
+        raise ValueError(f"Project directory does not exist: {p}")
+
+    return p
+
+
+def _flow_path(base_dir: Path | None = None) -> Path:
     """Get the path to the PRISMA flow file."""
-    return Path(PROJECT_DIR) / TRACKING_DIR / FLOW_FILE
+    if base_dir is None:
+        base_dir = _resolve_project_dir()
+    return base_dir / TRACKING_DIR / FLOW_FILE
 
 
-def _load_flow() -> dict[str, Any]:
+def _load_flow(base_dir: Path | None = None) -> dict[str, Any]:
     """Load the PRISMA flow data from disk."""
-    path = _flow_path()
+    path = _flow_path(base_dir)
     if path.exists():
         return json.loads(path.read_text(encoding="utf-8"))
     return {}
 
 
-def _save_flow(data: dict[str, Any]) -> None:
+def _save_flow(data: dict[str, Any], base_dir: Path | None = None) -> None:
     """Save the PRISMA flow data to disk."""
-    path = _flow_path()
+    path = _flow_path(base_dir)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, indent=2, default=str), encoding="utf-8")
 
@@ -47,11 +96,82 @@ def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+# ---------------------------------------------------------------------------
+# Project management tools
+# ---------------------------------------------------------------------------
+
+@mcp.tool()
+async def set_active_review(project_path: str) -> dict[str, Any]:
+    """Set the active review project for this session.
+
+    All subsequent tool calls will target this project unless overridden
+    by an explicit ``project_path`` parameter.
+
+    Args:
+        project_path: Path to the project directory (absolute, or relative
+            to PROJECTS_ROOT).
+
+    Returns:
+        Confirmation with the resolved path.
+    """
+    global _active_project
+    p = _resolve_project_dir(project_path)
+    _active_project = str(p)
+    has_flow = _flow_path(p).exists()
+    return {
+        "status": "active_review_set",
+        "path": str(p),
+        "has_prisma_data": has_flow,
+    }
+
+
+@mcp.tool()
+async def list_reviews() -> dict[str, Any]:
+    """List all projects under PROJECTS_ROOT that contain PRISMA review data.
+
+    Returns:
+        List of projects with their review title, type, and path.
+    """
+    root = Path(PROJECTS_ROOT).resolve()
+    reviews: list[dict[str, Any]] = []
+
+    if not root.exists():
+        return {"projects_root": str(root), "reviews": [], "note": "PROJECTS_ROOT does not exist yet."}
+
+    for child in sorted(root.iterdir()):
+        if not child.is_dir():
+            continue
+        flow_file = child / TRACKING_DIR / FLOW_FILE
+        entry: dict[str, Any] = {"name": child.name, "path": str(child)}
+        if flow_file.exists():
+            try:
+                flow = json.loads(flow_file.read_text(encoding="utf-8"))
+                entry["title"] = flow.get("title", "")
+                entry["review_type"] = flow.get("review_type", "")
+                entry["has_prisma_data"] = True
+            except (json.JSONDecodeError, OSError):
+                entry["has_prisma_data"] = False
+        else:
+            entry["has_prisma_data"] = False
+        reviews.append(entry)
+
+    return {
+        "projects_root": str(root),
+        "reviews": reviews,
+        "active_project": _active_project,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Review tracking tools
+# ---------------------------------------------------------------------------
+
 @mcp.tool()
 async def init_review(
     title: str,
     protocol_id: str = "",
     review_type: str = "systematic-review",
+    project_path: str = "",
 ) -> dict[str, Any]:
     """Initialize PRISMA tracking for a new systematic review.
 
@@ -60,10 +180,14 @@ async def init_review(
         protocol_id: Optional protocol registration ID (e.g., PROSPERO CRD number).
         review_type: Type of review: 'systematic-review', 'scoping-review',
             'meta-analysis'. Default 'systematic-review'.
+        project_path: Path to the project directory (absolute, or relative
+            to PROJECTS_ROOT). Leave empty to use the active project.
 
     Returns:
         Confirmation with initialized flow structure.
     """
+    base_dir = _resolve_project_dir(project_path or None, must_exist=False)
+    base_dir.mkdir(parents=True, exist_ok=True)
     flow = {
         "title": title,
         "protocol_id": protocol_id,
@@ -104,9 +228,9 @@ async def init_review(
             "quantitative_synthesis": 0,
         },
     }
-    _save_flow(flow)
+    _save_flow(flow, base_dir)
 
-    return {"status": "initialized", "title": title, "review_type": review_type}
+    return {"status": "initialized", "title": title, "review_type": review_type, "path": str(base_dir)}
 
 
 @mcp.tool()
@@ -116,6 +240,7 @@ async def record_search(
     date: str,
     results_count: int,
     notes: str = "",
+    project_path: str = "",
 ) -> dict[str, Any]:
     """Record a database search in the PRISMA identification stage.
 
@@ -125,11 +250,13 @@ async def record_search(
         date: Date the search was run (YYYY-MM-DD).
         results_count: Number of records retrieved.
         notes: Optional notes about the search.
+        project_path: Path to the project directory. Leave empty to use the active project.
 
     Returns:
         Updated identification totals.
     """
-    flow = _load_flow()
+    base_dir = _resolve_project_dir(project_path or None)
+    flow = _load_flow(base_dir)
     if not flow:
         return {"error": "No review initialized. Call init_review first."}
 
@@ -146,7 +273,7 @@ async def record_search(
         s["results_count"] for s in flow["identification"]["database_searches"]
     )
     flow["updated_at"] = _now()
-    _save_flow(flow)
+    _save_flow(flow, base_dir)
 
     return {
         "status": "recorded",
@@ -161,6 +288,7 @@ async def record_deduplication(
     before_count: int,
     after_count: int,
     method: str = "automated",
+    project_path: str = "",
 ) -> dict[str, Any]:
     """Record the deduplication step.
 
@@ -168,11 +296,13 @@ async def record_deduplication(
         before_count: Number of records before deduplication.
         after_count: Number of records after deduplication.
         method: Method used ('automated', 'manual', 'semi-automated').
+        project_path: Path to the project directory. Leave empty to use the active project.
 
     Returns:
         Updated deduplication counts.
     """
-    flow = _load_flow()
+    base_dir = _resolve_project_dir(project_path or None)
+    flow = _load_flow(base_dir)
     if not flow:
         return {"error": "No review initialized. Call init_review first."}
 
@@ -184,7 +314,7 @@ async def record_deduplication(
         "recorded_at": _now(),
     }
     flow["updated_at"] = _now()
-    _save_flow(flow)
+    _save_flow(flow, base_dir)
 
     return {
         "status": "recorded",
@@ -198,6 +328,7 @@ async def record_screening(
     stage: str,
     included: int,
     excluded_with_reasons: dict[str, int],
+    project_path: str = "",
 ) -> dict[str, Any]:
     """Record screening results for a PRISMA stage.
 
@@ -206,11 +337,13 @@ async def record_screening(
         included: Number of records included (passing to next stage).
         excluded_with_reasons: Dictionary of exclusion reasons and counts.
             Example: {"wrong population": 15, "wrong outcome": 8, "not primary study": 5}
+        project_path: Path to the project directory. Leave empty to use the active project.
 
     Returns:
         Updated screening counts for the stage.
     """
-    flow = _load_flow()
+    base_dir = _resolve_project_dir(project_path or None)
+    flow = _load_flow(base_dir)
     if not flow:
         return {"error": "No review initialized. Call init_review first."}
 
@@ -238,7 +371,7 @@ async def record_screening(
         return {"error": f"Unknown stage '{stage}'. Use 'title_abstract' or 'full_text'."}
 
     flow["updated_at"] = _now()
-    _save_flow(flow)
+    _save_flow(flow, base_dir)
 
     return {
         "status": "recorded",
@@ -250,13 +383,17 @@ async def record_screening(
 
 
 @mcp.tool()
-async def get_prisma_status() -> dict[str, Any]:
+async def get_prisma_status(project_path: str = "") -> dict[str, Any]:
     """Get the current PRISMA flow status summary.
+
+    Args:
+        project_path: Path to the project directory. Leave empty to use the active project.
 
     Returns:
         Complete PRISMA flow numbers at each stage.
     """
-    flow = _load_flow()
+    base_dir = _resolve_project_dir(project_path or None)
+    flow = _load_flow(base_dir)
     if not flow:
         return {"error": "No review initialized. Call init_review first."}
 
@@ -295,17 +432,21 @@ async def get_prisma_status() -> dict[str, Any]:
 
 
 @mcp.tool()
-async def generate_prisma_diagram() -> dict[str, Any]:
+async def generate_prisma_diagram(project_path: str = "") -> dict[str, Any]:
     """Generate PRISMA 2020 flow diagram data for rendering.
 
     Returns structured data that can be rendered as a PRISMA flow diagram
     in Quarto/Mermaid or other visualization tools.
 
+    Args:
+        project_path: Path to the project directory. Leave empty to use the active project.
+
     Returns:
         Dictionary with all PRISMA boxes and their values, plus a Mermaid
         diagram string ready to paste into a Quarto document.
     """
-    flow = _load_flow()
+    base_dir = _resolve_project_dir(project_path or None)
+    flow = _load_flow(base_dir)
     if not flow:
         return {"error": "No review initialized. Call init_review first."}
 
@@ -369,17 +510,22 @@ flowchart TD
 
 
 @mcp.tool()
-async def export_prisma_checklist(standard: str = "prisma-2020") -> dict[str, Any]:
+async def export_prisma_checklist(
+    standard: str = "prisma-2020",
+    project_path: str = "",
+) -> dict[str, Any]:
     """Generate a PRISMA reporting checklist with completion status.
 
     Args:
         standard: Checklist standard: 'prisma-2020', 'prisma-scr' (scoping reviews),
             or 'moose'. Default 'prisma-2020'.
+        project_path: Path to the project directory. Leave empty to use the active project.
 
     Returns:
         Dictionary with checklist items, each showing section, item, and completion status.
     """
-    flow = _load_flow()
+    base_dir = _resolve_project_dir(project_path or None)
+    flow = _load_flow(base_dir)
     if not flow:
         return {"error": "No review initialized. Call init_review first."}
 

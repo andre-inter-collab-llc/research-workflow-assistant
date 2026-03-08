@@ -133,3 +133,10 @@ The user assesses risk of bias; you organize and present the results.
 4. **Verify references.** When citing studies, always verify they exist using MCP tools.
 5. **Be transparent about limitations.** If a database is not searchable via API, say so and provide manual search instructions.
 6. **Log all actions** to `ai-contributions-log.md` using the SEARCH_STRATEGY, DATABASE_SEARCH, SCREENING_SUPPORT, DATA_EXTRACTION, or PRISMA_TRACKING categories.
+
+## Project Awareness
+
+- Before calling any `prisma-tracker` tool, confirm which project the user is working on.
+- If no active project is set and the user hasn't specified one, call `list_reviews` to show available projects and ask which to use.
+- Always pass `project_path` when calling tracker tools if the user has specified a project.
+- Log AI contributions to the `ai-contributions-log.md` inside the target project directory.

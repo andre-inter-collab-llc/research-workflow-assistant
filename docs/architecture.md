@@ -63,6 +63,7 @@ Each agent encodes a specialized research workflow:
 
 | Agent | Purpose | MCP Tools Used |
 |-------|---------|---------------|
+| `setup-wizard` | Guided first-time setup and environment validation | All 8 servers (for API key validation) |
 | `systematic-reviewer` | Full systematic review lifecycle | pubmed, openalex, semantic-scholar, europe-pmc, crossref, zotero, prisma-tracker |
 | `data-analyst` | Statistical analysis (R and Python) | None (uses language runtimes) |
 | `academic-writer` | Manuscript drafting with ICMJE compliance | zotero, crossref |
@@ -127,14 +128,16 @@ mcp-servers/<server-name>/
 #### Tracking Servers
 
 **PRISMA Tracker** (`prisma-tracker`)
-- Storage: JSON file (`review-tracking/prisma-flow.json`)
+- Storage: JSON file (`{project}/review-tracking/prisma-flow.json`)
 - Purpose: Track systematic review progress through PRISMA stages
+- Multi-project: `project_path` parameter on all tools, `set_active_review`, `list_reviews`
 - Tools: Initialize review, record search/screening results, generate PRISMA flow diagram (Mermaid), export checklists
 
 **Project Tracker** (`project-tracker`)
-- Storage: YAML files in `project-tracking/` directory
+- Storage: YAML files in `{project}/project-tracking/` directory
 - Purpose: Research project management with phases, milestones, tasks
-- Tools: Phase/milestone/task management, decision logging, meeting notes, progress briefs (markdown or Quarto)
+- Multi-project: `project_path` parameter on all tools, `set_active_project`, `list_projects`
+- Tools: Phase/milestone/task management, decision logging, meeting notes, progress briefs, setup status, MCP config generation
 
 ### 4. Compliance Framework (`compliance/`)
 
@@ -170,6 +173,43 @@ templates/
 ```
 
 ## Data Flow
+
+### Project Directory Structure
+
+Each research project contains its own tracking data:
+
+```
+my_projects/                    ← PROJECTS_ROOT (gitignored)
+├── my-review/
+│   ├── ai-contributions-log.md
+│   ├── project-config.yaml     ← optional project settings
+│   ├── project-tracking/       ← project-tracker data
+│   │   ├── project.yaml
+│   │   ├── tasks.yaml
+│   │   ├── decisions.yaml
+│   │   ├── meetings/
+│   │   └── briefs/
+│   └── review-tracking/        ← prisma-tracker data
+│       └── prisma-flow.json
+└── another-project/
+    └── ...
+```
+
+Projects can also live outside the assistant repository. See the
+[Working with Projects](getting-started.md#working-with-projects) section in
+the getting-started guide.
+
+### Multi-Project Path Resolution
+
+Both tracker servers resolve the target project directory in the same way:
+
+1. **Explicit `project_path` parameter** on the tool call (absolute path, or
+   relative to `PROJECTS_ROOT`)
+2. **Active project** set via `set_active_project` / `set_active_review`
+   (session-level state)
+3. **`PROJECT_DIR` / `PRISMA_PROJECT_DIR` env var** (legacy single-project
+   mode)
+4. **Current working directory** (ultimate fallback)
 
 ### Systematic Review Workflow
 

@@ -1,0 +1,25 @@
+# Research Workflow Assistant — Project Configuration
+#
+# Place this file in the root of your research project directory.
+# The assistant reads it to understand project-level preferences.
+#
+# All fields are optional. Missing fields use defaults shown in comments.
+
+research_assistant:
+  # Where tracking data is stored relative to this file:
+  #   "self"        — project-tracking/ and review-tracking/ inside this project (default)
+  #   "<path>"      — absolute or relative path to an external tracking directory
+  tracking_location: self
+
+  # Reporting standard used for this project:
+  #   prisma-2020, prisma-scr, moose, cochrane, none
+  reporting_standard: prisma-2020
+
+  # Zotero collection name for this project's references (optional)
+  # zotero_collection: "My Review"
+
+  # Project type: systematic-review, scoping-review, meta-analysis, general-research
+  project_type: systematic-review
+
+  # Target completion date (YYYY-MM-DD, optional)
+  # target_date: 2025-12-31

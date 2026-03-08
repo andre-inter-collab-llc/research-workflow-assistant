@@ -2,13 +2,17 @@
 
 This guide walks you through setting up the research-workflow-assistant in VS Code.
 
+> **First time?** You can use the interactive setup wizard instead of following
+> this guide manually. Open Copilot Chat and type `@setup-wizard` to begin a
+> guided walkthrough that covers everything below.
+
 ## Prerequisites
 
 - [VS Code](https://code.visualstudio.com/) 1.99+ with GitHub Copilot (agent mode enabled)
 - [Python](https://www.python.org/downloads/) 3.11 or later
-- [R](https://cran.r-project.org/) 4.0+ (for R-based analysis workflows)
-- [Quarto](https://quarto.org/docs/get-started/) CLI
-- [Zotero](https://www.zotero.org/) desktop app (for reference management)
+- [R](https://cran.r-project.org/) 4.0+ (optional — for R-based analysis workflows)
+- [Quarto](https://quarto.org/docs/get-started/) CLI (optional — for rendering templates)
+- [Zotero](https://www.zotero.org/) desktop app (optional — for reference management)
 - A GitHub Copilot subscription with chat access
 
 ## Installation
@@ -73,8 +77,12 @@ ZOTERO_API_KEY=your_key_here
 ZOTERO_USER_ID=your_user_id
 
 # Optional: custom directories for tracking data
-PRISMA_PROJECT_DIR=./review-tracking
-PROJECT_TRACKER_DIR=./project-tracking
+# PRISMA_PROJECT_DIR=./review-tracking
+# PROJECT_TRACKER_DIR=./project-tracking
+
+# Projects root directory (default: ./my_projects)
+# Can be an absolute path to store projects elsewhere
+# PROJECTS_ROOT=./my_projects
 ```
 
 See [api-setup-guide.md](api-setup-guide.md) for step-by-step instructions on obtaining each key.
@@ -92,6 +100,88 @@ You can also test individual servers from the terminal:
 ```bash
 python -m pubmed_server --help
 ```
+
+You can also run the automated validation script:
+
+```bash
+python scripts/validate_setup.py
+```
+
+## Working with Projects
+
+Research projects are stored in a **private projects folder** that is not committed to version control. By default this is the `my_projects/` directory inside the assistant repository.
+
+### Creating a project
+
+Ask any agent to initialize a project, or use `@project-manager` directly:
+
+```
+@project-manager Initialize a project called "My Review" in my_projects/my-review.
+```
+
+This creates the following structure inside `my_projects/my-review/`:
+
+```
+my-review/
+  ai-contributions-log.md
+  project-tracking/
+    project.yaml
+    tasks.yaml
+    decisions.yaml
+  review-tracking/       (if PRISMA tracking is initialized)
+    prisma-flow.json
+```
+
+### Using an external projects folder
+
+If you want projects stored elsewhere (e.g., a OneDrive-synced folder), set `PROJECTS_ROOT` in your `.env`:
+
+```ini
+PROJECTS_ROOT=C:\Users\you\OneDrive\Research Projects
+```
+
+Relative project paths (like `my-review`) will then resolve under that folder instead of `my_projects/`.
+
+### Switching between projects
+
+Use the project-tracker or prisma-tracker tools to switch context:
+
+```
+@project-manager Switch to my-review project.
+```
+
+Or pass `project_path` directly to any tool call. Priority order:
+
+1. Explicit `project_path` parameter on the tool call
+2. Active project set via `set_active_project` / `set_active_review`
+3. `PROJECT_DIR` / `PRISMA_PROJECT_DIR` env var
+4. Current working directory
+
+### Listing projects
+
+```
+@project-manager List all my projects.
+```
+
+This scans `PROJECTS_ROOT` and shows initialized projects with their status.
+
+### Working with external / existing projects
+
+You can point the assistant at any directory on your filesystem by providing an absolute path:
+
+```
+@project-manager Set active project to C:\Users\you\Documents\existing-project.
+```
+
+The assistant will create `project-tracking/` and `review-tracking/` folders inside that directory for its tracking data.
+
+### Cross-workspace usage
+
+If you work in a separate VS Code workspace, you have two options:
+
+1. **Multi-root workspace** — add both the assistant repo and your project as workspace folders. Use the template at `templates/research-workspace.code-workspace.example`.
+
+2. **Portable MCP config** — copy `templates/portable-mcp-config.json` to your project's `.vscode/mcp.json` and update the paths. This gives your project access to all 8 MCP servers without needing the assistant repo open.
 
 ## Using the Agents
 
@@ -159,6 +249,7 @@ See `compliance/ai-disclosure-template.md` for ready-to-use disclosure language.
 
 ## Next Steps
 
+- Run `@setup-wizard` for a guided interactive setup
 - Read [database-access.md](database-access.md) to understand what each database offers
 - Read [architecture.md](architecture.md) for a technical overview of the system
 - Explore the `compliance/` folder for PRISMA, MOOSE, and RoB 2 checklists

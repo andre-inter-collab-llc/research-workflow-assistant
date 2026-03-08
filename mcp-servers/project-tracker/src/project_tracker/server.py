@@ -3,9 +3,18 @@
 Local file-based research project management: phases, milestones, tasks,
 decisions, meetings, and progress briefs.
 
-Storage: project-tracking/ directory with YAML files.
+Supports multiple projects via:
+  - ``project_path`` parameter on every tool (explicit per-call targeting)
+  - ``set_active_project`` tool (sets a session-wide default)
+  - ``PROJECTS_ROOT`` env var (base directory for relative project paths)
+  - ``PROJECT_TRACKER_DIR`` / ``PROJECT_DIR`` env vars (legacy single-project fallback)
+
+Storage: {project_root}/project-tracking/ directory with YAML files.
 """
 
+from __future__ import annotations
+
+import json
 import os
 from datetime import datetime, timezone
 from pathlib import Path
@@ -14,8 +23,15 @@ from typing import Any
 import yaml
 from mcp.server.fastmcp import FastMCP
 
-PROJECT_DIR = os.environ.get("PROJECT_TRACKER_DIR", ".")
+# ---------------------------------------------------------------------------
+# Configuration
+# ---------------------------------------------------------------------------
+PROJECT_DIR = os.environ.get("PROJECT_TRACKER_DIR", os.environ.get("PROJECT_DIR", "."))
+PROJECTS_ROOT = os.environ.get("PROJECTS_ROOT", "./my_projects")
 TRACKING_DIR = "project-tracking"
+
+# Session-level active project (set via set_active_project tool)
+_active_project: str | None = None
 
 mcp = FastMCP(
     "project-tracker",
@@ -23,19 +39,54 @@ mcp = FastMCP(
 )
 
 
-def _tracking_path() -> Path:
-    return Path(PROJECT_DIR) / TRACKING_DIR
+# ---------------------------------------------------------------------------
+# Path resolution helpers
+# ---------------------------------------------------------------------------
+
+def _resolve_project_dir(project_path: str | None = None, *, must_exist: bool = True) -> Path:
+    """Resolve a project directory from the various possible sources.
+
+    Priority order:
+      1. Explicit ``project_path`` argument (absolute or relative to PROJECTS_ROOT)
+      2. ``_active_project`` module state (set via ``set_active_project``)
+      3. ``PROJECT_DIR`` env var (legacy single-project mode)
+
+    Raises ``ValueError`` when *must_exist* is True and the path does not exist.
+    """
+    raw: str | None = project_path or _active_project or None
+
+    if raw:
+        p = Path(raw)
+        if not p.is_absolute():
+            # Resolve relative paths against PROJECTS_ROOT
+            p = Path(PROJECTS_ROOT).resolve() / p
+        p = p.resolve()
+    else:
+        # Legacy fallback
+        p = Path(PROJECT_DIR).resolve()
+
+    if must_exist and not p.exists():
+        raise ValueError(f"Project directory does not exist: {p}")
+
+    return p
 
 
-def _load_yaml(filename: str) -> dict[str, Any]:
-    path = _tracking_path() / filename
+def _tracking_path(base_dir: Path | None = None) -> Path:
+    """Return the tracking subdirectory for a given project root."""
+    if base_dir is None:
+        base_dir = _resolve_project_dir()
+    return base_dir / TRACKING_DIR
+
+
+def _load_yaml(filename: str, base_dir: Path | None = None) -> dict[str, Any]:
+    path = _tracking_path(base_dir) / filename
     if path.exists():
         return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     return {}
 
 
-def _save_yaml(filename: str, data: dict[str, Any] | list[Any]) -> None:
-    path = _tracking_path() / filename
+def _save_yaml(filename: str, data: dict[str, Any] | list[Any], base_dir: Path | None = None) -> None:
+    path = _tracking_path(base_dir) / filename
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(yaml.dump(data, default_flow_style=False, sort_keys=False), encoding="utf-8")
 
@@ -62,12 +113,265 @@ def _next_id(items: list[dict[str, Any]], prefix: str) -> str:
 
 
 @mcp.tool()
+async def setup_status() -> dict[str, Any]:
+    """Check the current environment setup status.
+
+    Returns information about which API keys are configured (without revealing
+    values), whether the projects directory exists, and which projects are
+    available.  Used by the setup-wizard agent to detect existing configuration.
+    """
+    workspace = Path(PROJECT_DIR).resolve()
+    env_path = workspace / ".env"
+
+    # Check which keys are present in .env (value set vs empty)
+    key_names = [
+        "NCBI_API_KEY", "OPENALEX_EMAIL", "S2_API_KEY",
+        "CROSSREF_EMAIL", "ZOTERO_API_KEY", "ZOTERO_USER_ID", "PROJECTS_ROOT",
+    ]
+    env_keys: dict[str, str] = {}
+    if env_path.exists():
+        with open(env_path, encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                if "=" in line:
+                    k, _, v = line.partition("=")
+                    k, v = k.strip(), v.strip()
+                    if k in key_names:
+                        env_keys[k] = "set" if v else "empty"
+    for k in key_names:
+        env_keys.setdefault(k, "missing")
+
+    # Projects directory
+    projects_root = Path(PROJECTS_ROOT)
+    if not projects_root.is_absolute():
+        projects_root = workspace / projects_root
+    projects_root = projects_root.resolve()
+
+    projects: list[dict[str, str]] = []
+    if projects_root.is_dir():
+        for child in sorted(projects_root.iterdir()):
+            if child.is_dir() and child.name != ".gitkeep":
+                proj_yaml = child / TRACKING_DIR / "project.yaml"
+                if proj_yaml.exists():
+                    meta = yaml.safe_load(proj_yaml.read_text(encoding="utf-8")) or {}
+                    projects.append({
+                        "name": child.name,
+                        "title": meta.get("title", ""),
+                        "status": "initialized",
+                    })
+                else:
+                    projects.append({"name": child.name, "title": "", "status": "empty"})
+
+    return {
+        "env_file": "exists" if env_path.exists() else "missing",
+        "env_keys": env_keys,
+        "projects_root": str(projects_root),
+        "projects_root_exists": projects_root.is_dir(),
+        "projects": projects,
+        "active_project": _active_project,
+    }
+
+
+@mcp.tool()
+async def list_projects() -> dict[str, Any]:
+    """List all research projects in the projects directory.
+
+    Scans PROJECTS_ROOT for subdirectories.  Returns each project's name,
+    title (from project.yaml), and initialization status.
+    """
+    projects_root = Path(PROJECTS_ROOT)
+    if not projects_root.is_absolute():
+        projects_root = Path(PROJECT_DIR).resolve() / projects_root
+    projects_root = projects_root.resolve()
+
+    if not projects_root.is_dir():
+        return {"error": f"Projects directory does not exist: {projects_root}", "projects": []}
+
+    projects: list[dict[str, Any]] = []
+    for child in sorted(projects_root.iterdir()):
+        if child.is_dir() and child.name != ".gitkeep":
+            proj_yaml = child / TRACKING_DIR / "project.yaml"
+            if proj_yaml.exists():
+                meta = yaml.safe_load(proj_yaml.read_text(encoding="utf-8")) or {}
+                projects.append({
+                    "name": child.name,
+                    "title": meta.get("title", ""),
+                    "current_phase": meta.get("current_phase", ""),
+                    "start_date": meta.get("start_date", ""),
+                    "target_end": meta.get("target_end", ""),
+                    "initialized": True,
+                    "path": str(child),
+                })
+            else:
+                projects.append({
+                    "name": child.name,
+                    "title": "",
+                    "initialized": False,
+                    "path": str(child),
+                })
+
+    return {
+        "projects_root": str(projects_root),
+        "projects": projects,
+        "total": len(projects),
+        "active_project": _active_project,
+    }
+
+
+@mcp.tool()
+async def set_active_project(project_path: str) -> dict[str, Any]:
+    """Set the active project for subsequent tool calls.
+
+    Args:
+        project_path: Absolute path to a project directory, or a name/relative
+            path to resolve under PROJECTS_ROOT.
+
+    Returns:
+        Confirmation with the resolved absolute path.
+    """
+    global _active_project  # noqa: PLW0603
+
+    p = Path(project_path)
+    if not p.is_absolute():
+        root = Path(PROJECTS_ROOT)
+        if not root.is_absolute():
+            root = Path(PROJECT_DIR).resolve() / root
+        p = root.resolve() / p
+
+    p = p.resolve()
+
+    if not p.is_dir():
+        return {"error": f"Directory does not exist: {p}. Create it first or use init_project."}
+
+    _active_project = str(p)
+    return {"status": "active_project_set", "path": str(p)}
+
+
+@mcp.tool()
+async def generate_mcp_config(
+    target_project_path: str,
+    assistant_path: str = "",
+) -> dict[str, Any]:
+    """Generate a .vscode/mcp.json for an external project.
+
+    This lets a user open any project in VS Code and have the research-workflow-
+    assistant MCP servers available without a multi-root workspace.
+
+    Args:
+        target_project_path: Absolute path to the external project.
+        assistant_path: Absolute path to the research-workflow-assistant repo.
+            Defaults to the current workspace (PROJECT_DIR).
+
+    Returns:
+        The generated config content and file path.
+    """
+    assistant = Path(assistant_path or PROJECT_DIR).resolve()
+    target = Path(target_project_path).resolve()
+
+    if not target.is_dir():
+        return {"error": f"Target project directory does not exist: {target}"}
+
+    # Determine the Python executable path inside the assistant's venv
+    venv_python_win = assistant / ".venv" / "Scripts" / "python.exe"
+    venv_python_unix = assistant / ".venv" / "bin" / "python"
+    if venv_python_win.exists():
+        python_cmd = str(venv_python_win)
+    elif venv_python_unix.exists():
+        python_cmd = str(venv_python_unix)
+    else:
+        python_cmd = "python"
+
+    servers = {
+        "pubmed": {
+            "command": python_cmd,
+            "args": ["-m", "pubmed_server"],
+            "cwd": str(assistant / "mcp-servers" / "pubmed-server" / "src"),
+            "env": {"NCBI_API_KEY": "${env:NCBI_API_KEY}"},
+        },
+        "openalex": {
+            "command": python_cmd,
+            "args": ["-m", "openalex_server"],
+            "cwd": str(assistant / "mcp-servers" / "openalex-server" / "src"),
+            "env": {"OPENALEX_EMAIL": "${env:OPENALEX_EMAIL}"},
+        },
+        "semantic-scholar": {
+            "command": python_cmd,
+            "args": ["-m", "semantic_scholar_server"],
+            "cwd": str(assistant / "mcp-servers" / "semantic-scholar-server" / "src"),
+            "env": {"S2_API_KEY": "${env:S2_API_KEY}"},
+        },
+        "europe-pmc": {
+            "command": python_cmd,
+            "args": ["-m", "europe_pmc_server"],
+            "cwd": str(assistant / "mcp-servers" / "europe-pmc-server" / "src"),
+        },
+        "crossref": {
+            "command": python_cmd,
+            "args": ["-m", "crossref_server"],
+            "cwd": str(assistant / "mcp-servers" / "crossref-server" / "src"),
+            "env": {"CROSSREF_EMAIL": "${env:CROSSREF_EMAIL}"},
+        },
+        "zotero": {
+            "command": python_cmd,
+            "args": ["-m", "zotero_server"],
+            "cwd": str(assistant / "mcp-servers" / "zotero-server" / "src"),
+            "env": {
+                "ZOTERO_API_KEY": "${env:ZOTERO_API_KEY}",
+                "ZOTERO_USER_ID": "${env:ZOTERO_USER_ID}",
+            },
+        },
+        "prisma-tracker": {
+            "command": python_cmd,
+            "args": ["-m", "prisma_tracker"],
+            "cwd": str(assistant / "mcp-servers" / "prisma-tracker" / "src"),
+            "env": {
+                "PROJECT_DIR": "${workspaceFolder}",
+                "PROJECTS_ROOT": "${workspaceFolder}",
+            },
+        },
+        "project-tracker": {
+            "command": python_cmd,
+            "args": ["-m", "project_tracker"],
+            "cwd": str(assistant / "mcp-servers" / "project-tracker" / "src"),
+            "env": {
+                "PROJECT_DIR": "${workspaceFolder}",
+                "PROJECTS_ROOT": "${workspaceFolder}",
+            },
+        },
+    }
+
+    config = {"servers": servers}
+    config_json = json.dumps(config, indent=4)
+
+    # Write to target project
+    vscode_dir = target / ".vscode"
+    vscode_dir.mkdir(parents=True, exist_ok=True)
+    config_path = vscode_dir / "mcp.json"
+
+    if config_path.exists():
+        return {
+            "error": f"{config_path} already exists. Delete it first or merge manually.",
+            "generated_config": config_json,
+        }
+
+    config_path.write_text(config_json, encoding="utf-8")
+    return {
+        "status": "created",
+        "path": str(config_path),
+        "content": config_json,
+    }
+
+
+@mcp.tool()
 async def init_project(
     title: str,
     pi: str,
     team: list[str] | None = None,
     start_date: str = "",
     target_end: str = "",
+    project_path: str = "",
 ) -> dict[str, Any]:
     """Initialize project tracking for a new research project.
 
@@ -77,10 +381,15 @@ async def init_project(
         team: List of team member names.
         start_date: Project start date (YYYY-MM-DD). Defaults to today.
         target_end: Target completion date (YYYY-MM-DD).
+        project_path: Path to the project directory (absolute, or relative to
+            PROJECTS_ROOT). Defaults to the active project or PROJECT_DIR.
 
     Returns:
         Confirmation with project metadata.
     """
+    base = _resolve_project_dir(project_path or None, must_exist=False)
+    base.mkdir(parents=True, exist_ok=True)
+
     project = {
         "title": title,
         "pi": pi,
@@ -92,21 +401,33 @@ async def init_project(
         "current_phase": "",
         "phases": [],
     }
-    _save_yaml("project.yaml", project)
-    _save_yaml("tasks.yaml", {"tasks": []})
-    _save_yaml("decisions.yaml", {"decisions": []})
+    _save_yaml("project.yaml", project, base)
+    _save_yaml("tasks.yaml", {"tasks": []}, base)
+    _save_yaml("decisions.yaml", {"decisions": []}, base)
 
-    meetings_dir = _tracking_path() / "meetings"
+    meetings_dir = _tracking_path(base) / "meetings"
     meetings_dir.mkdir(parents=True, exist_ok=True)
-    briefs_dir = _tracking_path() / "briefs"
+    briefs_dir = _tracking_path(base) / "briefs"
     briefs_dir.mkdir(parents=True, exist_ok=True)
 
-    return {"status": "initialized", "title": title, "pi": pi}
+    # Create ai-contributions-log.md if it doesn't exist
+    log_path = base / "ai-contributions-log.md"
+    if not log_path.exists():
+        log_path.write_text(
+            "# AI Contributions Log\n\n"
+            "This log tracks all substantive AI contributions to this research project,\n"
+            "in compliance with ICMJE recommendations on AI-assisted technology disclosure.\n\n"
+            "## Log Entries\n\n",
+            encoding="utf-8",
+        )
+
+    return {"status": "initialized", "title": title, "pi": pi, "path": str(base)}
 
 
 @mcp.tool()
 async def define_phases(
     phases: list[dict[str, str]],
+    project_path: str = "",
 ) -> dict[str, Any]:
     """Define research phases with target dates.
 
@@ -114,11 +435,14 @@ async def define_phases(
         phases: List of phase dictionaries, each with 'name', 'target_start',
             and 'target_end' keys. Standard phases include: Protocol, Ethics/IRB,
             Registration, Data Collection, Analysis, Writing, Review, Submission, Revision.
+        project_path: Path to the project directory (absolute, or relative to
+            PROJECTS_ROOT). Defaults to the active project or PROJECT_DIR.
 
     Returns:
         Confirmation with defined phases.
     """
-    project = _load_yaml("project.yaml")
+    base = _resolve_project_dir(project_path or None)
+    project = _load_yaml("project.yaml", base)
     if not project:
         return {"error": "No project initialized. Call init_project first."}
 
@@ -138,7 +462,7 @@ async def define_phases(
     if phase_list:
         project["current_phase"] = phase_list[0]["name"]
     project["updated_at"] = _now()
-    _save_yaml("project.yaml", project)
+    _save_yaml("project.yaml", project, base)
 
     return {"status": "defined", "phases": [p["name"] for p in phase_list]}
 
@@ -147,17 +471,21 @@ async def define_phases(
 async def define_milestones(
     phase: str,
     milestones: list[dict[str, str]],
+    project_path: str = "",
 ) -> dict[str, Any]:
     """Add milestones within a phase.
 
     Args:
         phase: Name of the phase to add milestones to.
         milestones: List of milestone dictionaries with 'name' and optional 'target_date'.
+        project_path: Path to the project directory (absolute, or relative to
+            PROJECTS_ROOT). Defaults to the active project or PROJECT_DIR.
 
     Returns:
         Confirmation with defined milestones.
     """
-    project = _load_yaml("project.yaml")
+    base = _resolve_project_dir(project_path or None)
+    project = _load_yaml("project.yaml", base)
     if not project:
         return {"error": "No project initialized."}
 
@@ -180,7 +508,7 @@ async def define_milestones(
         return {"error": f"Phase '{phase}' not found."}
 
     project["updated_at"] = _now()
-    _save_yaml("project.yaml", project)
+    _save_yaml("project.yaml", project, base)
     return {"status": "defined", "phase": phase, "milestones": [m["name"] for m in milestones]}
 
 
@@ -189,6 +517,7 @@ async def update_milestone(
     milestone_id: str,
     status: str,
     notes: str = "",
+    project_path: str = "",
 ) -> dict[str, Any]:
     """Update milestone status.
 
@@ -196,11 +525,14 @@ async def update_milestone(
         milestone_id: The milestone ID (e.g., 'M001').
         status: New status: 'not-started', 'in-progress', 'completed', 'blocked'.
         notes: Optional notes about the update.
+        project_path: Path to the project directory (absolute, or relative to
+            PROJECTS_ROOT). Defaults to the active project or PROJECT_DIR.
 
     Returns:
         Updated milestone information.
     """
-    project = _load_yaml("project.yaml")
+    base = _resolve_project_dir(project_path or None)
+    project = _load_yaml("project.yaml", base)
     if not project:
         return {"error": "No project initialized."}
 
@@ -213,7 +545,7 @@ async def update_milestone(
                 if status == "completed":
                     m["completed_at"] = _now()
                 project["updated_at"] = _now()
-                _save_yaml("project.yaml", project)
+                _save_yaml("project.yaml", project, base)
                 return {"status": "updated", "milestone": m["name"], "new_status": status}
 
     return {"error": f"Milestone '{milestone_id}' not found."}
@@ -226,6 +558,7 @@ async def add_task(
     due_date: str = "",
     phase: str = "",
     priority: str = "medium",
+    project_path: str = "",
 ) -> dict[str, Any]:
     """Create a new task.
 
@@ -235,11 +568,14 @@ async def add_task(
         due_date: Due date (YYYY-MM-DD).
         phase: Associated research phase.
         priority: 'high', 'medium', or 'low'.
+        project_path: Path to the project directory (absolute, or relative to
+            PROJECTS_ROOT). Defaults to the active project or PROJECT_DIR.
 
     Returns:
         Created task with its ID.
     """
-    tasks_data = _load_yaml("tasks.yaml")
+    base = _resolve_project_dir(project_path or None)
+    tasks_data = _load_yaml("tasks.yaml", base)
     tasks = tasks_data.get("tasks", [])
 
     task = {
@@ -256,7 +592,7 @@ async def add_task(
         "completed_at": None,
     }
     tasks.append(task)
-    _save_yaml("tasks.yaml", {"tasks": tasks})
+    _save_yaml("tasks.yaml", {"tasks": tasks}, base)
 
     return {"status": "created", "task_id": task["id"], "description": description}
 
@@ -266,6 +602,7 @@ async def update_task(
     task_id: str,
     status: str,
     notes: str = "",
+    project_path: str = "",
 ) -> dict[str, Any]:
     """Update a task's status.
 
@@ -273,11 +610,14 @@ async def update_task(
         task_id: The task ID (e.g., 'T001').
         status: New status: 'not-started', 'in-progress', 'completed', 'blocked'.
         notes: Optional notes.
+        project_path: Path to the project directory (absolute, or relative to
+            PROJECTS_ROOT). Defaults to the active project or PROJECT_DIR.
 
     Returns:
         Updated task information.
     """
-    tasks_data = _load_yaml("tasks.yaml")
+    base = _resolve_project_dir(project_path or None)
+    tasks_data = _load_yaml("tasks.yaml", base)
     tasks = tasks_data.get("tasks", [])
 
     for task in tasks:
@@ -288,7 +628,7 @@ async def update_task(
             task["updated_at"] = _now()
             if status == "completed":
                 task["completed_at"] = _now()
-            _save_yaml("tasks.yaml", {"tasks": tasks})
+            _save_yaml("tasks.yaml", {"tasks": tasks}, base)
             return {"status": "updated", "task_id": task_id, "new_status": status}
 
     return {"error": f"Task '{task_id}' not found."}
@@ -301,6 +641,7 @@ async def log_decision(
     made_by: str,
     date: str = "",
     context: str = "",
+    project_path: str = "",
 ) -> dict[str, Any]:
     """Record a research decision with rationale.
 
@@ -310,11 +651,14 @@ async def log_decision(
         made_by: Who made the decision.
         date: Date of decision (YYYY-MM-DD). Defaults to today.
         context: Additional context or alternatives considered.
+        project_path: Path to the project directory (absolute, or relative to
+            PROJECTS_ROOT). Defaults to the active project or PROJECT_DIR.
 
     Returns:
         Confirmation with decision ID.
     """
-    decisions_data = _load_yaml("decisions.yaml")
+    base = _resolve_project_dir(project_path or None)
+    decisions_data = _load_yaml("decisions.yaml", base)
     decisions = decisions_data.get("decisions", [])
 
     entry = {
@@ -327,7 +671,7 @@ async def log_decision(
         "recorded_at": _now(),
     }
     decisions.append(entry)
-    _save_yaml("decisions.yaml", {"decisions": decisions})
+    _save_yaml("decisions.yaml", {"decisions": decisions}, base)
 
     return {"status": "recorded", "decision_id": entry["id"]}
 
@@ -338,6 +682,7 @@ async def log_meeting(
     attendees: list[str],
     notes: str,
     action_items: list[dict[str, str]] | None = None,
+    project_path: str = "",
 ) -> dict[str, Any]:
     """Record meeting notes with action items.
 
@@ -347,10 +692,13 @@ async def log_meeting(
         notes: Meeting discussion notes.
         action_items: Optional list of action item dictionaries with
             'description', 'assignee', and 'due_date' keys.
+        project_path: Path to the project directory (absolute, or relative to
+            PROJECTS_ROOT). Defaults to the active project or PROJECT_DIR.
 
     Returns:
         Confirmation with meeting file path.
     """
+    base = _resolve_project_dir(project_path or None)
     meeting = {
         "date": date,
         "attendees": attendees,
@@ -368,11 +716,11 @@ async def log_meeting(
         })
 
     filename = f"meetings/{date}_meeting.yaml"
-    _save_yaml(filename, meeting)
+    _save_yaml(filename, meeting, base)
 
     # Also create tasks for action items
     if action_items:
-        tasks_data = _load_yaml("tasks.yaml")
+        tasks_data = _load_yaml("tasks.yaml", base)
         tasks = tasks_data.get("tasks", [])
         for item in action_items:
             task = {
@@ -389,23 +737,30 @@ async def log_meeting(
                 "completed_at": None,
             }
             tasks.append(task)
-        _save_yaml("tasks.yaml", {"tasks": tasks})
+        _save_yaml("tasks.yaml", {"tasks": tasks}, base)
 
     return {"status": "recorded", "file": filename, "action_items_count": len(meeting["action_items"])}
 
 
 @mcp.tool()
-async def get_project_status() -> dict[str, Any]:
+async def get_project_status(
+    project_path: str = "",
+) -> dict[str, Any]:
     """Get a full project status snapshot.
+
+    Args:
+        project_path: Path to the project directory (absolute, or relative to
+            PROJECTS_ROOT). Defaults to the active project or PROJECT_DIR.
 
     Returns:
         Complete status including phases, milestones, task counts, and blockers.
     """
-    project = _load_yaml("project.yaml")
+    base = _resolve_project_dir(project_path or None)
+    project = _load_yaml("project.yaml", base)
     if not project:
         return {"error": "No project initialized."}
 
-    tasks_data = _load_yaml("tasks.yaml")
+    tasks_data = _load_yaml("tasks.yaml", base)
     tasks = tasks_data.get("tasks", [])
 
     phase_status = []
@@ -450,15 +805,22 @@ async def get_project_status() -> dict[str, Any]:
 
 
 @mcp.tool()
-async def get_overdue_items() -> dict[str, Any]:
+async def get_overdue_items(
+    project_path: str = "",
+) -> dict[str, Any]:
     """List overdue milestones and tasks.
+
+    Args:
+        project_path: Path to the project directory (absolute, or relative to
+            PROJECTS_ROOT). Defaults to the active project or PROJECT_DIR.
 
     Returns:
         Lists of overdue milestones and tasks with their details.
     """
+    base = _resolve_project_dir(project_path or None)
     today = _today()
-    project = _load_yaml("project.yaml")
-    tasks_data = _load_yaml("tasks.yaml")
+    project = _load_yaml("project.yaml", base)
+    tasks_data = _load_yaml("tasks.yaml", base)
     tasks = tasks_data.get("tasks", [])
 
     overdue_milestones = []
@@ -498,6 +860,7 @@ async def generate_brief(
     audience: str = "team",
     period: str = "weekly",
     format: str = "markdown",
+    project_path: str = "",
 ) -> dict[str, Any]:
     """Generate structured data for a progress brief.
 
@@ -506,17 +869,20 @@ async def generate_brief(
             Controls detail level.
         period: Reporting period: 'weekly', 'monthly', or 'custom'.
         format: Output format: 'markdown' (quick) or 'quarto' (for rendering).
+        project_path: Path to the project directory (absolute, or relative to
+            PROJECTS_ROOT). Defaults to the active project or PROJECT_DIR.
 
     Returns:
         Dictionary with brief content ready for rendering or copy-pasting.
     """
-    project = _load_yaml("project.yaml")
+    base = _resolve_project_dir(project_path or None)
+    project = _load_yaml("project.yaml", base)
     if not project:
         return {"error": "No project initialized."}
 
-    tasks_data = _load_yaml("tasks.yaml")
+    tasks_data = _load_yaml("tasks.yaml", base)
     tasks = tasks_data.get("tasks", [])
-    decisions_data = _load_yaml("decisions.yaml")
+    decisions_data = _load_yaml("decisions.yaml", base)
     decisions = decisions_data.get("decisions", [])
 
     # Gather status
@@ -596,7 +962,7 @@ async def generate_brief(
 
     # Save brief
     brief_filename = f"briefs/{_today()}_brief_{audience}.md"
-    brief_path = _tracking_path() / brief_filename
+    brief_path = _tracking_path(base) / brief_filename
     brief_path.parent.mkdir(parents=True, exist_ok=True)
     brief_path.write_text(brief_content, encoding="utf-8")
 
@@ -625,7 +991,7 @@ async def generate_brief(
         ]
         qmd_content = "\n".join(qmd_lines) + brief_content
         qmd_filename = f"briefs/{_today()}_brief_{audience}.qmd"
-        qmd_path = _tracking_path() / qmd_filename
+        qmd_path = _tracking_path(base) / qmd_filename
         qmd_path.write_text(qmd_content, encoding="utf-8")
         result["quarto_file"] = qmd_filename
 
@@ -633,16 +999,22 @@ async def generate_brief(
 
 
 @mcp.tool()
-async def get_decision_log(date_range: str | None = None) -> dict[str, Any]:
+async def get_decision_log(
+    date_range: str | None = None,
+    project_path: str = "",
+) -> dict[str, Any]:
     """Retrieve the decision log, optionally filtered by date.
 
     Args:
         date_range: Optional date range as 'YYYY-MM-DD:YYYY-MM-DD'. Returns all if omitted.
+        project_path: Path to the project directory (absolute, or relative to
+            PROJECTS_ROOT). Defaults to the active project or PROJECT_DIR.
 
     Returns:
         List of decisions.
     """
-    decisions_data = _load_yaml("decisions.yaml")
+    base = _resolve_project_dir(project_path or None)
+    decisions_data = _load_yaml("decisions.yaml", base)
     decisions = decisions_data.get("decisions", [])
 
     if date_range and ":" in date_range:
@@ -656,17 +1028,21 @@ async def get_decision_log(date_range: str | None = None) -> dict[str, Any]:
 async def get_action_items(
     assignee: str | None = None,
     status: str | None = None,
+    project_path: str = "",
 ) -> dict[str, Any]:
     """List action items (tasks), optionally filtered.
 
     Args:
         assignee: Filter by assignee name.
         status: Filter by status: 'not-started', 'in-progress', 'completed', 'blocked'.
+        project_path: Path to the project directory (absolute, or relative to
+            PROJECTS_ROOT). Defaults to the active project or PROJECT_DIR.
 
     Returns:
         Filtered list of tasks/action items.
     """
-    tasks_data = _load_yaml("tasks.yaml")
+    base = _resolve_project_dir(project_path or None)
+    tasks_data = _load_yaml("tasks.yaml", base)
     tasks = tasks_data.get("tasks", [])
 
     if assignee:
