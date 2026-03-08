@@ -1,0 +1,166 @@
+---
+title: "[Title of Systematic Review]"
+subtitle: "A Systematic Review [and Meta-Analysis]"
+author:
+  - name: "[First Author]"
+    affiliation: "[Institution]"
+    orcid: "[ORCID]"
+    corresponding: true
+  - name: "[Second Author]"
+    affiliation: "[Institution]"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+abstract: |
+  **Background:** [Context and rationale]
+  **Objectives:** [Review question and objectives]
+  **Methods:** [Search strategy, databases, eligibility criteria, data extraction, synthesis methods]
+  **Results:** [Number of studies, key findings, effect estimates]
+  **Conclusions:** [Interpretation, implications]
+  **Registration:** [PROSPERO/OSF number]
+format:
+  docx:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+bibliography: references.bib
+csl: apa.csl
+execute:
+  echo: false
+  warning: false
+---
+
+# Introduction
+
+## Rationale
+
+[Describe the rationale for the review in the context of what is already known]
+
+## Objectives
+
+[Provide an explicit statement of the review question(s) using PICO/PEO framework]
+
+# Methods
+
+## Protocol and Registration
+
+This systematic review was conducted in accordance with the PRISMA 2020 guidelines [@page2021prisma]. The protocol was registered with [PROSPERO/OSF] (registration number: [number]).
+
+## Eligibility Criteria
+
+### Inclusion Criteria
+
+[Describe using PICO/PEO elements]
+
+### Exclusion Criteria
+
+[List exclusion criteria]
+
+## Information Sources
+
+[Describe all databases searched, with dates]
+
+## Search Strategy
+
+[Present complete search strategy for at least one database. Full strategies for all databases are available in Supplementary Material.]
+
+## Selection Process
+
+[Describe screening process: number of reviewers, independence, tools, disagreement resolution]
+
+## Data Collection Process
+
+[Describe data extraction methods]
+
+## Data Items
+
+[List variables extracted]
+
+## Study Risk of Bias Assessment
+
+[Describe RoB tool and process]
+
+## Effect Measures
+
+[Describe effect measures used]
+
+## Synthesis Methods
+
+[Describe qualitative and quantitative synthesis methods]
+
+## AI Tool Disclosure
+
+[Tool name] was used to assist with [specific tasks]. All screening decisions, data extraction, and risk of bias assessments were performed independently by the research team. See AI Contributions Log (Supplementary Material) for complete details.
+
+# Results
+
+## Study Selection
+
+[Describe selection process with PRISMA flow diagram]
+
+```{r}
+#| label: fig-prisma
+#| fig-cap: "PRISMA 2020 flow diagram"
+# PRISMA flow diagram will be generated from prisma-tracker data
+# Use the prisma-tracker MCP server's generate_prisma_diagram() output
+```
+
+## Study Characteristics
+
+[Describe included studies]
+
+```{r}
+#| label: tbl-characteristics
+#| tbl-cap: "Characteristics of included studies"
+# Table of study characteristics
+```
+
+## Risk of Bias in Studies
+
+[Present RoB assessments]
+
+## Results of Individual Studies
+
+[Present individual study results]
+
+## Results of Syntheses
+
+[Present synthesis results, forest plots if meta-analysis performed]
+
+```{r}
+#| label: fig-forest
+#| fig-cap: "Forest plot of [outcome]"
+# Forest plot code (using metafor or meta package)
+```
+
+## Reporting Biases
+
+[Assess reporting biases, funnel plot if applicable]
+
+## Certainty of Evidence
+
+[Present GRADE or equivalent assessment]
+
+# Discussion
+
+## Summary of Evidence
+
+[General interpretation in context of other evidence]
+
+## Limitations
+
+[Limitations of evidence and review process]
+
+## Implications
+
+[Implications for practice, policy, and research]
+
+# Conclusions
+
+[Brief summary of findings and their implications]
+
+# Acknowledgments
+
+[Acknowledge non-author contributors]
+
+**AI Tool Disclosure:** [Tool name and version] was used during the preparation of this manuscript to [specific uses]. The authors reviewed and edited all AI-assisted content and take full responsibility for the content of the publication.
+
+# References

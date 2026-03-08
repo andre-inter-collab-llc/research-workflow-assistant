@@ -1,0 +1,45 @@
+---
+title: "PRISMA 2020 Flow Diagram"
+format:
+  docx: default
+  html: default
+---
+
+```{mermaid}
+flowchart TD
+    subgraph Identification
+        A["Records identified through<br/>database searching<br/>(n = )"]
+        B["Additional records identified<br/>through other sources<br/>(n = )"]
+    end
+
+    subgraph Screening
+        C["Records after duplicates removed<br/>(n = )"]
+        D["Records screened<br/>(n = )"]
+        E["Records excluded<br/>(n = )"]
+        F["Full-text articles assessed<br/>for eligibility<br/>(n = )"]
+        G["Full-text articles excluded,<br/>with reasons<br/>(n = )"]
+    end
+
+    subgraph Included
+        H["Studies included in<br/>qualitative synthesis<br/>(n = )"]
+        I["Studies included in<br/>quantitative synthesis<br/>(meta-analysis)<br/>(n = )"]
+    end
+
+    A --> C
+    B --> C
+    C --> D
+    D --> E
+    D --> F
+    F --> G
+    F --> H
+    H --> I
+```
+
+## Full-Text Exclusion Reasons
+
+| Reason | n |
+|--------|---|
+| | |
+| | |
+| | |
+| **Total excluded** | **0** |

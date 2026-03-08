@@ -1,0 +1,59 @@
+---
+title: "Meeting Notes"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+format:
+  docx:
+    toc: false
+---
+
+# Meeting Details
+
+- **Date:** [YYYY-MM-DD]
+- **Time:** [HH:MM - HH:MM]
+- **Location:** [In-person / Virtual platform]
+- **Note taker:** [Name]
+
+## Attendees
+
+- [ ] [Name 1]
+- [ ] [Name 2]
+- [ ] [Name 3]
+
+## Agenda
+
+1. [Agenda item 1]
+2. [Agenda item 2]
+3. [Agenda item 3]
+
+# Discussion Notes
+
+## [Topic 1]
+
+[Notes]
+
+## [Topic 2]
+
+[Notes]
+
+# Decisions Made
+
+| Decision | Rationale | Made by |
+|----------|-----------|---------|
+| | | |
+
+# Action Items
+
+| # | Action | Assignee | Due Date | Status |
+|---|--------|----------|----------|--------|
+| 1 | | | | Open |
+| 2 | | | | Open |
+| 3 | | | | Open |
+
+# Next Meeting
+
+- **Date:** [YYYY-MM-DD]
+- **Agenda items to carry forward:**
+
+---
+
+*Meeting notes recorded with AI assistance. Content verified by attendees.*

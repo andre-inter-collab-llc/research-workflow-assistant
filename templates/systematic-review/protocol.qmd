@@ -1,0 +1,183 @@
+---
+title: "Systematic Review Protocol"
+subtitle: "PROSPERO Registration Draft"
+author:
+  - name: "[Author Name]"
+    affiliation: "[Institution]"
+    orcid: "[ORCID]"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+format:
+  docx:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+bibliography: references.bib
+csl: apa.csl
+---
+
+# Registration Information
+
+- **Registration platform:** PROSPERO / OSF / Other
+- **Registration number:** [Pending / CRD...]
+- **Date of registration:**
+
+# Review Question
+
+## Research Question
+
+[State the primary research question clearly]
+
+## Question Framework
+
+- **Framework used:** PICO / PEO / SPIDER / PCC
+- **Population:**
+- **Intervention/Exposure:**
+- **Comparator:**
+- **Outcome:**
+
+# Background and Rationale
+
+[Describe the rationale for the review, existing evidence gaps, and why this review is needed]
+
+# Objectives
+
+[State specific objectives of the review]
+
+# Eligibility Criteria
+
+## Inclusion Criteria
+
+| Criterion | Description |
+|-----------|-------------|
+| Population | |
+| Intervention/Exposure | |
+| Comparator | |
+| Outcome | |
+| Study design | |
+| Time period | |
+| Language | |
+
+## Exclusion Criteria
+
+- [List exclusion criteria]
+
+# Information Sources
+
+## Electronic Databases
+
+| Database | Platform | Date searched |
+|----------|----------|---------------|
+| PubMed/MEDLINE | NCBI | |
+| OpenAlex | API | |
+| Semantic Scholar | API | |
+| Europe PMC | EBI | |
+| Scopus | Elsevier | |
+| Web of Science | Clarivate | |
+| [Others] | | |
+
+## Other Sources
+
+- Reference lists of included studies
+- Grey literature sources
+- Contact with experts
+- Trial registries
+
+# Search Strategy
+
+## Concept Decomposition
+
+| Concept | MeSH Terms | Free-text Synonyms |
+|---------|-----------|-------------------|
+| Population | | |
+| Intervention/Exposure | | |
+| Outcome | | |
+
+## Boolean Query Structure
+
+```
+(Population terms) AND (Intervention terms) AND (Outcome terms)
+```
+
+## Full Search Strategy
+
+[Insert database-specific search strategies here, generated with the @systematic-reviewer agent]
+
+# Study Selection
+
+## Screening Process
+
+1. **Deduplication:** [Method]
+2. **Title/abstract screening:** [Number of reviewers, independence, tool used]
+3. **Full-text screening:** [Number of reviewers, independence]
+4. **Disagreement resolution:** [Method]
+
+# Data Extraction
+
+## Data Items
+
+| Variable | Description | Source |
+|----------|-------------|--------|
+| | | |
+
+## Data Extraction Form
+
+[Describe or attach the data extraction form]
+
+# Risk of Bias Assessment
+
+- **Tool:** RoB 2.0 / ROBINS-I / NOS / CASP / JBI / Other
+- **Domains assessed:**
+- **Number of assessors:**
+- **Disagreement resolution:**
+
+# Data Synthesis
+
+## Qualitative Synthesis
+
+[Describe the approach to narrative synthesis]
+
+## Quantitative Synthesis (if applicable)
+
+- **Software:** R (metafor) / Python (statsmodels) / Other
+- **Effect measure:**
+- **Model:** Fixed-effects / Random-effects
+- **Heterogeneity assessment:** I-squared, Q statistic, tau-squared
+- **Subgroup analyses planned:**
+- **Sensitivity analyses planned:**
+
+# Confidence in Cumulative Evidence
+
+- **Framework:** GRADE / Other
+- **Domains assessed:**
+
+# AI Tool Disclosure
+
+This protocol was prepared with AI assistance:
+
+- **Tool:** [research-workflow-assistant / GitHub Copilot]
+- **Use:** [Describe specific use: search strategy development, template generation, etc.]
+- **Human oversight:** All decisions regarding research question, eligibility criteria, and methodology were made by the research team
+- **ICMJE compliance:** AI tools are not listed as authors; use is disclosed per ICMJE Section II.A.4
+
+# Timeline
+
+| Phase | Target Start | Target End |
+|-------|-------------|-----------|
+| Protocol registration | | |
+| Search execution | | |
+| Screening | | |
+| Data extraction | | |
+| Risk of bias assessment | | |
+| Data synthesis | | |
+| Manuscript preparation | | |
+| Submission | | |
+
+# Amendments
+
+Any amendments to this protocol will be documented with date, description, and rationale.
+
+| Date | Section | Amendment | Rationale |
+|------|---------|-----------|-----------|
+| | | | |
+
+# References

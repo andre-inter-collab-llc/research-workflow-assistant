@@ -1,0 +1,77 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+*.whl
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# R
+.Rhistory
+.Rdata
+.RData
+.httr-oauth
+.Rproj.user
+renv/library/
+renv/staging/
+renv/python/
+
+# Quarto
+_site/
+_book/
+_freeze/
+*_files/
+*.html
+!docs/**/*.html
+
+# Environment and secrets
+.env
+.env.local
+*.env
+secrets/
+
+# Logs
+*.log
+workflow_log.txt
+
+# Data (generated in user projects, not in this repo)
+*.RData
+*.rds
+*.csv
+!tests/fixtures/*.csv
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# mypy
+.mypy_cache/
+
+# pytest
+.pytest_cache/
+
+# Node (in case of any tooling)
+node_modules/

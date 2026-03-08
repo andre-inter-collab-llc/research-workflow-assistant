@@ -1,0 +1,109 @@
+---
+title: "Search Strategy Documentation"
+date: today
+format:
+  docx:
+    toc: true
+  html:
+    toc: true
+---
+
+# Search Strategy
+
+## Research Question
+
+**Framework:** [PICO / PEO / SPIDER / PCC]
+
+| Element | Description |
+|---------|-------------|
+| Population | |
+| Intervention/Exposure | |
+| Comparison | |
+| Outcome | |
+
+## Concept Decomposition
+
+| Concept | MeSH Terms | Free-Text Synonyms |
+|---------|-----------|-------------------|
+| Population | | |
+| Intervention/Exposure | | |
+| Comparison | | |
+| Outcome | | |
+
+## Database-Specific Strategies
+
+### PubMed/MEDLINE
+
+**Date searched:** [YYYY-MM-DD]
+**Results:** [n]
+
+```
+[Full PubMed query]
+```
+
+### OpenAlex
+
+**Date searched:** [YYYY-MM-DD]
+**Results:** [n]
+
+```
+[Full OpenAlex query with filters]
+```
+
+### Semantic Scholar
+
+**Date searched:** [YYYY-MM-DD]
+**Results:** [n]
+
+```
+[Full Semantic Scholar query]
+```
+
+### Europe PMC
+
+**Date searched:** [YYYY-MM-DD]
+**Results:** [n]
+
+```
+[Full Europe PMC query]
+```
+
+### [Additional Database]
+
+**Date searched:** [YYYY-MM-DD]
+**Results:** [n]
+
+```
+[Full query]
+```
+
+## Summary of Search Results
+
+| Database | Date Searched | Records Found |
+|----------|--------------|---------------|
+| PubMed/MEDLINE | | |
+| OpenAlex | | |
+| Semantic Scholar | | |
+| Europe PMC | | |
+| [Other] | | |
+| **Total** | | **[n]** |
+| **After deduplication** | | **[n]** |
+
+## Limits and Filters Applied
+
+- Date range: [start] to [end]
+- Language: [languages included]
+- Publication types: [included/excluded types]
+- Other limits: [describe]
+
+## Grey Literature Sources
+
+| Source | Strategy | Date Searched | Results |
+|--------|----------|--------------|---------|
+| | | | |
+
+## Hand Searching
+
+| Journal/Source | Issues Searched | Results |
+|---------------|----------------|---------|
+| | | |

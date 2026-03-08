@@ -1,0 +1,99 @@
+---
+title: "[Manuscript Title]"
+author:
+  - name: "[First Author]"
+    affiliation: "[Institution]"
+    orcid: "[ORCID]"
+    corresponding: true
+  - name: "[Co-Author]"
+    affiliation: "[Institution]"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+abstract: |
+  [Structured or unstructured abstract, typically 150-300 words]
+format:
+  docx:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+bibliography: references.bib
+csl: apa.csl
+execute:
+  echo: false
+  warning: false
+---
+
+# Introduction
+
+[Background, rationale, and objectives. Move from broad context to specific gap to research question.]
+
+# Methods
+
+## Study Design
+
+[Describe the study design and setting]
+
+## Participants / Data Sources
+
+[Describe population, eligibility criteria, data sources]
+
+## Variables / Measurements
+
+[Describe outcome variables, exposures, covariates]
+
+## Statistical Analysis
+
+[Describe analytical approach, software, handling of missing data]
+
+## Ethical Considerations
+
+[IRB/ethics approval, informed consent]
+
+# Results
+
+## Descriptive Statistics
+
+```{r}
+#| label: tbl-descriptive
+#| tbl-cap: "Participant characteristics"
+# Descriptive statistics table
+```
+
+## Primary Analysis
+
+[Present main results]
+
+```{r}
+#| label: fig-main
+#| fig-cap: "[Description of main figure]"
+# Main results figure
+```
+
+## Secondary Analyses
+
+[Additional analyses, subgroups, sensitivity]
+
+# Discussion
+
+## Summary of Findings
+
+[Key findings in context of existing literature]
+
+## Strengths and Limitations
+
+[Methodological strengths and limitations]
+
+## Implications
+
+[Clinical/policy/research implications]
+
+# Conclusions
+
+[Brief summary]
+
+# Acknowledgments
+
+[Non-author contributors, funding]
+
+**AI Tool Disclosure:** [Include if AI tools were used, per ICMJE Section II.A.4]
+
+# References

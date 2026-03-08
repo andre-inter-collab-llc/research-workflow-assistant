@@ -1,0 +1,43 @@
+---
+title: "Decision Log"
+subtitle: "[Project Title]"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+format:
+  docx:
+    toc: true
+    number-sections: false
+---
+
+# Decision Log
+
+This document records all major research decisions for audit trail purposes.
+
+```{r}
+#| include: false
+library(yaml)
+decisions <- yaml::read_yaml("project-tracking/decisions.yaml")
+```
+
+```{r}
+#| echo: false
+if(length(decisions$decisions) > 0) {
+  decisions_df <- do.call(rbind, lapply(decisions$decisions, function(d) {
+    data.frame(
+      ID = d$id,
+      Date = d$date,
+      Decision = d$decision,
+      Rationale = d$rationale,
+      Made_By = d$made_by,
+      Context = d$context %||% ""
+    )
+  }))
+  knitr::kable(decisions_df, 
+               col.names = c("ID", "Date", "Decision", "Rationale", "Made By", "Context"))
+} else {
+  cat("No decisions recorded yet.")
+}
+```
+
+---
+
+*Decision log maintained with AI assistance. All decisions and rationales provided by the research team.*

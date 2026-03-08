@@ -1,0 +1,94 @@
+---
+title: "Progress Brief"
+subtitle: "[Project Title]"
+author: "[PI Name]"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+format:
+  docx:
+    toc: false
+  pdf:
+    toc: false
+    documentclass: article
+    geometry: margin=1in
+---
+
+```{r}
+#| include: false
+# Load project tracking data
+library(yaml)
+project <- yaml::read_yaml("project-tracking/project.yaml")
+tasks <- yaml::read_yaml("project-tracking/tasks.yaml")
+decisions <- yaml::read_yaml("project-tracking/decisions.yaml")
+```
+
+# Project Status
+
+**Current Phase:** `r project$current_phase`
+**Start Date:** `r project$start_date`
+**Target End:** `r project$target_end`
+
+# Phase Progress
+
+```{r}
+#| echo: false
+# Generate phase progress table
+phases_df <- do.call(rbind, lapply(project$phases, function(p) {
+  completed <- sum(sapply(p$milestones, function(m) m$status == "completed"))
+  total <- length(p$milestones)
+  data.frame(
+    Phase = p$name,
+    Status = p$status,
+    Milestones = paste0(completed, "/", total),
+    Target_End = p$target_end %||% "TBD"
+  )
+}))
+knitr::kable(phases_df, col.names = c("Phase", "Status", "Milestones", "Target End"))
+```
+
+# Recent Accomplishments
+
+```{r}
+#| echo: false
+completed_milestones <- unlist(lapply(project$phases, function(p) {
+  sapply(p$milestones[sapply(p$milestones, function(m) m$status == "completed")],
+         function(m) paste0("- ", m$name, " (", p$name, ")"))
+}))
+```
+
+`r if(length(completed_milestones) > 0) paste(tail(completed_milestones, 5), collapse = "\n") else "No milestones completed yet."`
+
+# Blockers
+
+```{r}
+#| echo: false
+blocked_tasks <- tasks$tasks[sapply(tasks$tasks, function(t) t$status == "blocked")]
+if(length(blocked_tasks) > 0) {
+  cat(paste(sapply(blocked_tasks, function(t) 
+    paste0("- **", t$description, "**: ", t$notes %||% "No details")), 
+    collapse = "\n"))
+} else {
+  cat("No current blockers.")
+}
+```
+
+# Recent Decisions
+
+```{r}
+#| echo: false
+recent <- tail(decisions$decisions, 3)
+if(length(recent) > 0) {
+  cat(paste(sapply(recent, function(d) 
+    paste0("- **", d$decision, "** (", d$date, "): ", d$rationale)), 
+    collapse = "\n"))
+} else {
+  cat("No decisions recorded yet.")
+}
+```
+
+# Next Steps
+
+[To be filled in by the research team]
+
+---
+
+*This brief was generated with AI assistance. All project data was entered and verified by the research team.*

@@ -1,0 +1,66 @@
+{
+    "servers": {
+        "pubmed": {
+            "command": "python",
+            "args": ["-m", "pubmed_server"],
+            "cwd": "${workspaceFolder}/mcp-servers/pubmed-server/src",
+            "env": {
+                "NCBI_API_KEY": "${env:NCBI_API_KEY}"
+            }
+        },
+        "openalex": {
+            "command": "python",
+            "args": ["-m", "openalex_server"],
+            "cwd": "${workspaceFolder}/mcp-servers/openalex-server/src",
+            "env": {
+                "OPENALEX_EMAIL": "${env:OPENALEX_EMAIL}"
+            }
+        },
+        "semantic-scholar": {
+            "command": "python",
+            "args": ["-m", "semantic_scholar_server"],
+            "cwd": "${workspaceFolder}/mcp-servers/semantic-scholar-server/src",
+            "env": {
+                "S2_API_KEY": "${env:S2_API_KEY}"
+            }
+        },
+        "europe-pmc": {
+            "command": "python",
+            "args": ["-m", "europe_pmc_server"],
+            "cwd": "${workspaceFolder}/mcp-servers/europe-pmc-server/src"
+        },
+        "crossref": {
+            "command": "python",
+            "args": ["-m", "crossref_server"],
+            "cwd": "${workspaceFolder}/mcp-servers/crossref-server/src",
+            "env": {
+                "CROSSREF_EMAIL": "${env:CROSSREF_EMAIL}"
+            }
+        },
+        "zotero": {
+            "command": "python",
+            "args": ["-m", "zotero_server"],
+            "cwd": "${workspaceFolder}/mcp-servers/zotero-server/src",
+            "env": {
+                "ZOTERO_API_KEY": "${env:ZOTERO_API_KEY}",
+                "ZOTERO_USER_ID": "${env:ZOTERO_USER_ID}"
+            }
+        },
+        "prisma-tracker": {
+            "command": "python",
+            "args": ["-m", "prisma_tracker"],
+            "cwd": "${workspaceFolder}/mcp-servers/prisma-tracker/src",
+            "env": {
+                "PROJECT_DIR": "${workspaceFolder}"
+            }
+        },
+        "project-tracker": {
+            "command": "python",
+            "args": ["-m", "project_tracker"],
+            "cwd": "${workspaceFolder}/mcp-servers/project-tracker/src",
+            "env": {
+                "PROJECT_DIR": "${workspaceFolder}"
+            }
+        }
+    }
+}
