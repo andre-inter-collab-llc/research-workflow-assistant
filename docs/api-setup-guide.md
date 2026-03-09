@@ -197,6 +197,64 @@ Find group IDs at: `https://www.zotero.org/groups/`
 
 ---
 
+## Zotero Local (PDF Text & Annotations)
+
+**Key type:** File system path (no API key needed)
+**Required:** No (optional — enhances Zotero integration with local PDF access)
+
+The `zotero-local` MCP server reads directly from your local Zotero installation to enable:
+
+- **Full-text extraction** from PDFs stored in your Zotero library
+- **Annotation extraction** — highlights, sticky notes, underlines from both PDF-embedded annotations and Zotero's built-in reader annotations
+- **Keyword search** across all stored PDFs
+- **Notes** from local database (faster than API, works offline)
+- **Better BibTeX integration** (optional) for stable citation keys and enhanced export
+
+### Prerequisites
+
+1. [Zotero desktop](https://www.zotero.org/download/) must be installed
+2. PDFs must be stored locally (not "linked" to external URLs only)
+3. PyMuPDF is installed automatically with the `zotero-local-server` package
+
+### Finding your Zotero data directory
+
+1. Open Zotero → Edit → Settings (or Preferences on macOS) → Advanced → Files and Folders
+2. The "Data Directory Location" shows the path, e.g.:
+   - **Windows**: `C:\Users\YourName\Zotero`
+   - **macOS**: `/Users/YourName/Zotero`
+   - **Linux**: `/home/yourname/Zotero`
+3. That folder will contain `zotero.sqlite` and a `storage/` subdirectory
+
+> **Auto-detection:** If you leave `ZOTERO_DATA_DIR` blank, the server will try to auto-detect standard locations. Set the variable explicitly if auto-detection fails.
+
+### Configuration
+
+```ini
+# Path to your Zotero data directory (folder containing zotero.sqlite)
+ZOTERO_DATA_DIR=C:\Users\YourName\Zotero
+```
+
+### Better BibTeX (optional)
+
+If you use [Better BibTeX](https://retorque.re/zotero-better-bibtex/) for citation key management:
+
+1. Install BBT in Zotero: Tools → Add-ons → Install from file (or URL)
+2. Zotero must be **running** for BBT features to work (BBT exposes a local JSON-RPC API)
+3. No additional configuration needed — the server auto-detects BBT at `localhost:23119`
+
+**BBT features available:**
+- Stable, human-readable citation keys (e.g., `smith2024climate`)
+- Enhanced BibTeX/BibLaTeX export
+- Citation key lookup and reverse search
+
+### Documentation
+
+- [Zotero data directory](https://www.zotero.org/support/zotero_data)
+- [Better BibTeX](https://retorque.re/zotero-better-bibtex/)
+- [Zotero 7 reader annotations](https://www.zotero.org/support/pdf_reader)
+
+---
+
 ## Summary Table
 
 | Service | Auth Required | Key Type | Free Tier | Rate Limit |
@@ -207,6 +265,7 @@ Find group IDs at: `https://www.zotero.org/groups/`
 | Europe PMC | No | None | Yes (unlimited) | Fair use |
 | CrossRef | No | Email (polite pool) | Yes (unlimited) | Polite pool preferred |
 | Zotero | Yes | API Key + User ID | Yes (300MB storage) | Fair use |
+| Zotero Local | No | File path | Yes (local only) | Disk I/O bound |
 
 ## Environment File Template
 
@@ -228,6 +287,9 @@ CROSSREF_EMAIL=
 # Zotero (required for reference management)
 ZOTERO_API_KEY=
 ZOTERO_USER_ID=
+
+# Zotero Local (optional — for PDF text/annotations)
+ZOTERO_DATA_DIR=
 
 # Tracking directories (optional, defaults to ./review-tracking and ./project-tracking)
 PRISMA_PROJECT_DIR=

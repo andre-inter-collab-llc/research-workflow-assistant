@@ -18,6 +18,10 @@ research_assistant:
   # Zotero collection name for this project's references (optional)
   # zotero_collection: "My Review"
 
+  # Override the Zotero data directory for this project (optional).
+  # If blank, inherits from ZOTERO_DATA_DIR env var or auto-detects.
+  # zotero_data_dir: "C:\Users\you\Zotero"
+
   # Project type: systematic-review, scoping-review, meta-analysis, general-research
   project_type: systematic-review
 

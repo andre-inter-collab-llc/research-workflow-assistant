@@ -43,6 +43,7 @@ def _check_servers() -> dict:
         "europe-pmc": "europe_pmc_server",
         "crossref": "crossref_server",
         "zotero": "zotero_server",
+        "zotero-local": "zotero_local_server",
         "prisma-tracker": "prisma_tracker",
         "project-tracker": "project_tracker",
     }
@@ -59,6 +60,7 @@ def _check_env_keys(workspace_root: Path) -> dict:
         "CROSSREF_EMAIL",
         "ZOTERO_API_KEY",
         "ZOTERO_USER_ID",
+        "ZOTERO_DATA_DIR",
         "PROJECTS_ROOT",
     ]
     result: dict[str, str] = {}
@@ -136,6 +138,50 @@ def _check_optional_tool(command: str) -> dict:
     return {"status": "not-found"}
 
 
+def _check_zotero_local() -> dict:
+    """Check if the local Zotero data directory is accessible."""
+    try:
+        from zotero_local_server import zotero_db
+    except ImportError:
+        return {"status": "skip", "reason": "zotero_local_server not installed"}
+
+    data_dir = zotero_db.detect_zotero_data_dir()
+    if data_dir is None:
+        return {"status": "not-found", "message": "Zotero data directory not detected. Set ZOTERO_DATA_DIR."}
+
+    version = zotero_db.get_zotero_version(data_dir)
+    storage = data_dir / "storage"
+    pdf_count = 0
+    if storage.is_dir():
+        for child in storage.iterdir():
+            if child.is_dir():
+                for f in child.iterdir():
+                    if f.suffix.lower() == ".pdf":
+                        pdf_count += 1
+
+    result: dict = {
+        "status": "ok",
+        "data_dir": str(data_dir),
+        "zotero_version": version,
+        "pdf_count": pdf_count,
+    }
+
+    # Check for Better BibTeX (non-blocking)
+    try:
+        import httpx
+
+        resp = httpx.post(
+            "http://localhost:23119/better-bibtex/json-rpc",
+            json={"jsonrpc": "2.0", "method": "user.groups", "params": [], "id": 1},
+            timeout=3.0,
+        )
+        result["better_bibtex"] = "available" if resp.status_code == 200 else "not-running"
+    except Exception:
+        result["better_bibtex"] = "not-running"
+
+    return result
+
+
 def main() -> None:
     """Run all checks and output a JSON report."""
     # Determine workspace root (parent of scripts/)
@@ -146,6 +192,7 @@ def main() -> None:
         "servers": _check_servers(),
         "env_file": "exists" if (workspace_root / ".env").exists() else "missing",
         "env_keys": _check_env_keys(workspace_root),
+        "zotero_local": _check_zotero_local(),
         "projects_dir": _check_projects_dir(workspace_root),
         "optional_tools": {
             "r": _check_optional_tool("Rscript"),

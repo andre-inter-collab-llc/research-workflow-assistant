@@ -87,6 +87,17 @@
                 "PROJECT_DIR": "${workspaceFolder}",
                 "PROJECTS_ROOT": "${env:PROJECTS_ROOT}"
             }
+        },
+        "zotero-local": {
+            "command": "python",
+            "args": [
+                "-m",
+                "zotero_local_server"
+            ],
+            "cwd": "${workspaceFolder}/mcp-servers/zotero-local-server/src",
+            "env": {
+                "ZOTERO_DATA_DIR": "${env:ZOTERO_DATA_DIR}"
+            }
         }
     }
 }

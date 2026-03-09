@@ -6,6 +6,7 @@ description: >
   AI disclosure statements, and tracks AI contributions for authorship accountability.
 tools:
   - zotero
+  - zotero-local
   - crossref
 ---
 
@@ -99,6 +100,16 @@ Before manuscript finalization:
 - Verify DOIs resolve correctly via CrossRef
 - Flag any citations that cannot be verified
 - Ensure bibliography entries are complete (title, authors, year, journal, DOI)
+
+### Local Zotero & PDF Features
+
+When the `zotero-local` MCP server is available:
+- **Quote verification**: Use `extract_pdf_text` to locate exact quotes in source PDFs and verify page numbers
+- **Annotation review**: Use `extract_pdf_annotations` or `get_zotero_annotations` to review highlights and notes the researcher made while reading
+- **Keyword search**: Use `search_pdf_content` to find relevant passages across all stored PDFs for a topic
+- **Better BibTeX citekeys**: If BBT is available, use `bbt_get_citekey` to get stable citation keys for Quarto `[@citekey]` references instead of Zotero item keys
+- **Enhanced export**: Use `bbt_export` for Better BibTeX/BibLaTeX exports that produce cleaner `.bib` files
+- **Annotations report**: Use `export_annotations_report` to generate a Markdown summary of all highlights and notes for a collection, useful as a writing reference
 
 ## Workflow
 

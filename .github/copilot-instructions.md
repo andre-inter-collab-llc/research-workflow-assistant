@@ -145,7 +145,8 @@ When tracking project progress or generating briefs:
 - **semantic-scholar-server**: Search Semantic Scholar; get recommendations
 - **europe-pmc-server**: Search Europe PMC; access open-access full text
 - **crossref-server**: DOI resolution, metadata verification, reference validation
-- **zotero-server**: Manage references in the user's Zotero library
+- **zotero-server**: Manage references in the user's Zotero library (Web API: search, add, tag, export, notes, annotations, attachments)
+- **zotero-local-server**: Access local Zotero data: PDF text/annotation extraction, full-text keyword search across stored PDFs, and optional Better BibTeX integration
 - **prisma-tracker**: Track PRISMA flow diagram data locally
 - **project-tracker**: Track project phases, milestones, tasks, decisions, meetings
 
@@ -157,6 +158,7 @@ Respect API rate limits for all external services:
 - Europe PMC: reasonable use (no hard limit documented)
 - CrossRef: 50 req/sec (polite pool with email)
 - Zotero: follow Zotero API rate limit headers
+- Zotero Local: no external API; be mindful of PDF processing time for large libraries (search is bounded by configurable limits)
 
 ### Error Handling
 - If an API call fails, report the error clearly and suggest alternatives
@@ -193,13 +195,14 @@ The `@setup-wizard` agent provides interactive first-time setup. It covers envir
 
 ## Development Status and Next Steps
 
-**Last updated:** 2026-03-08
+**Last updated:** 2026-03-09
 
 ### What Has Been Built
 
 The repository scaffold is complete. All files listed below are implemented and committed:
 
 - **8 MCP servers** (Python, using `mcp` SDK + `httpx`): PubMed, OpenAlex, Semantic Scholar, Europe PMC, CrossRef, Zotero, PRISMA Tracker, Project Tracker
+- **1 local MCP server** (Python, using `mcp` SDK + `pymupdf`): Zotero Local (PDF text/annotation extraction, keyword search, Better BibTeX integration)
 - **5 custom Copilot agents** (`.agent.md`): systematic-reviewer, data-analyst, academic-writer, research-planner, project-manager
 - **6 compliance documents**: ICMJE authorship checklist, AI disclosure template, PRISMA 2020, PRISMA-ScR, MOOSE, Cochrane RoB 2
 - **9 Quarto/Markdown templates**: review protocol, review manuscript, search strategy, PRISMA flow, IMRaD manuscript, progress briefs (Quarto + markdown), meeting notes, decision log
@@ -213,12 +216,13 @@ When the developer opens this project for the first time, guide them through the
 1. **Set up Python environment and install MCP servers**
    - Create a virtual environment: `python -m venv .venv`
    - Activate it: `.venv\Scripts\activate` (Windows) or `source .venv/bin/activate` (macOS/Linux)
-   - Install all servers: `pip install -e mcp-servers/pubmed-server -e mcp-servers/openalex-server -e mcp-servers/semantic-scholar-server -e mcp-servers/europe-pmc-server -e mcp-servers/crossref-server -e mcp-servers/zotero-server -e mcp-servers/prisma-tracker -e mcp-servers/project-tracker`
+   - Install all servers: `pip install -e mcp-servers/pubmed-server -e mcp-servers/openalex-server -e mcp-servers/semantic-scholar-server -e mcp-servers/europe-pmc-server -e mcp-servers/crossref-server -e mcp-servers/zotero-server -e mcp-servers/zotero-local-server -e mcp-servers/prisma-tracker -e mcp-servers/project-tracker`
 
 2. **Configure API keys**
    - Copy `.env.example` to `.env`
    - Obtain and fill in API keys (see `docs/api-setup-guide.md`)
    - At minimum: NCBI_API_KEY and ZOTERO_API_KEY + ZOTERO_USER_ID
+   - Optionally set ZOTERO_DATA_DIR for local PDF access (auto-detects if left blank)
 
 3. **Verify MCP servers start correctly**
    - Open VS Code Command Palette > "MCP: List Servers"

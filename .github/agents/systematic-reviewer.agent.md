@@ -11,6 +11,7 @@ tools:
   - europe-pmc
   - crossref
   - zotero
+  - zotero-local
   - prisma-tracker
 ---
 
@@ -96,6 +97,7 @@ After all searches are complete:
 
 **Full-Text Screening:**
 - For included records, help the user locate full texts (use Europe PMC for open access, Unpaywall if available, or direct the user to their institutional access)
+- **If `zotero-local` is available**: Use `extract_pdf_text` to read stored PDFs for screening, `extract_pdf_annotations` to review the researcher's highlights and notes, and `search_pdf_content` to search across all PDFs for key terms relevant to inclusion criteria
 - Present full-text records for the user's include/exclude decision
 - Track exclusion reasons (must be predefined categories)
 - Update PRISMA tracker

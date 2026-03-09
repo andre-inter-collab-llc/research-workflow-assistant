@@ -1,0 +1,21 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "zotero-local-server"
+version = "0.1.0"
+description = "MCP server for local Zotero data access: PDF text/annotation extraction, keyword search, and optional Better BibTeX integration"
+requires-python = ">=3.11"
+dependencies = [
+    "mcp>=1.0.0",
+    "pymupdf>=1.24.0",
+    "httpx>=0.27.0",
+    "pydantic>=2.0.0",
+]
+
+[project.scripts]
+zotero-local-server = "zotero_local_server:serve"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/zotero_local_server"]

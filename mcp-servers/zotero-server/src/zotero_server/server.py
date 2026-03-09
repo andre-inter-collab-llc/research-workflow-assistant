@@ -318,6 +318,19 @@ async def add_to_collection(item_key: str, collection_key: str) -> dict[str, Any
     return {"status": "added", "item_key": item_key, "collection_key": collection_key}
 
 
+_EXPORT_ACCEPT = {
+    "bibtex": "application/x-bibtex",
+    "csljson": "application/json",
+    "ris": "application/x-research-info-systems",
+    "refer": "application/x-refer",
+    "mods": "application/mods+xml",
+    "coins": "text/x-coins",
+    "tei": "application/x-tei+xml",
+    "csv": "text/csv",
+    "zotero_rdf": "application/rdf+xml",
+}
+
+
 @mcp.tool()
 async def export_bibliography(
     collection_key: str | None = None,
@@ -326,30 +339,97 @@ async def export_bibliography(
 ) -> dict[str, Any]:
     """Export bibliography from Zotero in various citation formats.
 
+    Supports pagination for collections larger than 100 items.
+
     Args:
         collection_key: Collection to export (None for entire library).
         format: Export format: 'bibtex', 'csljson', 'ris', 'refer', 'mods',
-            'coins', 'tei'. Default 'bibtex'.
-        limit: Maximum items to export (default 100, max 100).
+            'coins', 'tei', 'csv', 'zotero_rdf'. Default 'bibtex'.
+        limit: Maximum items to export (default 100, max 500).
 
     Returns:
         Dictionary with the exported bibliography string.
     """
-    limit = min(limit, 100)
+    limit = min(limit, 500)
     if collection_key:
         url = _user_url(f"collections/{collection_key}/items")
     else:
         url = _user_url("items")
 
-    params = {"limit": str(limit), "itemType": "-attachment -note"}
+    accept = _EXPORT_ACCEPT.get(format, f"application/{format}")
+    parts: list[str] = []
+    start = 0
+    page_size = min(limit, 100)
 
     async with httpx.AsyncClient(timeout=30.0) as client:
-        headers = {**_headers(), "Accept": f"application/{format}" if format != "bibtex" else "application/x-bibtex"}
-        resp = await client.get(url, headers=headers, params=params)
-        resp.raise_for_status()
-        content = resp.text
+        while start < limit:
+            params = {
+                "limit": str(page_size),
+                "start": str(start),
+                "itemType": "-attachment -note",
+            }
+            headers = {**_headers(), "Accept": accept}
+            resp = await client.get(url, headers=headers, params=params)
+            resp.raise_for_status()
+            chunk = resp.text
+            if not chunk.strip():
+                break
+            parts.append(chunk)
+            total_results = resp.headers.get("Total-Results")
+            if total_results and start + page_size >= int(total_results):
+                break
+            start += page_size
 
+    content = "\n".join(parts)
     return {"format": format, "content": content}
+
+
+@mcp.tool()
+async def export_to_file(
+    file_path: str,
+    collection_key: str | None = None,
+    format: str = "bibtex",
+    limit: int = 500,
+) -> dict[str, Any]:
+    """Export bibliography directly to a file on disk.
+
+    Writes the exported content to a file (e.g., references.bib) without
+    returning the full text in the response. Useful for large exports.
+
+    Args:
+        file_path: Absolute path to the output file (e.g., '/path/to/references.bib').
+        collection_key: Collection to export (None for entire library).
+        format: Export format (same options as export_bibliography).
+        limit: Maximum items to export (default 500, max 500).
+
+    Returns:
+        Dictionary with status, file path, and item count.
+    """
+    import pathlib
+
+    result = await export_bibliography(
+        collection_key=collection_key, format=format, limit=limit
+    )
+    content = result.get("content", "")
+
+    out_path = pathlib.Path(file_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(content, encoding="utf-8")
+
+    # Rough count: BibTeX entries start with @, RIS records start with TY  -
+    if format == "bibtex":
+        count = content.count("@")
+    elif format == "ris":
+        count = content.count("TY  -")
+    else:
+        count = content.count("\n\n") + 1 if content.strip() else 0
+
+    return {
+        "status": "exported",
+        "file_path": str(out_path),
+        "format": format,
+        "estimated_items": count,
+    }
 
 
 @mcp.tool()
@@ -410,6 +490,261 @@ async def tag_item(item_key: str, tags: list[str]) -> dict[str, Any]:
         )
 
     return {"status": "tagged", "item_key": item_key, "tags": tags}
+
+
+# ---------------------------------------------------------------------------
+# Phase 1 additions: child items, notes, annotations, attachments
+# ---------------------------------------------------------------------------
+
+def _format_annotation(item: dict[str, Any]) -> dict[str, Any]:
+    """Extract key fields from a Zotero annotation item."""
+    data = item.get("data", {})
+    return {
+        "key": data.get("key", item.get("key", "")),
+        "annotation_type": data.get("annotationType", ""),
+        "annotation_text": data.get("annotationText", ""),
+        "annotation_comment": data.get("annotationComment", ""),
+        "annotation_color": data.get("annotationColor", ""),
+        "annotation_page_label": data.get("annotationPageLabel", ""),
+        "annotation_sort_index": data.get("annotationSortIndex", ""),
+        "parent_item": data.get("parentItem", ""),
+        "tags": [t.get("tag", "") for t in data.get("tags", [])],
+        "date_added": data.get("dateAdded", ""),
+        "date_modified": data.get("dateModified", ""),
+    }
+
+
+@mcp.tool()
+async def get_item_children(
+    item_key: str, include_trashed: bool = False
+) -> dict[str, Any]:
+    """Get all child items (notes, attachments, annotations) for a Zotero item.
+
+    Args:
+        item_key: The Zotero item key.
+        include_trashed: Whether to include items in the trash.
+
+    Returns:
+        Dictionary with categorised child items.
+    """
+    url = _user_url(f"items/{item_key}/children")
+    params: dict[str, str] = {}
+    if include_trashed:
+        params["includeTrashed"] = "1"
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        children = await _get(client, url, params)
+
+    notes = []
+    attachments = []
+    annotations = []
+    for child in children:
+        item_type = child.get("data", {}).get("itemType", "")
+        if item_type == "note":
+            notes.append({
+                "key": child.get("data", {}).get("key", child.get("key", "")),
+                "note": child.get("data", {}).get("note", ""),
+                "tags": [t.get("tag", "") for t in child.get("data", {}).get("tags", [])],
+                "date_added": child.get("data", {}).get("dateAdded", ""),
+                "date_modified": child.get("data", {}).get("dateModified", ""),
+            })
+        elif item_type == "attachment":
+            data = child.get("data", {})
+            attachments.append({
+                "key": data.get("key", child.get("key", "")),
+                "title": data.get("title", ""),
+                "filename": data.get("filename", ""),
+                "content_type": data.get("contentType", ""),
+                "link_mode": data.get("linkMode", ""),
+                "url": data.get("url", ""),
+                "tags": [t.get("tag", "") for t in data.get("tags", [])],
+            })
+        elif item_type == "annotation":
+            annotations.append(_format_annotation(child))
+
+    return {
+        "item_key": item_key,
+        "notes": notes,
+        "attachments": attachments,
+        "annotations": annotations,
+    }
+
+
+@mcp.tool()
+async def get_notes(item_key: str) -> dict[str, Any]:
+    """Get all notes attached to a Zotero item.
+
+    Args:
+        item_key: The Zotero item key.
+
+    Returns:
+        Dictionary with a list of note objects containing HTML content.
+    """
+    url = _user_url(f"items/{item_key}/children")
+    params = {"itemType": "note"}
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        children = await _get(client, url, params)
+
+    notes = []
+    for child in children:
+        data = child.get("data", {})
+        notes.append({
+            "key": data.get("key", child.get("key", "")),
+            "note": data.get("note", ""),
+            "tags": [t.get("tag", "") for t in data.get("tags", [])],
+            "date_added": data.get("dateAdded", ""),
+            "date_modified": data.get("dateModified", ""),
+        })
+
+    return {"item_key": item_key, "notes": notes}
+
+
+@mcp.tool()
+async def get_annotations(item_key: str) -> dict[str, Any]:
+    """Get all Zotero reader annotations for a PDF attachment.
+
+    Zotero 6/7 stores annotations (highlights, comments, sticky notes)
+    as child items of the PDF attachment.
+
+    Args:
+        item_key: The Zotero attachment (PDF) item key.
+
+    Returns:
+        Dictionary with a list of annotation objects.
+    """
+    url = _user_url(f"items/{item_key}/children")
+    params = {"itemType": "annotation"}
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        children = await _get(client, url, params)
+
+    return {
+        "attachment_key": item_key,
+        "annotations": [_format_annotation(child) for child in children],
+    }
+
+
+@mcp.tool()
+async def get_attachment_metadata(item_key: str) -> dict[str, Any]:
+    """Get metadata about attachments for a Zotero item without downloading files.
+
+    Args:
+        item_key: The Zotero parent item key.
+
+    Returns:
+        Dictionary with attachment metadata (filename, content type, size, link mode).
+    """
+    url = _user_url(f"items/{item_key}/children")
+    params = {"itemType": "attachment"}
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        children = await _get(client, url, params)
+
+    attachments = []
+    for child in children:
+        data = child.get("data", {})
+        attachments.append({
+            "key": data.get("key", child.get("key", "")),
+            "title": data.get("title", ""),
+            "filename": data.get("filename", ""),
+            "content_type": data.get("contentType", ""),
+            "link_mode": data.get("linkMode", ""),
+            "url": data.get("url", ""),
+            "md5": data.get("md5", ""),
+            "mtime": data.get("mtime", 0),
+        })
+
+    return {"item_key": item_key, "attachments": attachments}
+
+
+@mcp.tool()
+async def download_attachment(item_key: str) -> dict[str, Any]:
+    """Download a Zotero attachment file via the Web API.
+
+    Returns the file content as base64-encoded string for binary files,
+    or plain text for text-based formats. Useful as a fallback when
+    local Zotero storage is unavailable.
+
+    Args:
+        item_key: The Zotero attachment item key.
+
+    Returns:
+        Dictionary with filename, content_type, and base64-encoded content.
+    """
+    import base64
+
+    async with httpx.AsyncClient(timeout=60.0) as client:
+        # First get attachment metadata
+        item = await _get(client, _user_url(f"items/{item_key}"))
+        data = item.get("data", {})
+        filename = data.get("filename", "unknown")
+        content_type = data.get("contentType", "application/octet-stream")
+
+        # Download the file
+        url = _user_url(f"items/{item_key}/file")
+        resp = await client.get(url, headers=_headers())
+        resp.raise_for_status()
+
+        if content_type.startswith("text/"):
+            return {
+                "filename": filename,
+                "content_type": content_type,
+                "encoding": "utf-8",
+                "content": resp.text,
+            }
+
+        return {
+            "filename": filename,
+            "content_type": content_type,
+            "encoding": "base64",
+            "content": base64.b64encode(resp.content).decode("ascii"),
+            "size_bytes": len(resp.content),
+        }
+
+
+@mcp.tool()
+async def search_notes(
+    query: str, collection: str | None = None, limit: int = 25
+) -> dict[str, Any]:
+    """Search across all notes in the Zotero library for a keyword or phrase.
+
+    Args:
+        query: Search query string.
+        collection: Optional collection key to search within.
+        limit: Maximum results (default 25, max 100).
+
+    Returns:
+        Dictionary with matching notes and their parent item keys.
+    """
+    limit = min(limit, 100)
+    if collection:
+        url = _user_url(f"collections/{collection}/items")
+    else:
+        url = _user_url("items")
+
+    params = {
+        "q": query,
+        "limit": str(limit),
+        "itemType": "note",
+        "sort": "relevance",
+    }
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        items = await _get(client, url, params)
+
+    notes = []
+    for item in items:
+        data = item.get("data", {})
+        notes.append({
+            "key": data.get("key", item.get("key", "")),
+            "parent_item": data.get("parentItem", ""),
+            "note": data.get("note", ""),
+            "tags": [t.get("tag", "") for t in data.get("tags", [])],
+            "date_modified": data.get("dateModified", ""),
+        })
+
+    return {"query": query, "results": notes}
 
 
 def serve() -> None:

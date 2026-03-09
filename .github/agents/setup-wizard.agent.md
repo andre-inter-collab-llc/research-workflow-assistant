@@ -11,6 +11,7 @@ tools:
   - europe-pmc
   - crossref
   - zotero
+  - zotero-local
   - project-tracker
   - prisma-tracker
 ---
@@ -40,6 +41,7 @@ Check that the user has the required and optional software installed:
 - **R 4.0+**: Needed only for R-based analysis templates (meta-analysis, survival analysis). Link: https://cran.r-project.org/
 - **Quarto CLI**: Needed to render templates to DOCX/PDF/HTML. Link: https://quarto.org/docs/get-started/
 - **Zotero desktop app**: Needed for reference management integration. Link: https://www.zotero.org/download/
+- **Better BibTeX for Zotero** (optional): Provides stable citation keys and enhanced BibTeX/BibLaTeX export. Link: https://retorque.re/zotero-better-bibtex/
 
 For each missing optional tool, explain briefly what it enables and let the user decide whether to install now or later.
 
@@ -61,10 +63,11 @@ Guide the user through creating a virtual environment and installing the MCP ser
    - macOS/Linux: `source .venv/bin/activate`
    - Confirm the prompt changes to show `(.venv)`
 
-3. **Install all 8 MCP servers**:
+3. **Install all 9 MCP servers**:
    ```
-   pip install -e mcp-servers/pubmed-server -e mcp-servers/openalex-server -e mcp-servers/semantic-scholar-server -e mcp-servers/europe-pmc-server -e mcp-servers/crossref-server -e mcp-servers/zotero-server -e mcp-servers/prisma-tracker -e mcp-servers/project-tracker
+   pip install -e mcp-servers/pubmed-server -e mcp-servers/openalex-server -e mcp-servers/semantic-scholar-server -e mcp-servers/europe-pmc-server -e mcp-servers/crossref-server -e mcp-servers/zotero-server -e mcp-servers/zotero-local-server -e mcp-servers/prisma-tracker -e mcp-servers/project-tracker
    ```
+   Note: `zotero-local-server` requires PyMuPDF for PDF processing. If you see build errors for this package, it is safe to skip it and install the other 8 servers first.
 
 4. **Verify installation**: Ask the user to confirm the install completed without errors. If there are errors, help troubleshoot (common issues: wrong Python version, missing build tools on Windows).
 
@@ -107,6 +110,16 @@ Present them in this order:
   6. Your **numeric** User ID is displayed at the top of the same page (e.g., `12345678`). It is NOT your username — look for the line "Your userID for use in API calls is ..."
 - **Action**: User provides both ZOTERO_API_KEY and ZOTERO_USER_ID (must be numeric), or says "skip"
 
+### 3f. Zotero Local Data Directory (Optional — for PDF features)
+- **What**: Enables local PDF text extraction, annotation/highlight reading, full-text keyword search across your Zotero library, and Better BibTeX integration. Requires Zotero desktop to be installed with PDFs stored locally.
+- **How**:
+  1. Open Zotero → Edit → Settings (or Preferences) → Advanced → Files and Folders
+  2. The "Data Directory Location" shows the path (e.g., `C:\Users\you\Zotero` or `~/Zotero`)
+  3. That folder should contain `zotero.sqlite` and a `storage/` subdirectory with your PDFs
+  4. If the user is not sure, the `zotero-local` server will auto-detect common paths
+- **Action**: User provides the path → set `ZOTERO_DATA_DIR` in `.env`. Or says "auto-detect" (leave blank). Or says "skip" (local features will not be available; the Web API server still works).
+- **Optional**: If the user has Better BibTeX installed, confirm: "Do you have Better BibTeX installed in Zotero?" → If yes, note that BBT features (stable citekeys, enhanced export) will be available when Zotero is running.
+
 ### Writing the .env file
 
 After collecting all keys:
@@ -130,6 +143,7 @@ For each configured key, run a small test query using the corresponding MCP serv
 - **Europe PMC** (no key needed): Search for `"health"` with `max_results=1`. This just confirms the server starts.
 - **CrossRef** (if CROSSREF_EMAIL set): Search for works with query `"systematic review"` with `rows=1`.
 - **Zotero** (if ZOTERO_API_KEY set): List collections. If it returns without error, the key and user ID are valid.
+- **Zotero Local** (if ZOTERO_DATA_DIR set or auto-detected): Call `detect_zotero_storage`. Check that it reports `status: found` with a valid `data_dir`, `pdf_count`, and `zotero_version`. If BBT status check is desired, also call `bbt_status`.
 
 ### Reporting results
 
