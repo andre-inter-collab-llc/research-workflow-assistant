@@ -75,7 +75,8 @@ CROSSREF_EMAIL=your@email.com
 
 # Required for Zotero
 ZOTERO_API_KEY=your_key_here
-ZOTERO_USER_ID=your_user_id
+# Numeric User ID (NOT your username) — find it at: https://www.zotero.org/settings/keys
+ZOTERO_USER_ID=12345678
 
 # Optional: custom directories for tracking data
 # PRISMA_PROJECT_DIR=./review-tracking

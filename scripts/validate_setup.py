@@ -54,7 +54,7 @@ def _check_env_keys(workspace_root: Path) -> dict:
     env_path = workspace_root / ".env"
     keys_to_check = [
         "NCBI_API_KEY",
-        "OPENALEX_EMAIL",
+        "OPENALEX_API_KEY",
         "S2_API_KEY",
         "CROSSREF_EMAIL",
         "ZOTERO_API_KEY",

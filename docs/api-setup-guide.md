@@ -169,13 +169,15 @@ For projects with heavy usage, consider registering for the [CrossRef Plus servi
 To find your User ID:
 
 1. Go to [Zotero Settings](https://www.zotero.org/settings/keys)
-2. Your numeric User ID is displayed at the top of the page
+2. Your **numeric** User ID is displayed at the top of the page (e.g., `12345678`)
+
+> **Important:** The User ID is a number, not your username. Look for the line that says "Your userID for use in API calls is **XXXXXXX**" near the top of the page.
 
 ### Configuration
 
 ```ini
 ZOTERO_API_KEY=your_key_here
-ZOTERO_USER_ID=your_numeric_user_id
+ZOTERO_USER_ID=12345678
 ```
 
 ### Working with group libraries

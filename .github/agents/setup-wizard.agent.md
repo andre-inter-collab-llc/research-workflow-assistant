@@ -104,8 +104,8 @@ Present them in this order:
   3. Give it a name like "research-assistant"
   4. Permissions: check "Allow library access" and "Allow write access" and "Allow notes access"
   5. Save → copy the key
-  6. Your User ID is displayed on the same page at the top
-- **Action**: User provides both ZOTERO_API_KEY and ZOTERO_USER_ID, or says "skip"
+  6. Your **numeric** User ID is displayed at the top of the same page (e.g., `12345678`). It is NOT your username — look for the line "Your userID for use in API calls is ..."
+- **Action**: User provides both ZOTERO_API_KEY and ZOTERO_USER_ID (must be numeric), or says "skip"
 
 ### Writing the .env file
 

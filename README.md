@@ -1,6 +1,8 @@
 # Research Workflow Assistant
 
-An open-source, modular AI research assistant that runs inside **VS Code + GitHub Copilot**. It connects to academic databases via MCP (Model Context Protocol) servers and encodes research best practices through custom Copilot agents. Built for reproducibility, ICMJE compliance, and human-centered research.
+An open-source, modular AI research assistant that runs inside **[VS Code](https://code.visualstudio.com/) + [GitHub Copilot](https://github.com/features/copilot)**. It connects to academic databases via MCP (Model Context Protocol) servers and encodes research best practices through custom Copilot agents. Built for reproducibility, ICMJE compliance, and human-centered research.
+
+> **Model note:** This project was developed and tested using **Claude Opus 4.6** in GitHub Copilot agent mode. Other models available in Copilot ([model comparison](https://docs.github.com/en/copilot/reference/ai-models/model-comparison)) may work but have not been validated with these agents and instructions. If you experience issues with a different model, try switching to Claude Opus 4.6 in the Copilot model picker.
 
 > **First time here?** Jump straight to the [Quick Start](#quick-start) below,
 > or open Copilot Chat and type `@setup-wizard` for an interactive guided setup.
@@ -139,7 +141,7 @@ Open `.env` and add your credentials. At minimum:
 | `NCBI_API_KEY` | [NCBI account settings](https://www.ncbi.nlm.nih.gov/account/settings/) | Recommended |
 | `OPENALEX_API_KEY` | [OpenAlex API key settings](https://openalex.org/settings/api-key) | Recommended |
 | `ZOTERO_API_KEY` | [Zotero key settings](https://www.zotero.org/settings/keys) | If using Zotero |
-| `ZOTERO_USER_ID` | Shown on the same Zotero page | If using Zotero |
+| `ZOTERO_USER_ID` | Numeric ID shown at the top of the [Zotero keys page](https://www.zotero.org/settings/keys) (not your username) | If using Zotero |
 
 Full details: [docs/api-setup-guide.md](docs/api-setup-guide.md)
 
@@ -246,3 +248,4 @@ Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
 - [MCP](https://modelcontextprotocol.io/) for the Model Context Protocol specification
 - [Quarto](https://quarto.org/) for scientific publishing
 - [Posit](https://posit.co/) for the R ecosystem
+- Built with [GitHub Copilot](https://github.com/features/copilot) using [Claude Opus 4.6](https://docs.github.com/en/copilot/reference/ai-models/model-comparison) by Anthropic
