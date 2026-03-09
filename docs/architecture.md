@@ -102,7 +102,7 @@ mcp-servers/<server-name>/
 
 **OpenAlex Server** (`openalex-server`)
 - API: OpenAlex REST (JSON)
-- Auth: Email for polite pool (OPENALEX_EMAIL)
+- Auth: API key (OPENALEX_API_KEY) — free at https://openalex.org/settings/api-key
 - Tools: search works, citation traversal, concept exploration, author works
 
 **Semantic Scholar Server** (`semantic-scholar-server`)

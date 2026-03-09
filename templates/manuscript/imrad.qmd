@@ -94,6 +94,8 @@ execute:
 
 [Non-author contributors, funding]
 
-**AI Tool Disclosure:** [Include if AI tools were used, per ICMJE Section II.A.4]
+**AI Tool Disclosure:** [Include if AI tools were used, per ICMJE Section II.A.4. See `compliance/ai-disclosure-template.md` for templates.]
+
+**Data Source Attribution:** [If Semantic Scholar was used, include: "Literature search results were supplemented using the Semantic Scholar Open Data Platform (Kinney et al., 2023), which provides data under a CC BY-NC license." Add similar attributions for other databases as required by their terms of service.]
 
 # References

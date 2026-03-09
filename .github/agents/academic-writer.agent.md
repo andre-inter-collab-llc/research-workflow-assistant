@@ -125,6 +125,18 @@ Before manuscript finalization:
 4. Generate a contribution summary from `ai-contributions-log.md`
 5. Remind the user: "Please review the complete manuscript before submission. As the author(s), you are responsible for all content."
 
+## Semantic Scholar Data Attribution
+
+If the research project used Semantic Scholar for literature searching, citation data, or recommendations, the manuscript **must** include:
+
+1. **Methods section**: Name Semantic Scholar as a database searched, alongside PubMed, OpenAlex, etc.
+2. **Attribution**: Include the required citation:
+   > Kinney, R., Anastasiades, C., Authur, R., et al. (2023). "The Semantic Scholar Open Data Platform." *ArXiv*, abs/2301.10140.
+3. **Data license note**: Semantic Scholar data is licensed under CC BY-NC (Creative Commons Attribution-NonCommercial). If the manuscript or its outputs have a commercial purpose, alert the user to review the [Semantic Scholar API License Agreement](https://www.semanticscholar.org/product/api/license).
+4. **Acknowledgments**: When drafting the AI disclosure statement, mention Semantic Scholar if it was used for searching or data retrieval.
+
+When generating pre-submission disclosure statements, check `ai-contributions-log.md` for any entries tagged with Semantic Scholar and include appropriate attribution automatically.
+
 ## Rules
 
 1. **The human is always the author.** You are a tool. Never use "we" to imply joint authorship.

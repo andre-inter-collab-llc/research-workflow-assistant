@@ -81,14 +81,14 @@ Present them in this order:
 - **How**: Go to https://www.ncbi.nlm.nih.gov/account/settings/ → sign in or create account → scroll to "API Key Management" → "Create an API Key" → copy the key
 - **Action**: User provides the key, or says "skip" / "later"
 
-### 3b. OpenAlex Email (Recommended)
-- **What**: Routes requests through the faster "polite pool" — no API key needed, just an email address
-- **How**: Provide any valid email address you want associated with your API requests
-- **Action**: User provides email, or says "skip"
+### 3b. OpenAlex API Key (Recommended)
+- **What**: Required for OpenAlex API access. Free key gives $1/day budget (~1,000 searches or ~10,000 list/filter calls)
+- **How**: Create a free account at https://openalex.org/ → go to https://openalex.org/settings/api-key → copy the key
+- **Action**: User provides the key, or says "skip" / "later"
 
 ### 3c. CrossRef Email (Recommended)
-- **What**: Same polite pool benefit as OpenAlex
-- **How**: Provide any valid email address (can be the same as OpenAlex)
+- **What**: Same polite pool benefit; routes through faster pool
+- **How**: Provide any valid email address
 - **Action**: User provides email, or says "skip"
 
 ### 3d. Semantic Scholar API Key (Optional)
@@ -125,7 +125,7 @@ For each configured key, run a small test query using the corresponding MCP serv
 ### Test queries
 
 - **PubMed** (if NCBI_API_KEY set): Search for `"test"` with `max_results=1`. If results come back, it works.
-- **OpenAlex** (if OPENALEX_EMAIL set): Search for a known work, e.g., query `"machine learning"` with `max_results=1`.
+- **OpenAlex** (if OPENALEX_API_KEY set): Search for a known work, e.g., query `"machine learning"` with `max_results=1`.
 - **Semantic Scholar** (if S2_API_KEY set): Search for `"neural networks"` with `limit=1`.
 - **Europe PMC** (no key needed): Search for `"health"` with `max_results=1`. This just confirms the server starts.
 - **CrossRef** (if CROSSREF_EMAIL set): Search for works with query `"systematic review"` with `rows=1`.
@@ -254,7 +254,7 @@ Print a clear summary:
 
 ### API Keys
 - NCBI_API_KEY: {configured/skipped}
-- OPENALEX_EMAIL: {configured/skipped}
+- OPENALEX_API_KEY: {configured/skipped}
 - CROSSREF_EMAIL: {configured/skipped}
 - S2_API_KEY: {configured/skipped}
 - ZOTERO_API_KEY: {configured/skipped}

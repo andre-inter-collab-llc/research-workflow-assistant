@@ -106,6 +106,8 @@ This document describes the academic databases available through the research-wo
 - The recommendation tool is valuable for finding papers your search may have missed
 - TLDR summaries help with rapid screening
 - Influential citation counts highlight which references actually build on prior work
+- **Attribution required**: Per the [API License Agreement](https://www.semanticscholar.org/product/api/license), cite [The Semantic Scholar Open Data Platform](https://www.semanticscholar.org/paper/cb92a7f9d9dbcf9145e32fdfa0e70e2a6b828eb1) in publications that use S2 API results
+- Rate limit: 1 req/sec unauthenticated; exponential backoff is applied automatically on 429 responses
 
 ---
 

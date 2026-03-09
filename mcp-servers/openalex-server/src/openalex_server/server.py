@@ -1,7 +1,8 @@
 """OpenAlex MCP Server implementation.
 
-API Documentation: https://docs.openalex.org/
-Rate limits: 10 requests/sec (polite pool with email), 100K/day max.
+API Documentation: https://developers.openalex.org/
+Authentication: Free API key required. Get yours at https://openalex.org/settings/api-key
+Rate limits: 100 requests/sec, $1/day free budget.
 """
 
 import os
@@ -11,7 +12,7 @@ import httpx
 from mcp.server.fastmcp import FastMCP
 
 OPENALEX_BASE = "https://api.openalex.org"
-CONTACT_EMAIL = os.environ.get("OPENALEX_EMAIL", "")
+OPENALEX_API_KEY = os.environ.get("OPENALEX_API_KEY", "")
 
 mcp = FastMCP(
     "openalex",
@@ -22,8 +23,8 @@ mcp = FastMCP(
 def _base_params() -> dict[str, str]:
     """Return base parameters for all OpenAlex requests."""
     params: dict[str, str] = {}
-    if CONTACT_EMAIL:
-        params["mailto"] = CONTACT_EMAIL
+    if OPENALEX_API_KEY:
+        params["api_key"] = OPENALEX_API_KEY
     return params
 
 
@@ -95,7 +96,7 @@ async def search_works(
         query: Full-text search query.
         filters: OpenAlex filter string (e.g., 'publication_year:2020-2024,type:article').
             Common filters: publication_year, type, is_oa, concepts.id, authorships.author.id.
-            See https://docs.openalex.org/api-entities/works/filter-works
+            See https://developers.openalex.org/guides/filtering
         sort: Sort order. Options: relevance_score:desc, cited_by_count:desc,
             publication_date:desc, publication_date:asc. Default: relevance_score:desc.
         per_page: Results per page (default 20, max 200).
@@ -147,12 +148,12 @@ async def get_cited_by(work_id: str, per_page: int = 25) -> dict[str, Any]:
 
     Args:
         work_id: OpenAlex ID of the source work (e.g., 'W2741809807').
-        per_page: Number of citing works to return (default 25, max 200).
+        per_page: Number of citing works to return (default 25, max 100).
 
     Returns:
         Dictionary with 'total_count' and the list of citing 'works'.
     """
-    per_page = min(per_page, 200)
+    per_page = min(per_page, 100)
     params = {
         **_base_params(),
         "filter": f"cites:{work_id}",
@@ -173,12 +174,12 @@ async def get_references(work_id: str, per_page: int = 25) -> dict[str, Any]:
 
     Args:
         work_id: OpenAlex ID of the source work (e.g., 'W2741809807').
-        per_page: Number of referenced works to return (default 25, max 200).
+        per_page: Number of referenced works to return (default 25, max 100).
 
     Returns:
         Dictionary with 'total_count' and the list of referenced 'works'.
     """
-    per_page = min(per_page, 200)
+    per_page = min(per_page, 100)
     params = {
         **_base_params(),
         "filter": f"cited_by:{work_id}",
@@ -202,12 +203,12 @@ async def get_concepts(query: str, per_page: int = 20) -> dict[str, Any]:
 
     Args:
         query: Search query for concepts.
-        per_page: Number of results (default 20, max 200).
+        per_page: Number of results (default 20, max 100).
 
     Returns:
         Dictionary with matching concepts including hierarchy level, work count, and related concepts.
     """
-    per_page = min(per_page, 200)
+    per_page = min(per_page, 100)
     params = {**_base_params(), "search": query, "per_page": str(per_page)}
 
     async with httpx.AsyncClient(timeout=30.0) as client:
@@ -241,7 +242,7 @@ async def get_author_works(author_id: str, per_page: int = 25) -> dict[str, Any]
     Returns:
         Dictionary with author profile and list of their works.
     """
-    per_page = min(per_page, 200)
+    per_page = min(per_page, 100)
 
     async with httpx.AsyncClient(timeout=30.0) as client:
         # Get author profile
@@ -280,12 +281,12 @@ async def search_sources(query: str, per_page: int = 20) -> dict[str, Any]:
 
     Args:
         query: Search query for source/journal names.
-        per_page: Number of results (default 20, max 200).
+        per_page: Number of results (default 20, max 100).
 
     Returns:
         Dictionary with matching sources and their metadata.
     """
-    per_page = min(per_page, 200)
+    per_page = min(per_page, 100)
     params = {**_base_params(), "search": query, "per_page": str(per_page)}
 
     async with httpx.AsyncClient(timeout=30.0) as client:

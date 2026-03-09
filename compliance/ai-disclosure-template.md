@@ -28,6 +28,25 @@ Include this paragraph in the cover letter to the journal editor:
 
 > We wish to disclose that AI tools were used during the preparation of this manuscript, as detailed in the Acknowledgments [and/or Methods] section(s). In accordance with ICMJE recommendations, we confirm that: (1) no AI tool is listed as an author, (2) all authors meet all four ICMJE authorship criteria, (3) the authors take full responsibility for the work, and (4) the use of AI tools is transparently described in the manuscript.
 
+## Database-Specific Data Licensing
+
+### Semantic Scholar (CC BY-NC)
+
+Semantic Scholar data is provided under a **Creative Commons Attribution-NonCommercial (CC BY-NC)** license. If your research used Semantic Scholar for literature searching, citation retrieval, or paper recommendations, you must:
+
+1. **Attribute** Semantic Scholar as a data source in your methods section.
+2. **Cite** the platform paper:
+   > Kinney, R., Anastasiades, C., Authur, R., et al. (2023). "The Semantic Scholar Open Data Platform." *ArXiv*, abs/2301.10140.
+3. **Respect the non-commercial restriction**: CC BY-NC does not permit commercial use of the retrieved data. If your research has a commercial purpose, review the [Semantic Scholar API License Agreement](https://www.semanticscholar.org/product/api/license) for applicable terms.
+
+**Example methods sentence:**
+
+> Semantic Scholar (Allen Institute for AI) was searched via its Graph API for additional references and citation network analysis.
+
+**Example acknowledgments addition:**
+
+> Literature search results were supplemented using the Semantic Scholar Open Data Platform (Kinney et al., 2023), which provides bibliographic data under a CC BY-NC license.
+
 ## Contribution Log Reference
 
 Every project using this tool generates an `ai-contributions-log.md` file that records:

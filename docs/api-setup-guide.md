@@ -31,22 +31,40 @@ NCBI_API_KEY=your_key_here
 
 ## OpenAlex
 
-**Key type:** Email address (for polite pool)
-**Required:** No, but strongly recommended
-**Benefit:** Faster responses and higher rate limits via the "polite pool"
+**Key type:** API Key (free)
+**Required:** Yes (free key gives $1/day of API usage)
+**Rate limit:** 100 requests/second; $1/day free budget covers ~1,000 searches or ~10,000 list/filter calls
 
-### How to configure
+### How to get your key
 
-No API key is needed. Provide your email address so requests are routed through the polite pool:
+1. Go to [OpenAlex](https://openalex.org/) and create a free account
+2. Navigate to [API Key Settings](https://openalex.org/settings/api-key)
+3. Copy your API key
+
+### Configuration
 
 ```ini
-OPENALEX_EMAIL=your@email.com
+OPENALEX_API_KEY=your_key_here
 ```
+
+### Free tier daily budget
+
+Your free key gives you $1/day to spend across API operations:
+
+| Operation | Cost per call | Free daily allowance |
+|-----------|--------------|---------------------|
+| Get single entity (by ID/DOI) | Free | Unlimited |
+| List + filter | $0.0001 | ~10,000 calls |
+| Search (full-text) | $0.001 | ~1,000 calls |
+| Semantic search | $0.01 | ~100 calls |
+
+Monitor usage at [openalex.org/settings/usage](https://openalex.org/settings/usage) or via the `/rate-limit` endpoint.
 
 ### Documentation
 
-- [OpenAlex API docs](https://docs.openalex.org/)
-- [Rate limits and polite pool](https://docs.openalex.org/how-to-use-the-api/rate-limits-and-authentication)
+- [OpenAlex Developer Docs](https://developers.openalex.org/)
+- [Authentication & Pricing](https://developers.openalex.org/api-reference/authentication)
+- [API Reference](https://developers.openalex.org/api-reference/introduction)
 
 ---
 
@@ -54,15 +72,16 @@ OPENALEX_EMAIL=your@email.com
 
 **Key type:** API Key
 **Required:** No (works without, at lower rate limits)
-**Without key:** ~100 requests/5 minutes
-**With key:** Higher limits (varies by tier)
+**Rate plans:** Two tiers — 1 req/sec (unauthenticated) and higher with API key
+**Key inactivity:** Keys inactive for ~60 days may be revoked
 
 ### How to get your key
 
-1. Go to [Semantic Scholar API](https://www.semanticscholar.org/product/api)
-2. Click "Request API Key"
-3. Fill out the form describing your use case
-4. You will receive an API key via email (may take a few business days)
+1. First, verify you can make unauthenticated requests (the server works without a key at 1 req/sec)
+2. Go to the [Semantic Scholar API key request form](https://www.semanticscholar.org/product/api#api-key-form)
+3. Fill out the form describing your use case and expected endpoints
+4. Complete the [API License Agreement](https://www.semanticscholar.org/product/api/license)
+5. You will receive an API key via email (may take a few business days)
 
 ### Configuration
 
@@ -70,10 +89,22 @@ OPENALEX_EMAIL=your@email.com
 S2_API_KEY=your_key_here
 ```
 
+### License requirements
+
+By using the Semantic Scholar API, you agree to the [API License Agreement](https://www.semanticscholar.org/product/api/license). Key obligations:
+
+- **Attribution**: Include attribution to "Semantic Scholar" in any published materials that use S2 data
+- **Citation**: Cite [The Semantic Scholar Open Data Platform](https://www.semanticscholar.org/paper/cb92a7f9d9dbcf9145e32fdfa0e70e2a6b828eb1) in scientific publications that use API results
+- **Rate limits**: Do not attempt to exceed or circumvent rate limits
+- **Exponential backoff**: Apply exponential backoff on 429 responses (implemented in the MCP server)
+- **Key security**: Do not share your API key beyond authorized users in your organization
+
 ### Documentation
 
 - [API docs](https://api.semanticscholar.org/api-docs/)
-- [Getting started](https://www.semanticscholar.org/product/api)
+- [API overview](https://www.semanticscholar.org/product/api)
+- [API tutorial](https://www.semanticscholar.org/product/api/tutorial) — step-by-step guide covering keyword search, recommendations, author lookups, bulk search, dataset downloads, and query syntax
+- [License agreement](https://www.semanticscholar.org/product/api/license)
 
 ---
 
@@ -169,8 +200,8 @@ Find group IDs at: `https://www.zotero.org/groups/`
 | Service | Auth Required | Key Type | Free Tier | Rate Limit |
 |---------|:---:|----------|-----------|------------|
 | PubMed | Recommended | API Key | Yes (unlimited) | 3/sec without key, 10/sec with key |
-| OpenAlex | No | Email (polite pool) | Yes (unlimited) | 10/sec polite pool |
-| Semantic Scholar | No | API Key | Yes | ~100/5min without key |
+| OpenAlex | Yes (free) | API Key | $1/day free | 100/sec, $1/day budget |
+| Semantic Scholar | No | API Key | Yes (1 req/sec) | 1 req/sec unauthenticated |
 | Europe PMC | No | None | Yes (unlimited) | Fair use |
 | CrossRef | No | Email (polite pool) | Yes (unlimited) | Polite pool preferred |
 | Zotero | Yes | API Key + User ID | Yes (300MB storage) | Fair use |
@@ -183,8 +214,8 @@ Create a `.env` file in the project root:
 # PubMed / NCBI
 NCBI_API_KEY=
 
-# OpenAlex (email for polite pool)
-OPENALEX_EMAIL=
+# OpenAlex (free API key required)
+OPENALEX_API_KEY=
 
 # Semantic Scholar (optional, for higher rate limits)
 S2_API_KEY=

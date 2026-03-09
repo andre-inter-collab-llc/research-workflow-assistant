@@ -64,8 +64,8 @@ Edit `.env` with your credentials:
 # Required for PubMed (increases rate limit from 3/sec to 10/sec)
 NCBI_API_KEY=your_key_here
 
-# Recommended for OpenAlex (polite pool, faster responses)
-OPENALEX_EMAIL=your@email.com
+# Required for OpenAlex (free API key)
+OPENALEX_API_KEY=your_key_here
 
 # Optional for Semantic Scholar (higher rate limits)
 S2_API_KEY=your_key_here

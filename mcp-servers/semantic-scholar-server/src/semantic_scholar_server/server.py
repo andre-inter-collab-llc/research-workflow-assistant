@@ -1,18 +1,27 @@
 """Semantic Scholar MCP Server implementation.
 
 API Documentation: https://api.semanticscholar.org/api-docs/
-Rate limits: 1 request/sec (public), higher with partner API key.
+License: https://www.semanticscholar.org/product/api/license
+Rate limits: 1 req/sec (unauthenticated), higher with API key.
+Retry policy: Exponential backoff on 429 responses per license terms.
 """
 
+import asyncio
+import logging
 import os
 from typing import Any
 
 import httpx
 from mcp.server.fastmcp import FastMCP
 
+logger = logging.getLogger(__name__)
+
 S2_BASE = "https://api.semanticscholar.org/graph/v1"
 S2_RECS_BASE = "https://api.semanticscholar.org/recommendations/v1"
 API_KEY = os.environ.get("S2_API_KEY", "")
+
+MAX_RETRIES = 3
+BASE_BACKOFF = 1.0  # seconds
 
 PAPER_FIELDS = ",".join([
     "paperId", "externalIds", "title", "abstract", "year", "venue",
@@ -24,7 +33,11 @@ AUTHOR_FIELDS = "authorId,externalIds,name,affiliations,paperCount,citationCount
 
 mcp = FastMCP(
     "semantic-scholar",
-    instructions="Search Semantic Scholar Academic Graph for papers, citations, and recommendations",
+    instructions=(
+        "Search Semantic Scholar Academic Graph for papers, citations, and recommendations. "
+        "Data is licensed CC BY-NC. Publications using this data must cite: "
+        "Kinney et al. (2023) 'The Semantic Scholar Open Data Platform' ArXiv abs/2301.10140."
+    ),
 )
 
 
@@ -36,17 +49,33 @@ def _headers() -> dict[str, str]:
     return headers
 
 
+async def _request_with_backoff(
+    client: httpx.AsyncClient,
+    method: str,
+    url: str,
+    **kwargs: Any,
+) -> httpx.Response:
+    """Make an HTTP request with exponential backoff on 429 responses."""
+    for attempt in range(MAX_RETRIES + 1):
+        resp = await client.request(method, url, headers=_headers(), **kwargs)
+        if resp.status_code != 429 or attempt == MAX_RETRIES:
+            resp.raise_for_status()
+            return resp
+        wait = BASE_BACKOFF * (2 ** attempt)
+        logger.warning("S2 rate limited (429). Retrying in %.1fs (attempt %d/%d)", wait, attempt + 1, MAX_RETRIES)
+        await asyncio.sleep(wait)
+    return resp  # unreachable, but satisfies type checker
+
+
 async def _get(client: httpx.AsyncClient, url: str, params: dict[str, str] | None = None) -> dict[str, Any]:
-    """Make a GET request and return parsed JSON."""
-    resp = await client.get(url, params=params, headers=_headers())
-    resp.raise_for_status()
+    """Make a GET request with retry and return parsed JSON."""
+    resp = await _request_with_backoff(client, "GET", url, params=params)
     return resp.json()
 
 
 async def _post(client: httpx.AsyncClient, url: str, json_data: dict[str, Any]) -> dict[str, Any]:
-    """Make a POST request and return parsed JSON."""
-    resp = await client.post(url, json=json_data, headers=_headers())
-    resp.raise_for_status()
+    """Make a POST request with retry and return parsed JSON."""
+    resp = await _request_with_backoff(client, "POST", url, json=json_data)
     return resp.json()
 
 

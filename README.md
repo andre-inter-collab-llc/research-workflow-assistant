@@ -137,7 +137,7 @@ Open `.env` and add your credentials. At minimum:
 | Key | Where to get it | Required? |
 |---|---|---|
 | `NCBI_API_KEY` | [NCBI account settings](https://www.ncbi.nlm.nih.gov/account/settings/) | Recommended |
-| `OPENALEX_EMAIL` | Your email address | Recommended |
+| `OPENALEX_API_KEY` | [OpenAlex API key settings](https://openalex.org/settings/api-key) | Recommended |
 | `ZOTERO_API_KEY` | [Zotero key settings](https://www.zotero.org/settings/keys) | If using Zotero |
 | `ZOTERO_USER_ID` | Shown on the same Zotero page | If using Zotero |
 
@@ -214,7 +214,7 @@ research-workflow-assistant/
 | Database | API | Access | Auth |
 |---|---|---|---|
 | PubMed/MEDLINE | NCBI E-utilities | Free | API key (recommended) |
-| OpenAlex | REST API | Free, fully open | Email (polite pool) |
+| OpenAlex | REST API | Free ($1/day budget) | API key (free) |
 | Semantic Scholar | Academic Graph API | Free (rate limited) | API key (optional) |
 | Europe PMC | REST API | Free | None |
 | CrossRef | REST API | Free | Email (polite pool) |

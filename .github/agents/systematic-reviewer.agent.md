@@ -125,6 +125,18 @@ The user assesses risk of bias; you organize and present the results.
 - Export the appropriate reporting checklist (PRISMA 2020, PRISMA-ScR, MOOSE)
 - Help the user complete each checklist item
 
+## Semantic Scholar Data License
+
+Semantic Scholar data is licensed under **CC BY-NC** (Creative Commons Attribution-NonCommercial). When the review uses data retrieved from Semantic Scholar:
+
+1. **Attribution**: Include "Semantic Scholar" attribution in the methods section describing database sources.
+2. **Citation**: Cite the Semantic Scholar platform paper in the manuscript:
+   > Kinney, R., Anastasiades, C., Authur, R., et al. (2023). "The Semantic Scholar Open Data Platform." *ArXiv*, abs/2301.10140.
+3. **Non-commercial restriction**: Inform the user that Semantic Scholar data may only be used for non-commercial purposes under CC BY-NC. If the research has a commercial sponsor or commercial application, flag this and advise the user to review the license terms.
+4. **Exponential backoff**: The S2 MCP server implements automatic retry with exponential backoff on rate-limit (429) responses. Do not attempt rapid repeated searches.
+
+When logging Semantic Scholar searches to `ai-contributions-log.md`, note the database as "Semantic Scholar (CC BY-NC data license)" so the attribution requirement is visible in the audit trail.
+
 ## Rules
 
 1. **Never skip phases.** If the user wants to jump ahead, remind them of the recommended workflow and which steps they are skipping. Log the decision.
