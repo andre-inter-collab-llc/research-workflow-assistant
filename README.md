@@ -2,6 +2,10 @@
 
 An open-source, modular AI research assistant that runs inside **VS Code + GitHub Copilot**. It connects to academic databases via MCP (Model Context Protocol) servers and encodes research best practices through custom Copilot agents. Built for reproducibility, ICMJE compliance, and human-centered research.
 
+> **First time here?** Jump straight to the [Quick Start](#quick-start) below,
+> or open Copilot Chat and type `@setup-wizard` for an interactive guided setup.
+> For the full walkthrough, see [docs/getting-started.md](docs/getting-started.md).
+
 ## Who Is This For?
 
 Any researcher who wants AI-assisted support without surrendering intellectual ownership:
@@ -75,41 +79,89 @@ Per ICMJE Section II.A.4: AI use must be disclosed in acknowledgments (writing a
 
 ## Quick Start
 
+> **Prefer a guided setup?** Open Copilot Chat and type `@setup-wizard`. It will
+> walk you through every step interactively.
+
 ### Prerequisites
 
-- [VS Code](https://code.visualstudio.com/) with [GitHub Copilot](https://github.com/features/copilot)
-- [Python 3.11+](https://www.python.org/) (for MCP servers)
-- [R 4.0+](https://www.r-project.org/) (for analysis templates, optional)
-- [Quarto](https://quarto.org/) (for document generation)
-- [Zotero](https://www.zotero.org/) (for reference management, optional)
+| Requirement | Notes |
+|---|---|
+| [VS Code](https://code.visualstudio.com/) 1.99+ with [GitHub Copilot](https://github.com/features/copilot) | Agent mode must be enabled |
+| [Python 3.11+](https://www.python.org/) | Required — runs the MCP servers |
+| [R 4.0+](https://www.r-project.org/) | Optional — for R-based analysis templates |
+| [Quarto](https://quarto.org/) | Optional — for rendering document templates |
+| [Zotero](https://www.zotero.org/) | Optional — for reference management |
 
-### Installation
+### Step 1 — Clone and open the repo
 
 ```bash
-# Clone the repository
 git clone https://github.com/yourusername/research-workflow-assistant.git
 cd research-workflow-assistant
-
-# Install Python dependencies (MCP servers)
-pip install -e ".[dev]"
-
-# Open in VS Code
 code .
 ```
 
-### Configuration
+### Step 2 — Create a Python environment and install MCP servers
 
-1. Copy `.vscode/mcp.json` into your research project (or use this repo as a template)
-2. Set environment variables for API keys (see [API Setup Guide](docs/api-setup-guide.md)):
-   - `NCBI_API_KEY` (PubMed, recommended for higher rate limits)
-   - `ZOTERO_API_KEY` and `ZOTERO_USER_ID` (Zotero)
-   - `SCOPUS_API_KEY` (Scopus, institutional only)
-   - `OPENALEX_EMAIL` (OpenAlex, for polite pool)
-3. Restart VS Code to load MCP servers
+```bash
+# Create and activate a virtual environment
+python -m venv .venv
+# Windows:
+.venv\Scripts\activate
+# macOS / Linux:
+# source .venv/bin/activate
 
-### Usage
+# Install all 8 MCP servers in development mode
+pip install -e mcp-servers/pubmed-server \
+            -e mcp-servers/openalex-server \
+            -e mcp-servers/semantic-scholar-server \
+            -e mcp-servers/europe-pmc-server \
+            -e mcp-servers/crossref-server \
+            -e mcp-servers/zotero-server \
+            -e mcp-servers/prisma-tracker \
+            -e mcp-servers/project-tracker
 
-Open Copilot Chat in VS Code and invoke an agent:
+# Install dev tools (linting, testing)
+pip install -e ".[dev]"
+```
+
+### Step 3 — Configure API keys
+
+```bash
+# Copy the example env file
+cp .env.example .env          # macOS / Linux
+copy .env.example .env        # Windows
+```
+
+Open `.env` and add your credentials. At minimum:
+
+| Key | Where to get it | Required? |
+|---|---|---|
+| `NCBI_API_KEY` | [NCBI account settings](https://www.ncbi.nlm.nih.gov/account/settings/) | Recommended |
+| `OPENALEX_EMAIL` | Your email address | Recommended |
+| `ZOTERO_API_KEY` | [Zotero key settings](https://www.zotero.org/settings/keys) | If using Zotero |
+| `ZOTERO_USER_ID` | Shown on the same Zotero page | If using Zotero |
+
+Full details: [docs/api-setup-guide.md](docs/api-setup-guide.md)
+
+### Step 4 — Verify everything works
+
+```bash
+python scripts/validate_setup.py
+```
+
+Or in VS Code: **Ctrl+Shift+P** → "MCP: List Servers" — all 8 servers should appear.
+
+### Step 5 — Start using it
+
+Open Copilot Chat and try an agent:
+
+```
+@project-manager Initialize a new project called "my-first-review" in my_projects/my-first-review.
+```
+
+See [docs/getting-started.md](docs/getting-started.md) for the full guide, including project setup, multi-project workflows, and cross-workspace usage.
+
+### Usage examples
 
 ```
 @systematic-reviewer I want to conduct a systematic review on the effectiveness

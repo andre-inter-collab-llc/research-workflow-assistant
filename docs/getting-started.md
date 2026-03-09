@@ -1,10 +1,11 @@
 # Getting Started
 
-This guide walks you through setting up the research-workflow-assistant in VS Code.
+This is the complete setup and orientation guide for the research-workflow-assistant. If you followed the [Quick Start in the README](../README.md#quick-start) and everything worked, you can skip ahead to [Working with Projects](#working-with-projects).
 
-> **First time?** You can use the interactive setup wizard instead of following
-> this guide manually. Open Copilot Chat and type `@setup-wizard` to begin a
-> guided walkthrough that covers everything below.
+> **Prefer an interactive walkthrough?** Open Copilot Chat in VS Code and type
+> `@setup-wizard`. It will guide you through every step below — environment
+> validation, API key configuration, MCP server verification, and first-project
+> creation — in a conversational format.
 
 ## Prerequisites
 
