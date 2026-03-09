@@ -15,3 +15,6 @@ dependencies = [
 
 [project.scripts]
 crossref-server = "crossref_server:serve"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/crossref_server"]

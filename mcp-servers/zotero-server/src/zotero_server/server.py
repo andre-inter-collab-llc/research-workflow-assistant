@@ -17,7 +17,7 @@ USER_ID = os.environ.get("ZOTERO_USER_ID", "")
 
 mcp = FastMCP(
     "zotero",
-    description="Manage Zotero reference library: search, add, organize, and export citations",
+    instructions="Manage Zotero reference library: search, add, organize, and export citations",
 )
 
 

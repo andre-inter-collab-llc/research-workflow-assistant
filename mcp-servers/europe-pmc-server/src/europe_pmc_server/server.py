@@ -13,7 +13,7 @@ EPMC_BASE = "https://www.ebi.ac.uk/europepmc/webservices/rest"
 
 mcp = FastMCP(
     "europe-pmc",
-    description="Search Europe PMC for biomedical and life sciences literature",
+    instructions="Search Europe PMC for biomedical and life sciences literature",
 )
 
 

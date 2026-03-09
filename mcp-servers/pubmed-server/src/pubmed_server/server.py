@@ -16,7 +16,7 @@ API_KEY = os.environ.get("NCBI_API_KEY", "")
 
 mcp = FastMCP(
     "pubmed",
-    description="Search PubMed/MEDLINE via NCBI E-utilities",
+    instructions="Search PubMed/MEDLINE via NCBI E-utilities",
 )
 
 

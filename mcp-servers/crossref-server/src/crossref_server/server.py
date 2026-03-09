@@ -15,7 +15,7 @@ CONTACT_EMAIL = os.environ.get("CROSSREF_EMAIL", "")
 
 mcp = FastMCP(
     "crossref",
-    description="Search CrossRef for DOI metadata, reference verification, and bibliographic data",
+    instructions="Search CrossRef for DOI metadata, reference verification, and bibliographic data",
 )
 
 

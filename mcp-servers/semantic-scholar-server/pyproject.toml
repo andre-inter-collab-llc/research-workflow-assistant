@@ -15,3 +15,6 @@ dependencies = [
 
 [project.scripts]
 semantic-scholar-server = "semantic_scholar_server:serve"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/semantic_scholar_server"]

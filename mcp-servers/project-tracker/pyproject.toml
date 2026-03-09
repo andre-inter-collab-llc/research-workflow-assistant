@@ -15,3 +15,6 @@ dependencies = [
 
 [project.scripts]
 project-tracker = "project_tracker:serve"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/project_tracker"]

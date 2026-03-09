@@ -15,3 +15,6 @@ dependencies = [
 
 [project.scripts]
 zotero-server = "zotero_server:serve"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/zotero_server"]

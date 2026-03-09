@@ -15,7 +15,7 @@ CONTACT_EMAIL = os.environ.get("OPENALEX_EMAIL", "")
 
 mcp = FastMCP(
     "openalex",
-    description="Search OpenAlex for academic works, authors, sources, and concepts",
+    instructions="Search OpenAlex for academic works, authors, sources, and concepts",
 )
 
 

@@ -24,7 +24,7 @@ AUTHOR_FIELDS = "authorId,externalIds,name,affiliations,paperCount,citationCount
 
 mcp = FastMCP(
     "semantic-scholar",
-    description="Search Semantic Scholar Academic Graph for papers, citations, and recommendations",
+    instructions="Search Semantic Scholar Academic Graph for papers, citations, and recommendations",
 )
 
 

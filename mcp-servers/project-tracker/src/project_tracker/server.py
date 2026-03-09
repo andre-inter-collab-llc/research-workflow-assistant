@@ -35,7 +35,7 @@ _active_project: str | None = None
 
 mcp = FastMCP(
     "project-tracker",
-    description="Track research project phases, milestones, tasks, decisions, and generate progress briefs",
+    instructions="Track research project phases, milestones, tasks, decisions, and generate progress briefs",
 )
 
 

@@ -35,7 +35,7 @@ _active_project: str | None = None
 
 mcp = FastMCP(
     "prisma-tracker",
-    description="Track PRISMA 2020 systematic review flow: searches, screening, and reporting",
+    instructions="Track PRISMA 2020 systematic review flow: searches, screening, and reporting",
 )
 
 
