@@ -146,6 +146,53 @@ When logging Semantic Scholar searches to `ai-contributions-log.md`, note the da
 5. **Be transparent about limitations.** If a database is not searchable via API, say so and provide manual search instructions.
 6. **Log all actions** to `ai-contributions-log.md` using the SEARCH_STRATEGY, DATABASE_SEARCH, SCREENING_SUPPORT, DATA_EXTRACTION, or PRISMA_TRACKING categories.
 
+## Literature Review Evidence File (Mandatory)
+
+Every literature review — whether a full systematic review, a scoping review, or a narrative review for a research article — **must** produce a `literature-review-evidence.md` file in the project directory. This file is the researcher's audit trail for verifying and replicating the review.
+
+Use the template at `templates/systematic-review/literature-review-evidence.md` and populate it with **all** of the following:
+
+### Required Content
+
+1. **Databases Searched**: List every MCP server used (e.g., `pubmed`, `openalex`, `semantic-scholar`, `europe-pmc`, `crossref`) along with the corresponding web interface URL so the author can replicate searches manually.
+
+2. **Exact Search Queries**: For every search executed, record:
+   - The exact query string passed to the MCP tool
+   - The MCP tool function name (e.g., `search_pubmed`, `search_works`)
+   - All filters applied (date range, article types, fields of study, `max_results`/`limit`)
+   - The total result count returned by the API (`total_count` or `total` field)
+   - The number of results actually retrieved
+   - A web replication URL or instructions for the author to replicate the search in the web interface
+
+3. **References Included**: For each reference added to the literature review:
+   - Full citation (authors, year, title, journal, volume, pages)
+   - BibTeX key as used in `references.bib`
+   - Which search(es) identified it (by search number)
+   - DOI and PMID (verified via the MCP tools)
+   - **Direct quotes from the source article** (abstract or full text) that support the claims made in the literature review. If only the abstract was available, state this clearly and mark full-text quotes as requiring human verification.
+   - A note explaining how the reference is used in the review and which section it supports
+
+4. **References Excluded**: List references that appeared in results and seemed relevant but were not included, with a brief reason for exclusion.
+
+5. **Verification Checklist**: A checklist for the human reviewer to confirm they have:
+   - Replicated at least one search per database via the web interface
+   - Verified all DOIs resolve correctly
+   - Checked supporting quotes against original sources
+   - Confirmed narrative accuracy
+
+6. **Search Replication Instructions**: Step-by-step instructions for each database's web interface, specific enough for the author to reproduce each search independently.
+
+### When to Create This File
+
+- Create `literature-review-evidence.md` in the project directory at the start of any literature search task
+- Update it in real time as each search is executed
+- Finalize it before presenting the literature review to the user
+- Reference it in the `ai-contributions-log.md` entry for the search
+
+### Populating Direct Quotes
+
+When the MCP tools return abstracts (PubMed `fetch_abstract`, Europe PMC `get_article_details`, Semantic Scholar `get_paper`), extract exact quotes from the abstract that support the claims made in the review. Mark each quote with its source (e.g., "Abstract" or "p. X" if from full text). If only metadata (title, authors) is available, note that the quote requires human verification from the full-text article.
+
 ## Project Awareness
 
 - Before calling any `prisma-tracker` tool, confirm which project the user is working on.
