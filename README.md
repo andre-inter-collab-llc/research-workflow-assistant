@@ -2,7 +2,7 @@
 
 An open-source, modular AI research assistant that runs inside **[VS Code](https://code.visualstudio.com/) + [GitHub Copilot](https://github.com/features/copilot)**. It connects to academic databases via MCP (Model Context Protocol) servers and encodes research best practices through custom Copilot agents. Built for reproducibility, ICMJE compliance, and human-centered research.
 
-> **Model note:** This project was developed and tested using **Claude Opus 4.6** in GitHub Copilot agent mode. Other models available in Copilot ([model comparison](https://docs.github.com/en/copilot/reference/ai-models/model-comparison)) may work but have not been validated with these agents and instructions. If you experience issues with a different model, try switching to Claude Opus 4.6 in the Copilot model picker.
+> **Model note:** This project was developed and tested using **Claude Opus 4.6** and **GPT-5.3-Codex** in GitHub Copilot agent mode. You can switch between models depending on task type and preference. Other models available in Copilot ([model comparison](https://docs.github.com/en/copilot/reference/ai-models/model-comparison)) may also work, but behavior can vary by agent workflow, so validate critical outputs after switching.
 
 > **First time here?** Start with [docs/quick-start.md](docs/quick-start.md),
 > or open Copilot Chat and type `@setup` for an interactive guided setup.
@@ -301,4 +301,4 @@ Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
 - [MCP](https://modelcontextprotocol.io/) for the Model Context Protocol specification
 - [Quarto](https://quarto.org/) for scientific publishing
 - [Posit](https://posit.co/) for the R ecosystem
-- Built with [GitHub Copilot](https://github.com/features/copilot) using [Claude Opus 4.6](https://docs.github.com/en/copilot/reference/ai-models/model-comparison) by Anthropic
+- Built with [GitHub Copilot](https://github.com/features/copilot) using [Claude Opus 4.6](https://docs.github.com/en/copilot/reference/ai-models/model-comparison) by Anthropic and GPT-5.3-Codex
