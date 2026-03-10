@@ -5,62 +5,44 @@
 
 ```mermaid
 graph TB
-    %% ── Researcher layer ──
     YOU["👤 You · the Researcher\nAll decisions · All ownership · All accountability"]
 
-    %% ── VS Code layer ──
     VSCODE["VS Code + GitHub Copilot Chat"]
 
     YOU --> VSCODE
 
-    %% ── Agent layer ──
     subgraph AGENTS["Specialist AI Agents"]
         direction LR
-        ORCH["@research-orchestrator\nEnd-to-end\nworkflow routing"]
-        SR["@systematic-reviewer\nPRISMA-compliant\nevidence reviews"]
-        RP["@research-planner\nProtocols &\nstudy design"]
-        DA["@data-analyst\nReproducible R / Python\nanalysis scripts"]
-        AW["@academic-writer\nManuscript drafting\n& citations"]
-        PM["@project-manager\nMilestones, decisions\n& progress briefs"]
-        TS["@troubleshooter\nDiagnostics &\nenvironment fixes"]
+        ORCH["@research-orchestrator\nEnd-to-end\nworkflow routing"] ~~~ SR["@systematic-reviewer\nPRISMA-compliant\nevidence reviews"] ~~~ RP["@research-planner\nProtocols &\nstudy design"] ~~~ DA["@data-analyst\nReproducible R / Python\nanalysis scripts"] ~~~ AW["@academic-writer\nManuscript drafting\n& citations"] ~~~ PM["@project-manager\nMilestones, decisions\n& progress briefs"] ~~~ TS["@troubleshooter\nDiagnostics &\nenvironment fixes"]
     end
 
     VSCODE --> AGENTS
 
-    %% ── ICMJE compliance bar ──
     ICMJE["🔒 ICMJE Compliance Layer\nHuman-in-the-loop · Audit trail · AI disclosure"]
 
     AGENTS --> ICMJE
 
-    %% ── MCP Server layer ──
     subgraph MCP["MCP Servers · Model Context Protocol"]
         direction LR
         subgraph LITERATURE["Literature Databases"]
-            PUB["PubMed\n NCBI E-utilities"]
-            OA["OpenAlex\n REST API"]
-            SS["Semantic Scholar\n Academic Graph"]
-            EPMC["Europe PMC\n REST API"]
-            CR["CrossRef\n DOI metadata"]
+            direction LR
+            PUB["PubMed\nNCBI E-utilities"] ~~~ OA["OpenAlex\nREST API"] ~~~ SS["Semantic Scholar\nAcademic Graph"] ~~~ EPMC["Europe PMC\nREST API"] ~~~ CR["CrossRef\nDOI metadata"]
         end
         subgraph REFERENCE["Reference Management"]
-            ZOT["Zotero Web\n API v3"]
-            ZLOC["Zotero Local\n PDFs & annotations"]
+            direction LR
+            ZOT["Zotero Web\nAPI v3"] ~~~ ZLOC["Zotero Local\nPDFs & annotations"]
         end
         subgraph TRACKING["Project Tracking"]
-            PRISMA["PRISMA Tracker\n flow diagrams"]
-            PROJ["Project Tracker\n tasks & milestones"]
+            direction LR
+            PRISMA["PRISMA Tracker\nflow diagrams"] ~~~ PROJ["Project Tracker\ntasks & milestones"]
         end
     end
 
     ICMJE --> MCP
 
-    %% ── Output layer ──
     subgraph OUTPUTS["Research Outputs"]
         direction LR
-        QMD["📄 Quarto Documents\nManuscripts · Protocols · Reports"]
-        SCRIPTS["📊 Analysis Scripts\nR · Python · Reproducible"]
-        PFLOW["📋 PRISMA Flow\nDiagrams & Checklists"]
-        BRIEFS["📝 Progress Briefs\nDecision logs · Meeting notes"]
+        QMD["📄 Quarto Documents\nManuscripts · Protocols · Reports"] ~~~ SCRIPTS["📊 Analysis Scripts\nR · Python · Reproducible"] ~~~ PFLOW["📋 PRISMA Flow\nDiagrams & Checklists"] ~~~ BRIEFS["📝 Progress Briefs\nDecision logs · Meeting notes"]
     end
 
     MCP --> OUTPUTS

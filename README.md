@@ -42,62 +42,44 @@ No PhD required. If you do research, this tool is for you.
 
 ```mermaid
 graph TB
-    %% ── Researcher layer ──
     YOU["👤 You · the Researcher<br/>All decisions · All ownership · All accountability"]
 
-    %% ── VS Code layer ──
     VSCODE["VS Code + GitHub Copilot Chat"]
 
     YOU --> VSCODE
 
-    %% ── Agent layer ──
     subgraph AGENTS["Specialist AI Agents"]
         direction LR
-        ORCH["@research-orchestrator<br/>End-to-end<br/>workflow routing"]
-        SR["@systematic-reviewer<br/>PRISMA-compliant<br/>evidence reviews"]
-        RP["@research-planner<br/>Protocols &<br/>study design"]
-        DA["@data-analyst<br/>Reproducible R / Python<br/>analysis scripts"]
-        AW["@academic-writer<br/>Manuscript drafting<br/>& citations"]
-        PM["@project-manager<br/>Milestones, decisions<br/>& progress briefs"]
-        TS["@troubleshooter<br/>Diagnostics &<br/>environment fixes"]
+        ORCH["@research-orchestrator<br/>End-to-end<br/>workflow routing"] ~~~ SR["@systematic-reviewer<br/>PRISMA-compliant<br/>evidence reviews"] ~~~ RP["@research-planner<br/>Protocols &<br/>study design"] ~~~ DA["@data-analyst<br/>Reproducible R / Python<br/>analysis scripts"] ~~~ AW["@academic-writer<br/>Manuscript drafting<br/>& citations"] ~~~ PM["@project-manager<br/>Milestones, decisions<br/>& progress briefs"] ~~~ TS["@troubleshooter<br/>Diagnostics &<br/>environment fixes"]
     end
 
     VSCODE --> AGENTS
 
-    %% ── ICMJE compliance bar ──
     ICMJE["🔒 ICMJE Compliance Layer<br/>Human-in-the-loop · Audit trail · AI disclosure"]
 
     AGENTS --> ICMJE
 
-    %% ── MCP Server layer ──
     subgraph MCP["MCP Servers · Model Context Protocol"]
         direction LR
         subgraph LITERATURE["Literature Databases"]
-            PUB["PubMed<br/>NCBI E-utilities"]
-            OA["OpenAlex<br/>REST API"]
-            SS["Semantic Scholar<br/>Academic Graph"]
-            EPMC["Europe PMC<br/>REST API"]
-            CR["CrossRef<br/>DOI metadata"]
+            direction LR
+            PUB["PubMed<br/>NCBI E-utilities"] ~~~ OA["OpenAlex<br/>REST API"] ~~~ SS["Semantic Scholar<br/>Academic Graph"] ~~~ EPMC["Europe PMC<br/>REST API"] ~~~ CR["CrossRef<br/>DOI metadata"]
         end
         subgraph REFERENCE["Reference Management"]
-            ZOT["Zotero Web<br/>API v3"]
-            ZLOC["Zotero Local<br/>PDFs & annotations"]
+            direction LR
+            ZOT["Zotero Web<br/>API v3"] ~~~ ZLOC["Zotero Local<br/>PDFs & annotations"]
         end
         subgraph TRACKING["Project Tracking"]
-            PRISMA["PRISMA Tracker<br/>flow diagrams"]
-            PROJ["Project Tracker<br/>tasks & milestones"]
+            direction LR
+            PRISMA["PRISMA Tracker<br/>flow diagrams"] ~~~ PROJ["Project Tracker<br/>tasks & milestones"]
         end
     end
 
     ICMJE --> MCP
 
-    %% ── Output layer ──
     subgraph OUTPUTS["Research Outputs"]
         direction LR
-        QMD["📄 Quarto Documents<br/>Manuscripts · Protocols · Reports"]
-        SCRIPTS["📊 Analysis Scripts<br/>R · Python · Reproducible"]
-        PFLOW["📋 PRISMA Flow<br/>Diagrams & Checklists"]
-        BRIEFS["📝 Progress Briefs<br/>Decision logs · Meeting notes"]
+        QMD["📄 Quarto Documents<br/>Manuscripts · Protocols · Reports"] ~~~ SCRIPTS["📊 Analysis Scripts<br/>R · Python · Reproducible"] ~~~ PFLOW["📋 PRISMA Flow<br/>Diagrams & Checklists"] ~~~ BRIEFS["📝 Progress Briefs<br/>Decision logs · Meeting notes"]
     end
 
     MCP --> OUTPUTS
@@ -122,7 +104,9 @@ graph TB
     class QMD,SCRIPTS,PFLOW,BRIEFS output
 ```
 
-> **Rendered version:** Run `quarto render docs/architecture-diagram.qmd` to produce a self-contained HTML with the diagram. See [docs/architecture-diagram.qmd](docs/architecture-diagram.qmd) for the source.
+> **Image version:** ![RWA Architecture](docs/rwa-architecture.png)
+>
+> Also available as [SVG](docs/rwa-architecture.svg), [rendered HTML](docs/architecture-diagram.qmd) (`quarto render docs/architecture-diagram.qmd`), or [Mermaid source](docs/rwa-architecture.mmd).
 
 ## ICMJE Compliance: You Are the Author
 

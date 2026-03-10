@@ -5100,62 +5100,44 @@ z-index: 1000;
 <p></p><figure class="figure"><p></p>
 <div>
 <pre class="mermaid mermaid-js">graph TB
-    %% ── Researcher layer ──
     YOU[&quot;👤 You · the Researcher&lt;br/&gt;All decisions · All ownership · All accountability&quot;]
 
-    %% ── VS Code layer ──
     VSCODE[&quot;VS Code + GitHub Copilot Chat&quot;]
 
     YOU --&gt; VSCODE
 
-    %% ── Agent layer ──
     subgraph AGENTS[&quot;Specialist AI Agents&quot;]
         direction LR
-        ORCH[&quot;@research-orchestrator&lt;br/&gt;End-to-end&lt;br/&gt;workflow routing&quot;]
-        SR[&quot;@systematic-reviewer&lt;br/&gt;PRISMA-compliant&lt;br/&gt;evidence reviews&quot;]
-        RP[&quot;@research-planner&lt;br/&gt;Protocols &amp;&lt;br/&gt;study design&quot;]
-        DA[&quot;@data-analyst&lt;br/&gt;Reproducible R / Python&lt;br/&gt;analysis scripts&quot;]
-        AW[&quot;@academic-writer&lt;br/&gt;Manuscript drafting&lt;br/&gt;&amp; citations&quot;]
-        PM[&quot;@project-manager&lt;br/&gt;Milestones, decisions&lt;br/&gt;&amp; progress briefs&quot;]
-        TS[&quot;@troubleshooter&lt;br/&gt;Diagnostics &amp;&lt;br/&gt;environment fixes&quot;]
+        ORCH[&quot;@research-orchestrator&lt;br/&gt;End-to-end&lt;br/&gt;workflow routing&quot;] ~~~ SR[&quot;@systematic-reviewer&lt;br/&gt;PRISMA-compliant&lt;br/&gt;evidence reviews&quot;] ~~~ RP[&quot;@research-planner&lt;br/&gt;Protocols &amp;&lt;br/&gt;study design&quot;] ~~~ DA[&quot;@data-analyst&lt;br/&gt;Reproducible R / Python&lt;br/&gt;analysis scripts&quot;] ~~~ AW[&quot;@academic-writer&lt;br/&gt;Manuscript drafting&lt;br/&gt;&amp; citations&quot;] ~~~ PM[&quot;@project-manager&lt;br/&gt;Milestones, decisions&lt;br/&gt;&amp; progress briefs&quot;] ~~~ TS[&quot;@troubleshooter&lt;br/&gt;Diagnostics &amp;&lt;br/&gt;environment fixes&quot;]
     end
 
     VSCODE --&gt; AGENTS
 
-    %% ── ICMJE compliance bar ──
     ICMJE[&quot;🔒 ICMJE Compliance Layer&lt;br/&gt;Human-in-the-loop · Audit trail · AI disclosure&quot;]
 
     AGENTS --&gt; ICMJE
 
-    %% ── MCP Server layer ──
     subgraph MCP[&quot;MCP Servers · Model Context Protocol&quot;]
         direction LR
         subgraph LITERATURE[&quot;Literature Databases&quot;]
-            PUB[&quot;PubMed&lt;br/&gt;NCBI E-utilities&quot;]
-            OA[&quot;OpenAlex&lt;br/&gt;REST API&quot;]
-            SS[&quot;Semantic Scholar&lt;br/&gt;Academic Graph&quot;]
-            EPMC[&quot;Europe PMC&lt;br/&gt;REST API&quot;]
-            CR[&quot;CrossRef&lt;br/&gt;DOI metadata&quot;]
+            direction LR
+            PUB[&quot;PubMed&lt;br/&gt;NCBI E-utilities&quot;] ~~~ OA[&quot;OpenAlex&lt;br/&gt;REST API&quot;] ~~~ SS[&quot;Semantic Scholar&lt;br/&gt;Academic Graph&quot;] ~~~ EPMC[&quot;Europe PMC&lt;br/&gt;REST API&quot;] ~~~ CR[&quot;CrossRef&lt;br/&gt;DOI metadata&quot;]
         end
         subgraph REFERENCE[&quot;Reference Management&quot;]
-            ZOT[&quot;Zotero Web&lt;br/&gt;API v3&quot;]
-            ZLOC[&quot;Zotero Local&lt;br/&gt;PDFs &amp; annotations&quot;]
+            direction LR
+            ZOT[&quot;Zotero Web&lt;br/&gt;API v3&quot;] ~~~ ZLOC[&quot;Zotero Local&lt;br/&gt;PDFs &amp; annotations&quot;]
         end
         subgraph TRACKING[&quot;Project Tracking&quot;]
-            PRISMA[&quot;PRISMA Tracker&lt;br/&gt;flow diagrams&quot;]
-            PROJ[&quot;Project Tracker&lt;br/&gt;tasks &amp; milestones&quot;]
+            direction LR
+            PRISMA[&quot;PRISMA Tracker&lt;br/&gt;flow diagrams&quot;] ~~~ PROJ[&quot;Project Tracker&lt;br/&gt;tasks &amp; milestones&quot;]
         end
     end
 
     ICMJE --&gt; MCP
 
-    %% ── Output layer ──
     subgraph OUTPUTS[&quot;Research Outputs&quot;]
         direction LR
-        QMD[&quot;📄 Quarto Documents&lt;br/&gt;Manuscripts · Protocols · Reports&quot;]
-        SCRIPTS[&quot;📊 Analysis Scripts&lt;br/&gt;R · Python · Reproducible&quot;]
-        PFLOW[&quot;📋 PRISMA Flow&lt;br/&gt;Diagrams &amp; Checklists&quot;]
-        BRIEFS[&quot;📝 Progress Briefs&lt;br/&gt;Decision logs · Meeting notes&quot;]
+        QMD[&quot;📄 Quarto Documents&lt;br/&gt;Manuscripts · Protocols · Reports&quot;] ~~~ SCRIPTS[&quot;📊 Analysis Scripts&lt;br/&gt;R · Python · Reproducible&quot;] ~~~ PFLOW[&quot;📋 PRISMA Flow&lt;br/&gt;Diagrams &amp; Checklists&quot;] ~~~ BRIEFS[&quot;📝 Progress Briefs&lt;br/&gt;Decision logs · Meeting notes&quot;]
     end
 
     MCP --&gt; OUTPUTS
