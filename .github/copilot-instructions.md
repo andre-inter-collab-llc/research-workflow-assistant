@@ -14,8 +14,10 @@ Before responding to **any** user request (except the `@setup` agent itself), ev
 
 ### 1. Disclaimer Acceptance Check
 
-- Read `.rwa-user-config.yaml` in the workspace root.
-- If the file does not exist or `disclaimer_accepted` is not `true`:
+- Resolve the config path as `${workspaceFolder}/.rwa-user-config.yaml` and read that file directly.
+- Do not rely on filename search alone for this check; hidden-file indexing can be inconsistent.
+- Parse YAML type-safely. Only the boolean value `true` passes.
+- If the file does not exist, is unreadable, is invalid YAML, is blank, or `disclaimer_accepted` is not boolean `true`:
   - **Do not answer the user's question.**
   - Respond with: *"Before using RWA, you need to review and accept the disclaimer. Run `@setup` to get started."*
   - **Stop. Do not proceed with any other action.**

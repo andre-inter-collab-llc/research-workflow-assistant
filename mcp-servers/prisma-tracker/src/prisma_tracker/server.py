@@ -58,7 +58,7 @@ def _resolve_project_dir(project_path: str | None = None, *, must_exist: bool = 
     if raw:
         p = Path(raw)
         if not p.is_absolute():
-            p = Path(PROJECTS_ROOT).resolve() / p
+            p = _resolve_projects_root() / p
         p = p.resolve()
     else:
         p = Path(PROJECT_DIR).resolve()
@@ -74,6 +74,19 @@ def _flow_path(base_dir: Path | None = None) -> Path:
     if base_dir is None:
         base_dir = _resolve_project_dir()
     return base_dir / TRACKING_DIR / FLOW_FILE
+
+
+def _resolve_projects_root(*, must_exist: bool = False) -> Path:
+    """Resolve PROJECTS_ROOT consistently against PROJECT_DIR when relative."""
+    projects_root = Path(PROJECTS_ROOT)
+    if not projects_root.is_absolute():
+        projects_root = Path(PROJECT_DIR).resolve() / projects_root
+    projects_root = projects_root.resolve()
+
+    if must_exist and not projects_root.is_dir():
+        raise ValueError(f"Projects directory does not exist: {projects_root}")
+
+    return projects_root
 
 
 def _load_flow(base_dir: Path | None = None) -> dict[str, Any]:
@@ -132,11 +145,15 @@ async def list_reviews() -> dict[str, Any]:
     Returns:
         List of projects with their review title, type, and path.
     """
-    root = Path(PROJECTS_ROOT).resolve()
+    root = _resolve_projects_root()
     reviews: list[dict[str, Any]] = []
 
     if not root.exists():
-        return {"projects_root": str(root), "reviews": [], "note": "PROJECTS_ROOT does not exist yet."}
+        return {
+            "projects_root": str(root),
+            "reviews": [],
+            "note": "PROJECTS_ROOT does not exist yet. Create it or set PROJECTS_ROOT to a valid path in .env.",
+        }
 
     for child in sorted(root.iterdir()):
         if not child.is_dir():

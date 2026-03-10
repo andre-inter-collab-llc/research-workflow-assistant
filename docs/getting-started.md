@@ -10,6 +10,21 @@ This is the complete setup and orientation guide for the research-workflow-assis
 > **Already set up but something broke?** Use `@troubleshooter` for issue diagnosis,
 > targeted repair steps, and day-to-day usage guidance.
 
+## Quick Troubleshooting Flow
+
+Follow this when setup appears broken:
+
+1. Run `python scripts/validate_setup.py`
+2. Run `python scripts/mcp_smoke_check.py`
+3. If either fails, open Command Palette and run `MCP: List Servers`
+4. If servers still fail, run `@troubleshooter` and share both script outputs
+
+Decision path:
+
+- No servers in MCP list: check `.vscode/mcp.json`, selected Python interpreter, then restart/reload VS Code
+- Servers listed but tools unavailable: open a new Copilot Chat session
+- Setup report shows wrong projects root: set `PROJECTS_ROOT=./my_projects` in `.env` and restart MCP servers
+
 ## Prerequisites
 
 - [VS Code](https://code.visualstudio.com/) 1.99+ with GitHub Copilot (agent mode enabled)
@@ -90,7 +105,7 @@ ZOTERO_USER_ID=12345678
 
 # Projects root directory (default: ./my_projects)
 # Can be an absolute path to store projects elsewhere
-# PROJECTS_ROOT=./my_projects
+PROJECTS_ROOT=./my_projects
 ```
 
 See [api-setup-guide.md](api-setup-guide.md) for step-by-step instructions on obtaining each key.
@@ -202,8 +217,8 @@ Or pass `project_path` directly to any tool call. Priority order:
 
 1. Explicit `project_path` parameter on the tool call
 2. Active project set via `set_active_project` / `set_active_review`
-3. `PROJECT_DIR` / `PRISMA_PROJECT_DIR` env var
-4. Current working directory
+3. Relative paths resolve under `PROJECTS_ROOT` (recommended: `./my_projects`)
+4. Legacy fallback: `PROJECT_DIR` / `PRISMA_PROJECT_DIR`
 
 ### Listing projects
 
@@ -229,7 +244,7 @@ If you work in a separate VS Code workspace, you have two options:
 
 1. **Multi-root workspace** — add both the assistant repo and your project as workspace folders. Use the template at `templates/research-workspace.code-workspace.example`.
 
-2. **Portable MCP config** — copy `templates/portable-mcp-config.json` to your project's `.vscode/mcp.json` and update the paths. This gives your project access to all 8 MCP servers without needing the assistant repo open.
+2. **Portable MCP config** — copy `templates/portable-mcp-config.json` to your project's `.vscode/mcp.json` and update the paths. This gives your project access to all 9 MCP servers without needing the assistant repo open.
 
 ## Using the Agents
 

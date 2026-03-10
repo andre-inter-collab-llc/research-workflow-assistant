@@ -2,6 +2,24 @@
 
 This guide explains how to obtain API keys and credentials for each academic database used by the research-workflow-assistant.
 
+## Quick Start: Which Keys To Set First
+
+If you are setting up RWA for the first time, configure these in this order:
+
+| Priority | Key(s) | Why | Typical Time |
+|---|---|---|---|
+| 1 | `OPENALEX_API_KEY` | Required for OpenAlex tools | 2 min |
+| 2 | `NCBI_API_KEY` | Improves PubMed throughput (10 req/sec vs 3 req/sec) | 2 min |
+| 3 | `PROJECTS_ROOT` | Ensures project tracking targets the correct folder | 1 min |
+| 4 | `ZOTERO_API_KEY`, `ZOTERO_USER_ID` | Needed for Zotero integration features | 3 min |
+| Optional | `S2_API_KEY`, `CROSSREF_EMAIL`, `ZOTERO_DATA_DIR` | Nice-to-have for specific workflows | 1-5 min |
+
+Recommended default:
+
+```ini
+PROJECTS_ROOT=./my_projects
+```
+
 ## PubMed / NCBI E-utilities
 
 **Key type:** NCBI API Key

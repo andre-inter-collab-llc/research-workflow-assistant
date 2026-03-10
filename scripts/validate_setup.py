@@ -4,18 +4,22 @@
 Run from the repository root:
     python scripts/validate_setup.py
 
-Outputs a JSON report of the environment status.
+Outputs a human-readable checklist by default.
+Use --json to print the full machine-readable report.
 """
 
 from __future__ import annotations
 
 import importlib
+import argparse
 import json
 import os
 import shutil
 import subprocess
 import sys
 from pathlib import Path
+
+import yaml
 
 # Load .env so that env key checks reflect what servers will actually see
 _workspace_root = Path(__file__).resolve().parent.parent
@@ -172,6 +176,43 @@ def _check_optional_tool(command: str) -> dict:
     return {"status": "not-found"}
 
 
+def _check_user_config(workspace_root: Path) -> dict:
+    """Check .rwa-user-config.yaml disclaimer acceptance state."""
+    config_path = workspace_root / ".rwa-user-config.yaml"
+    if not config_path.exists():
+        return {
+            "status": "missing",
+            "path": str(config_path),
+            "disclaimer_accepted": False,
+            "reason": "config file not found",
+        }
+
+    try:
+        config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    except yaml.YAMLError:
+        return {
+            "status": "invalid",
+            "path": str(config_path),
+            "disclaimer_accepted": False,
+            "reason": "invalid YAML",
+        }
+
+    if not isinstance(config, dict):
+        return {
+            "status": "invalid",
+            "path": str(config_path),
+            "disclaimer_accepted": False,
+            "reason": "config is not a YAML mapping",
+        }
+
+    accepted = config.get("disclaimer_accepted") is True
+    return {
+        "status": "ok" if accepted else "not-accepted",
+        "path": str(config_path),
+        "disclaimer_accepted": accepted,
+    }
+
+
 def _check_zotero_local() -> dict:
     """Check if the local Zotero data directory is accessible."""
     try:
@@ -278,8 +319,85 @@ def _check_all_server_health(workspace_root: Path) -> dict:
     return {mod: _check_server_health(mod, workspace_root) for mod in modules}
 
 
-def main() -> None:
-    """Run all checks and output a JSON report."""
+def _print_human_report(report: dict[str, object]) -> None:
+    """Print a concise, human-friendly setup summary."""
+    print("Setup Verification Results")
+    print("=" * 72)
+
+    python_status = report["python"]["status"]  # type: ignore[index]
+    python_icon = "OK" if python_status == "ok" else "FAIL"
+    python_version = report["python"].get("version", "unknown")  # type: ignore[index]
+    print(f"[{python_icon}] Python version: {python_version} (required: 3.11+)")
+
+    servers = report["servers"]  # type: ignore[index]
+    server_ok = sum(1 for s in servers.values() if s.get("status") == "ok")
+    print(f"[{'OK' if server_ok == len(servers) else 'WARN'}] MCP packages importable: {server_ok}/{len(servers)}")
+
+    server_health = report["server_health"]  # type: ignore[index]
+    healthy = sum(1 for s in server_health.values() if s.get("status") == "ok")
+    print(f"[{'OK' if healthy == len(server_health) else 'WARN'}] MCP startup checks passed: {healthy}/{len(server_health)}")
+
+    env_file = report.get("env_file", "missing")
+    print(f"[{'OK' if env_file == 'exists' else 'FAIL'}] .env file: {env_file}")
+
+    user_config = report["user_config"]  # type: ignore[index]
+    uc_status = user_config.get("status")
+    if uc_status == "ok":
+        print(f"[OK] Disclaimer accepted in {user_config.get('path')}")
+    else:
+        print(
+            "[WARN] Disclaimer acceptance not confirmed "
+            f"({user_config.get('reason', uc_status)}). Run @setup if needed."
+        )
+
+    env_keys = report["env_keys"]  # type: ignore[index]
+    required = ["NCBI_API_KEY", "OPENALEX_API_KEY", "ZOTERO_API_KEY", "ZOTERO_USER_ID", "PROJECTS_ROOT"]
+    missing_required = [k for k in required if env_keys.get(k) in {"missing", "empty"}]
+    if missing_required:
+        print(f"[WARN] Required/recommended keys needing attention: {', '.join(missing_required)}")
+    else:
+        print("[OK] Required/recommended API keys are configured")
+
+    projects = report["projects_dir"]  # type: ignore[index]
+    projects_status = projects.get("status")
+    projects_icon = "OK" if projects_status == "ok" else "WARN"
+    project_count = len(projects.get("projects", []))
+    print(f"[{projects_icon}] Projects root: {projects.get('path', 'unknown')} (projects found: {project_count})")
+
+    zotero_local = report["zotero_local"]  # type: ignore[index]
+    zl_status = zotero_local.get("status")
+    if zl_status == "ok":
+        print(
+            f"[OK] Zotero local detected at {zotero_local.get('data_dir')} "
+            f"(PDFs: {zotero_local.get('pdf_count', 0)}, BBT: {zotero_local.get('better_bibtex', 'unknown')})"
+        )
+    else:
+        print(f"[WARN] Zotero local: {zotero_local.get('message', zotero_local.get('reason', 'not configured'))}")
+
+    overall = report.get("overall", "unknown")
+    print("-" * 72)
+    print(f"Overall status: {overall}")
+
+    if overall != "ready":
+        print("Next steps:")
+        if env_file != "exists":
+            print("- Create .env from .env.example and fill required keys")
+        if missing_required:
+            print("- Set missing keys in .env and restart MCP servers")
+        if healthy != len(server_health):
+            print("- Run task: Install All MCP Servers, then re-run this script")
+        if projects_status != "ok":
+            print("- Ensure PROJECTS_ROOT points to a valid directory (default: ./my_projects)")
+
+    print("=" * 72)
+
+
+def main() -> int:
+    """Run all checks and output a setup report."""
+    parser = argparse.ArgumentParser(description="Validate RWA setup")
+    parser.add_argument("--json", action="store_true", help="Print machine-readable JSON report")
+    args = parser.parse_args()
+
     # Determine workspace root (parent of scripts/)
     workspace_root = Path(__file__).resolve().parent.parent
 
@@ -289,6 +407,7 @@ def main() -> None:
         "server_health": _check_all_server_health(workspace_root),
         "env_file": "exists" if (workspace_root / ".env").exists() else "missing",
         "env_keys": _check_env_keys(workspace_root),
+        "user_config": _check_user_config(workspace_root),
         "zotero_local": _check_zotero_local(),
         "projects_dir": _check_projects_dir(workspace_root),
         "optional_tools": {
@@ -310,9 +429,14 @@ def main() -> None:
     else:
         report["overall"] = "needs-setup"
 
-    json.dump(report, sys.stdout, indent=2)
-    print()  # trailing newline
+    if args.json:
+        json.dump(report, sys.stdout, indent=2)
+        print()  # trailing newline
+    else:
+        _print_human_report(report)
+
+    return 0 if report["overall"] == "ready" else 1
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

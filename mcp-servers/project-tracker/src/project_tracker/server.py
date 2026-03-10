@@ -58,8 +58,8 @@ def _resolve_project_dir(project_path: str | None = None, *, must_exist: bool = 
     if raw:
         p = Path(raw)
         if not p.is_absolute():
-            # Resolve relative paths against PROJECTS_ROOT
-            p = Path(PROJECTS_ROOT).resolve() / p
+            # Resolve relative paths against PROJECTS_ROOT under PROJECT_DIR.
+            p = _resolve_projects_root() / p
         p = p.resolve()
     else:
         # Legacy fallback
@@ -76,6 +76,19 @@ def _tracking_path(base_dir: Path | None = None) -> Path:
     if base_dir is None:
         base_dir = _resolve_project_dir()
     return base_dir / TRACKING_DIR
+
+
+def _resolve_projects_root(*, must_exist: bool = False) -> Path:
+    """Resolve PROJECTS_ROOT consistently against PROJECT_DIR when relative."""
+    projects_root = Path(PROJECTS_ROOT)
+    if not projects_root.is_absolute():
+        projects_root = Path(PROJECT_DIR).resolve() / projects_root
+    projects_root = projects_root.resolve()
+
+    if must_exist and not projects_root.is_dir():
+        raise ValueError(f"Projects directory does not exist: {projects_root}")
+
+    return projects_root
 
 
 def _load_yaml(filename: str, base_dir: Path | None = None) -> dict[str, Any]:
@@ -153,10 +166,7 @@ async def setup_status() -> dict[str, Any]:
         env_keys["S2_API_KEY"] = "pending"
 
     # Projects directory
-    projects_root = Path(PROJECTS_ROOT)
-    if not projects_root.is_absolute():
-        projects_root = workspace / projects_root
-    projects_root = projects_root.resolve()
+    projects_root = _resolve_projects_root()
 
     projects: list[dict[str, str]] = []
     if projects_root.is_dir():
@@ -173,7 +183,7 @@ async def setup_status() -> dict[str, Any]:
                 else:
                     projects.append({"name": child.name, "title": "", "status": "empty"})
 
-    return {
+    result = {
         "env_file": "exists" if env_path.exists() else "missing",
         "env_keys": env_keys,
         "projects_root": str(projects_root),
@@ -181,6 +191,13 @@ async def setup_status() -> dict[str, Any]:
         "projects": projects,
         "active_project": _active_project,
     }
+
+    if not projects_root.is_dir():
+        result["projects_root_warning"] = (
+            "PROJECTS_ROOT does not exist. Create it or set PROJECTS_ROOT to a valid path in .env."
+        )
+
+    return result
 
 
 @mcp.tool()
@@ -190,13 +207,10 @@ async def list_projects() -> dict[str, Any]:
     Scans PROJECTS_ROOT for subdirectories.  Returns each project's name,
     title (from project.yaml), and initialization status.
     """
-    projects_root = Path(PROJECTS_ROOT)
-    if not projects_root.is_absolute():
-        projects_root = Path(PROJECT_DIR).resolve() / projects_root
-    projects_root = projects_root.resolve()
-
-    if not projects_root.is_dir():
-        return {"error": f"Projects directory does not exist: {projects_root}", "projects": []}
+    try:
+        projects_root = _resolve_projects_root(must_exist=True)
+    except ValueError as exc:
+        return {"error": str(exc), "projects": []}
 
     projects: list[dict[str, Any]] = []
     for child in sorted(projects_root.iterdir()):
@@ -244,9 +258,7 @@ async def set_active_project(project_path: str) -> dict[str, Any]:
 
     p = Path(project_path)
     if not p.is_absolute():
-        root = Path(PROJECTS_ROOT)
-        if not root.is_absolute():
-            root = Path(PROJECT_DIR).resolve() / root
+        root = _resolve_projects_root()
         p = root.resolve() / p
 
     p = p.resolve()

@@ -4,10 +4,12 @@ An open-source, modular AI research assistant that runs inside **[VS Code](https
 
 > **Model note:** This project was developed and tested using **Claude Opus 4.6** in GitHub Copilot agent mode. Other models available in Copilot ([model comparison](https://docs.github.com/en/copilot/reference/ai-models/model-comparison)) may work but have not been validated with these agents and instructions. If you experience issues with a different model, try switching to Claude Opus 4.6 in the Copilot model picker.
 
-> **First time here?** Jump straight to the [Quick Start](#quick-start) below,
+> **First time here?** Start with [docs/quick-start.md](docs/quick-start.md),
 > or open Copilot Chat and type `@setup` for an interactive guided setup.
 > If setup is complete and something is not working, use `@troubleshooter` for diagnostics and issue resolution.
 > For the full walkthrough, see [docs/getting-started.md](docs/getting-started.md).
+
+> **Important:** Before using non-setup agents, you must accept the user disclaimer once via `@setup`.
 
 ## Who Is This For?
 
@@ -82,7 +84,46 @@ The tool enforces this by:
 
 Per ICMJE Section II.A.4: AI use must be disclosed in acknowledgments (writing assistance) and methods (data analysis). This tool generates those disclosures for you.
 
+## Disclaimer and Readiness Gate
+
+RWA enforces a disclaimer/readiness gate before non-setup agent workflows.
+
+- Source disclaimer text: [compliance/user-disclaimer.md](compliance/user-disclaimer.md)
+- Acceptance state file: [.rwa-user-config.yaml](.rwa-user-config.yaml)
+- Required value: `disclaimer_accepted: true` (boolean)
+
+When accepted through `@setup`, `.rwa-user-config.yaml` should include values like:
+
+```yaml
+disclaimer_accepted: true
+disclaimer_accepted_date: "YYYY-MM-DD"
+setup_completed: true
+setup_completed_date: "YYYY-MM-DD"
+```
+
+If acceptance is missing or invalid, agents will return:
+
+`Before using RWA, you need to review and accept the disclaimer. Run @setup to get started.`
+
+If you see this message unexpectedly:
+
+1. Confirm [.rwa-user-config.yaml](.rwa-user-config.yaml) exists at workspace root.
+2. Confirm `disclaimer_accepted` is boolean `true` (not a quoted string).
+3. Run `@setup` again to refresh config if needed.
+4. Open a new Copilot Chat session after setup changes.
+
 ## Quick Start
+
+<details>
+<summary><strong>What setup includes (typical 20-30 minutes)</strong></summary>
+
+- Stage 1: Verify Python and VS Code prerequisites
+- Stage 2: Create `.venv` and install all MCP servers
+- Stage 3: Configure `.env` API keys and `PROJECTS_ROOT`
+- Stage 4: Run setup validation + MCP smoke check
+- Stage 5: Confirm servers in VS Code and start first project
+
+</details>
 
 > **Prefer a guided setup?** Open Copilot Chat and type `@setup`. It will
 > walk you through every step interactively.
@@ -115,13 +156,14 @@ python -m venv .venv
 # macOS / Linux:
 # source .venv/bin/activate
 
-# Install all 8 MCP servers in development mode
+# Install all 9 MCP servers in development mode
 pip install -e mcp-servers/pubmed-server \
             -e mcp-servers/openalex-server \
             -e mcp-servers/semantic-scholar-server \
             -e mcp-servers/europe-pmc-server \
             -e mcp-servers/crossref-server \
             -e mcp-servers/zotero-server \
+            -e mcp-servers/zotero-local-server \
             -e mcp-servers/prisma-tracker \
             -e mcp-servers/project-tracker
 
@@ -148,13 +190,21 @@ Open `.env` and add your credentials. At minimum:
 
 Full details: [docs/api-setup-guide.md](docs/api-setup-guide.md)
 
+`PROJECTS_ROOT` should normally remain `./my_projects` unless you explicitly want projects in another folder.
+
 ### Step 4 — Verify everything works
 
 ```bash
 python scripts/validate_setup.py
 ```
 
-Or in VS Code: **Ctrl+Shift+P** → "MCP: List Servers" — all 8 servers should appear.
+Need JSON for automation?
+
+```bash
+python scripts/validate_setup.py --json
+```
+
+Or in VS Code: **Ctrl+Shift+P** → "MCP: List Servers" — all 9 servers should appear.
 
 ### Step 5 — Start using it
 
