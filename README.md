@@ -34,6 +34,7 @@ No PhD required. If you do research, this tool is for you.
 | **Academic writing** | `@academic-writer` agent scaffolds IMRaD manuscripts, manages citations, enforces ICMJE AI disclosure |
 | **Research planning** | `@research-planner` agent helps with protocols, ethics applications, study design, grant writing |
 | **Project management** | `@project-manager` agent tracks phases, milestones, tasks, decisions; generates progress briefs for colleagues |
+| **End-to-end orchestration** | `@research-orchestrator` routes workflows across specialist agents, tracks stage progression, and provides ready-to-run handoff prompts |
 | **Troubleshooting and support** | `@troubleshooter` agent diagnoses environment and MCP issues, validates API keys, and provides practical how-to help for day-to-day RWA usage |
 | **ICMJE compliance** | Built into every agent: human-in-the-loop mandate, audit trail, AI disclosure generation, authorship checklist |
 
@@ -50,6 +51,7 @@ VS Code + GitHub Copilot Chat
   |-- @academic-writer         (agent: manuscript drafting)
   |-- @research-planner        (agent: study design, protocols)
   |-- @project-manager         (agent: tracking, briefs, decisions)
+  |-- @research-orchestrator   (agent: end-to-end workflow routing)
   |-- @troubleshooter          (agent: diagnostics, fixes, usage help)
   |
   |-- MCP Servers (tools available to all agents):
@@ -217,6 +219,14 @@ python scripts/validate_setup.py --json
 Or in VS Code: **Ctrl+Shift+P** → "MCP: List Servers" — all 9 servers should appear.
 
 ### Step 5 — Start using it
+
+If you want one entry point that coordinates all phases, start with:
+
+```
+@research-orchestrator I am starting a systematic review. Orchestrate the full workflow and tell me exactly which agent prompt to run at each stage.
+```
+
+Or choose a specialist agent directly if you already know the stage.
 
 Open Copilot Chat and try an agent:
 

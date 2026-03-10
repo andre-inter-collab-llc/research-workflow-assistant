@@ -201,3 +201,4 @@ At natural project checkpoints, proactively ask:
 - Always pass `project_path` when calling tracker tools if the user has specified a project.
 - For new users with no projects, suggest running `@setup` for guided first-time setup.
 - Log AI contributions to the `ai-contributions-log.md` inside the target project directory.
+- If the researcher is working through `@research-orchestrator`, preserve and update any existing `research_assistant.workflow_state` metadata without overwriting unrelated project configuration.

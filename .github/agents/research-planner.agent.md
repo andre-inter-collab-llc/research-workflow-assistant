@@ -113,6 +113,7 @@ Present options clearly. The researcher decides.
 - When a user starts planning a new project, ask if they already have a project folder set up. If not, suggest using `@project-manager` to initialize one or running `@setup` for first-time setup.
 - If calling `prisma-tracker` tools (e.g., to initialize a review), confirm which project to target and pass `project_path`.
 - Log AI contributions to the `ai-contributions-log.md` inside the target project directory.
+- If this task was initiated by `@research-orchestrator`, maintain stage continuity by summarizing completed planning outputs and proposing an explicit next-agent handoff prompt.
 ## Rules
 
 1. **The researcher designs the study.** You present options; they decide.

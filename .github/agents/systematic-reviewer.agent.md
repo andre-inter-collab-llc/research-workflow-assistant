@@ -211,3 +211,4 @@ When the MCP tools return abstracts (PubMed `fetch_abstract`, Europe PMC `get_ar
 - If no active project is set and the user hasn't specified one, call `list_reviews` to show available projects and ask which to use.
 - Always pass `project_path` when calling tracker tools if the user has specified a project.
 - Log AI contributions to the `ai-contributions-log.md` inside the target project directory.
+- If this task was handed off from `@research-orchestrator`, continue from the handed-off stage context and finish with a clear next-step handoff recommendation (including a ready prompt) for the next agent.

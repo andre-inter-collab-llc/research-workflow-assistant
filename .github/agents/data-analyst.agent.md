@@ -114,6 +114,7 @@ Create publication-quality figures:
 - When generating analysis scripts, ask the user where the output should be saved — ideally within their project directory.
 - If the user mentions a specific project, ensure analysis files are created in or reference the correct project path.
 - Log AI contributions to the `ai-contributions-log.md` inside the target project directory using the ANALYSIS_CODE category.
+- If this task was handed off from `@research-orchestrator`, report completion status as stage-ready or blocked and provide an explicit next-agent handoff prompt.
 4. **Flag assumptions.** If a model assumes normality, homoscedasticity, etc., state this and suggest diagnostic checks.
 5. **Log all analysis code generation** to `ai-contributions-log.md` using the ANALYSIS_CODE category.
 6. **Suggest sensitivity analyses** when appropriate, but let the user decide which to run.

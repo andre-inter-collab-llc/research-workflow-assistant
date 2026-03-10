@@ -281,6 +281,7 @@ If you work in a separate VS Code workspace, you have two options:
 
 1. Open Copilot Chat in agent mode
 2. Tag the agent you need:
+  - `@research-orchestrator` for end-to-end guidance and handoff prompts across all stages
   - `@setup` for first-time setup or full environment reconfiguration
    - `@systematic-reviewer` for systematic reviews
    - `@data-analyst` for statistical analysis
@@ -290,6 +291,12 @@ If you work in a separate VS Code workspace, you have two options:
   - `@troubleshooter` for diagnosing errors, fixing environment issues, and usage support
 
 ### Example: Starting a systematic review
+
+```
+@research-orchestrator I am starting a scoping review in my project. Route me stage by stage and provide the exact next agent prompt each time.
+```
+
+### Example: Direct specialist usage
 
 ```
 @systematic-reviewer I want to conduct a systematic review on the effectiveness 

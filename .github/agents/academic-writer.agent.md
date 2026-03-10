@@ -183,3 +183,4 @@ When generating pre-submission disclosure statements, check `ai-contributions-lo
 - If the user specifies a project, save manuscript files within that project directory.
 - When verifying references or managing citations, confirm the project context so Zotero collections can be matched to the right project.
 - When project authorship metadata exists, prefer it over ad hoc author placeholders and keep the manuscript/report YAML aligned with the project metadata unless the user explicitly overrides it.
+- If this task was handed off from `@research-orchestrator`, provide a closeout summary suitable for stage completion and include a next-step handoff prompt when additional workflow stages remain.
