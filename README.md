@@ -40,34 +40,89 @@ No PhD required. If you do research, this tool is for you.
 
 ## Architecture
 
+```mermaid
+graph TB
+    %% ── Researcher layer ──
+    YOU["👤 You · the Researcher<br/>All decisions · All ownership · All accountability"]
+
+    %% ── VS Code layer ──
+    VSCODE["VS Code + GitHub Copilot Chat"]
+
+    YOU --> VSCODE
+
+    %% ── Agent layer ──
+    subgraph AGENTS["Specialist AI Agents"]
+        direction LR
+        ORCH["@research-orchestrator<br/>End-to-end<br/>workflow routing"]
+        SR["@systematic-reviewer<br/>PRISMA-compliant<br/>evidence reviews"]
+        RP["@research-planner<br/>Protocols &<br/>study design"]
+        DA["@data-analyst<br/>Reproducible R / Python<br/>analysis scripts"]
+        AW["@academic-writer<br/>Manuscript drafting<br/>& citations"]
+        PM["@project-manager<br/>Milestones, decisions<br/>& progress briefs"]
+        TS["@troubleshooter<br/>Diagnostics &<br/>environment fixes"]
+    end
+
+    VSCODE --> AGENTS
+
+    %% ── ICMJE compliance bar ──
+    ICMJE["🔒 ICMJE Compliance Layer<br/>Human-in-the-loop · Audit trail · AI disclosure"]
+
+    AGENTS --> ICMJE
+
+    %% ── MCP Server layer ──
+    subgraph MCP["MCP Servers · Model Context Protocol"]
+        direction LR
+        subgraph LITERATURE["Literature Databases"]
+            PUB["PubMed<br/>NCBI E-utilities"]
+            OA["OpenAlex<br/>REST API"]
+            SS["Semantic Scholar<br/>Academic Graph"]
+            EPMC["Europe PMC<br/>REST API"]
+            CR["CrossRef<br/>DOI metadata"]
+        end
+        subgraph REFERENCE["Reference Management"]
+            ZOT["Zotero Web<br/>API v3"]
+            ZLOC["Zotero Local<br/>PDFs & annotations"]
+        end
+        subgraph TRACKING["Project Tracking"]
+            PRISMA["PRISMA Tracker<br/>flow diagrams"]
+            PROJ["Project Tracker<br/>tasks & milestones"]
+        end
+    end
+
+    ICMJE --> MCP
+
+    %% ── Output layer ──
+    subgraph OUTPUTS["Research Outputs"]
+        direction LR
+        QMD["📄 Quarto Documents<br/>Manuscripts · Protocols · Reports"]
+        SCRIPTS["📊 Analysis Scripts<br/>R · Python · Reproducible"]
+        PFLOW["📋 PRISMA Flow<br/>Diagrams & Checklists"]
+        BRIEFS["📝 Progress Briefs<br/>Decision logs · Meeting notes"]
+    end
+
+    MCP --> OUTPUTS
+
+    %% ── Styles ──
+    classDef researcher fill:#2563eb,stroke:#1e40af,color:#fff,font-weight:bold
+    classDef vscode fill:#007acc,stroke:#005a9e,color:#fff,font-weight:bold
+    classDef agent fill:#7c3aed,stroke:#5b21b6,color:#fff
+    classDef compliance fill:#dc2626,stroke:#991b1b,color:#fff,font-weight:bold
+    classDef litdb fill:#10b981,stroke:#047857,color:#fff
+    classDef refmgmt fill:#14b8a6,stroke:#0d9488,color:#fff
+    classDef tracking fill:#06b6d4,stroke:#0891b2,color:#fff
+    classDef output fill:#d97706,stroke:#b45309,color:#fff
+
+    class YOU researcher
+    class VSCODE vscode
+    class ORCH,SR,RP,DA,AW,PM,TS agent
+    class ICMJE compliance
+    class PUB,OA,SS,EPMC,CR litdb
+    class ZOT,ZLOC refmgmt
+    class PRISMA,PROJ tracking
+    class QMD,SCRIPTS,PFLOW,BRIEFS output
 ```
-You (researcher)
-  |
-  v
-VS Code + GitHub Copilot Chat
-  |
-  |-- @systematic-reviewer    (agent: guides review workflow)
-  |-- @data-analyst            (agent: statistical analysis)
-  |-- @academic-writer         (agent: manuscript drafting)
-  |-- @research-planner        (agent: study design, protocols)
-  |-- @project-manager         (agent: tracking, briefs, decisions)
-  |-- @research-orchestrator   (agent: end-to-end workflow routing)
-  |-- @troubleshooter          (agent: diagnostics, fixes, usage help)
-  |
-  |-- MCP Servers (tools available to all agents):
-  |     |-- pubmed-server          (NCBI E-utilities)
-  |     |-- openalex-server        (OpenAlex REST API)
-  |     |-- semantic-scholar-server (S2 Academic Graph API)
-  |     |-- europe-pmc-server      (Europe PMC REST API)
-  |     |-- crossref-server        (CrossRef/DOI metadata)
-  |     |-- zotero-server          (Zotero Web API v3)
-  |     |-- prisma-tracker         (local PRISMA flow tracking)
-  |     |-- project-tracker        (local project management)
-  |
-  v
-Outputs: Quarto documents, R/Python scripts, PRISMA diagrams,
-         progress briefs, structured data files
-```
+
+> **Rendered version:** Run `quarto render docs/architecture-diagram.qmd` to produce a self-contained HTML with the diagram. See [docs/architecture-diagram.qmd](docs/architecture-diagram.qmd) for the source.
 
 ## ICMJE Compliance: You Are the Author
 
