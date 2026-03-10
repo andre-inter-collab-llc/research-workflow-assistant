@@ -68,7 +68,9 @@ def _check_env_keys(workspace_root: Path) -> dict:
     keys_to_check = [
         "NCBI_API_KEY",
         "OPENALEX_API_KEY",
+        "OPENALEX_EMAIL",
         "S2_API_KEY",
+        "S2_API_KEY_STATUS",
         "CROSSREF_EMAIL",
         "ZOTERO_API_KEY",
         "ZOTERO_USER_ID",
@@ -97,6 +99,14 @@ def _check_env_keys(workspace_root: Path) -> dict:
             result[key] = "set"
         else:
             result[key] = "empty"
+
+    # OPENALEX_EMAIL is optional when OPENALEX_API_KEY is configured.
+    if result.get("OPENALEX_EMAIL") == "empty" and result.get("OPENALEX_API_KEY") == "set":
+        result["OPENALEX_EMAIL"] = "optional"
+
+    # Treat Semantic Scholar key as intentionally pending when explicitly marked.
+    if result.get("S2_API_KEY") == "empty" and result.get("S2_API_KEY_STATUS") == "set":
+        result["S2_API_KEY"] = "pending"
 
     return result
 

@@ -125,8 +125,9 @@ async def setup_status() -> dict[str, Any]:
 
     # Check which keys are present in .env (value set vs empty)
     key_names = [
-        "NCBI_API_KEY", "OPENALEX_EMAIL", "S2_API_KEY",
-        "CROSSREF_EMAIL", "ZOTERO_API_KEY", "ZOTERO_USER_ID", "PROJECTS_ROOT",
+        "NCBI_API_KEY", "OPENALEX_API_KEY", "OPENALEX_EMAIL", "S2_API_KEY",
+        "S2_API_KEY_STATUS", "CROSSREF_EMAIL", "ZOTERO_API_KEY", "ZOTERO_USER_ID",
+        "PROJECTS_ROOT",
     ]
     env_keys: dict[str, str] = {}
     if env_path.exists():
@@ -142,6 +143,14 @@ async def setup_status() -> dict[str, Any]:
                         env_keys[k] = "set" if v else "empty"
     for k in key_names:
         env_keys.setdefault(k, "missing")
+
+    # OPENALEX_EMAIL is optional when OPENALEX_API_KEY is configured.
+    if env_keys.get("OPENALEX_EMAIL") == "missing" and env_keys.get("OPENALEX_API_KEY") == "set":
+        env_keys["OPENALEX_EMAIL"] = "optional"
+
+    # Treat Semantic Scholar key as intentionally pending when explicitly marked.
+    if env_keys.get("S2_API_KEY") == "empty" and env_keys.get("S2_API_KEY_STATUS") == "set":
+        env_keys["S2_API_KEY"] = "pending"
 
     # Projects directory
     projects_root = Path(PROJECTS_ROOT)

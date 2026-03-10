@@ -2,18 +2,101 @@
 
 API Documentation: https://www.zotero.org/support/dev/web_api/v3/start
 Rate limits: Not explicitly documented; be respectful.
-Requires: ZOTERO_API_KEY and ZOTERO_USER_ID environment variables.
+Requires: ZOTERO_API_KEY. ZOTERO_USER_ID is optional when key-based autodiscovery is available.
 """
 
 import os
+from pathlib import Path
 from typing import Any
 
 import httpx
 from mcp.server.fastmcp import FastMCP
+from dotenv import load_dotenv
+
+
+def _load_dotenv_from_workspace() -> None:
+    """Load .env by walking up from this file so all entrypoints share config behavior."""
+    dir_path = Path(__file__).resolve().parent
+    for candidate in (dir_path, *dir_path.parents):
+        env_file = candidate / ".env"
+        if env_file.is_file():
+            load_dotenv(env_file)
+            break
+
+
+def _normalize_user_id(raw: str | None) -> str:
+    """Normalize user ID and reject non-numeric values."""
+    if raw is None:
+        return ""
+    value = raw.strip().strip('"').strip("'").strip()
+    if not value or not value.isdigit():
+        return ""
+    return value
+
+
+def _resolve_user_id_from_env() -> str:
+    """Resolve Zotero user ID from supported environment variable aliases."""
+    for key in ("ZOTERO_USER_ID", "ZOTERO_USERID", "ZOTERO_LIBRARY_ID"):
+        user_id = _normalize_user_id(os.environ.get(key))
+        if user_id:
+            return user_id
+    return ""
+
+
+def _canonicalize_user_url(url: str, user_id: str) -> str:
+    """Replace blank user path segments after user ID resolution."""
+    return url.replace("/users//", f"/users/{user_id}/")
+
+
+async def _discover_user_id(client: httpx.AsyncClient) -> str:
+    """Discover Zotero user ID using the authenticated key metadata endpoint."""
+    if not API_KEY:
+        return ""
+
+    resp = await client.get(f"{ZOTERO_BASE}/keys/current", headers=_headers())
+    resp.raise_for_status()
+    payload = resp.json() if resp.content else {}
+
+    candidates = [
+        payload.get("userID"),
+        payload.get("userId"),
+        payload.get("user", {}).get("userID") if isinstance(payload.get("user"), dict) else None,
+        payload.get("access", {}).get("user", {}).get("id")
+        if isinstance(payload.get("access"), dict)
+        and isinstance(payload.get("access", {}).get("user"), dict)
+        else None,
+    ]
+
+    for raw in candidates:
+        user_id = _normalize_user_id(str(raw) if raw is not None else None)
+        if user_id:
+            return user_id
+    return ""
+
+
+async def _ensure_user_id(client: httpx.AsyncClient) -> str:
+    """Ensure user ID is available from env or API key autodiscovery."""
+    global USER_ID
+
+    if USER_ID:
+        return USER_ID
+
+    USER_ID = await _discover_user_id(client)
+    if USER_ID:
+        return USER_ID
+
+    raise RuntimeError(
+        "Zotero configuration error: unable to resolve ZOTERO_USER_ID. "
+        "Set ZOTERO_USER_ID (or ZOTERO_USERID / ZOTERO_LIBRARY_ID) to a numeric ID, "
+        "or provide a valid ZOTERO_API_KEY for auto-discovery."
+    )
+
+
+_load_dotenv_from_workspace()
 
 ZOTERO_BASE = "https://api.zotero.org"
 API_KEY = os.environ.get("ZOTERO_API_KEY", "")
-USER_ID = os.environ.get("ZOTERO_USER_ID", "")
+USER_ID = _resolve_user_id_from_env()
 
 mcp = FastMCP(
     "zotero",
@@ -36,6 +119,8 @@ def _user_url(path: str) -> str:
 
 async def _get(client: httpx.AsyncClient, url: str, params: dict[str, str] | None = None) -> Any:
     """Make a GET request to Zotero API."""
+    user_id = await _ensure_user_id(client)
+    url = _canonicalize_user_url(url, user_id)
     resp = await client.get(url, headers=_headers(), params=params or {})
     resp.raise_for_status()
     return resp.json()
@@ -43,6 +128,8 @@ async def _get(client: httpx.AsyncClient, url: str, params: dict[str, str] | Non
 
 async def _post(client: httpx.AsyncClient, url: str, json_data: Any) -> Any:
     """Make a POST request to Zotero API."""
+    user_id = await _ensure_user_id(client)
+    url = _canonicalize_user_url(url, user_id)
     resp = await client.post(url, headers={**_headers(), "Content-Type": "application/json"}, json=json_data)
     resp.raise_for_status()
     return resp.json()
@@ -50,6 +137,8 @@ async def _post(client: httpx.AsyncClient, url: str, json_data: Any) -> Any:
 
 async def _patch(client: httpx.AsyncClient, url: str, json_data: Any, version: int) -> Any:
     """Make a PATCH request to Zotero API."""
+    user_id = await _ensure_user_id(client)
+    url = _canonicalize_user_url(url, user_id)
     headers = {**_headers(), "Content-Type": "application/json", "If-Unmodified-Since-Version": str(version)}
     resp = await client.patch(url, headers=headers, json=json_data)
     resp.raise_for_status()
@@ -362,6 +451,8 @@ async def export_bibliography(
     page_size = min(limit, 100)
 
     async with httpx.AsyncClient(timeout=30.0) as client:
+        user_id = await _ensure_user_id(client)
+        url = _canonicalize_user_url(url, user_id)
         while start < limit:
             params = {
                 "limit": str(page_size),
@@ -683,6 +774,8 @@ async def download_attachment(item_key: str) -> dict[str, Any]:
 
         # Download the file
         url = _user_url(f"items/{item_key}/file")
+        user_id = await _ensure_user_id(client)
+        url = _canonicalize_user_url(url, user_id)
         resp = await client.get(url, headers=_headers())
         resp.raise_for_status()
 
