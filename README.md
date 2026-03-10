@@ -5,7 +5,8 @@ An open-source, modular AI research assistant that runs inside **[VS Code](https
 > **Model note:** This project was developed and tested using **Claude Opus 4.6** in GitHub Copilot agent mode. Other models available in Copilot ([model comparison](https://docs.github.com/en/copilot/reference/ai-models/model-comparison)) may work but have not been validated with these agents and instructions. If you experience issues with a different model, try switching to Claude Opus 4.6 in the Copilot model picker.
 
 > **First time here?** Jump straight to the [Quick Start](#quick-start) below,
-> or open Copilot Chat and type `@setup-wizard` for an interactive guided setup.
+> or open Copilot Chat and type `@setup` for an interactive guided setup.
+> If setup is complete and something is not working, use `@troubleshooter` for diagnostics and issue resolution.
 > For the full walkthrough, see [docs/getting-started.md](docs/getting-started.md).
 
 ## Who Is This For?
@@ -31,6 +32,7 @@ No PhD required. If you do research, this tool is for you.
 | **Academic writing** | `@academic-writer` agent scaffolds IMRaD manuscripts, manages citations, enforces ICMJE AI disclosure |
 | **Research planning** | `@research-planner` agent helps with protocols, ethics applications, study design, grant writing |
 | **Project management** | `@project-manager` agent tracks phases, milestones, tasks, decisions; generates progress briefs for colleagues |
+| **Troubleshooting and support** | `@troubleshooter` agent diagnoses environment and MCP issues, validates API keys, and provides practical how-to help for day-to-day RWA usage |
 | **ICMJE compliance** | Built into every agent: human-in-the-loop mandate, audit trail, AI disclosure generation, authorship checklist |
 
 ## Architecture
@@ -46,6 +48,7 @@ VS Code + GitHub Copilot Chat
   |-- @academic-writer         (agent: manuscript drafting)
   |-- @research-planner        (agent: study design, protocols)
   |-- @project-manager         (agent: tracking, briefs, decisions)
+  |-- @troubleshooter          (agent: diagnostics, fixes, usage help)
   |
   |-- MCP Servers (tools available to all agents):
   |     |-- pubmed-server          (NCBI E-utilities)
@@ -81,7 +84,7 @@ Per ICMJE Section II.A.4: AI use must be disclosed in acknowledgments (writing a
 
 ## Quick Start
 
-> **Prefer a guided setup?** Open Copilot Chat and type `@setup-wizard`. It will
+> **Prefer a guided setup?** Open Copilot Chat and type `@setup`. It will
 > walk you through every step interactively.
 
 ### Prerequisites

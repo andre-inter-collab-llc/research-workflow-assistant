@@ -4,7 +4,7 @@
         {
             "label": "Validate Research Assistant Setup",
             "type": "shell",
-            "command": "python",
+            "command": "${workspaceFolder}/.venv/Scripts/python.exe",
             "args": [
                 "${workspaceFolder}/scripts/validate_setup.py"
             ],
@@ -36,7 +36,7 @@
         {
             "label": "Install All MCP Servers",
             "type": "shell",
-            "command": "pip",
+            "command": "${workspaceFolder}/.venv/Scripts/pip.exe",
             "args": [
                 "install",
                 "-e", "${workspaceFolder}/mcp-servers/pubmed-server",
@@ -64,6 +64,38 @@
                 "panel": "shared"
             },
             "group": "build"
+        },
+        {
+            "label": "MCP Smoke Check (Project Tracker)",
+            "type": "shell",
+            "command": "${workspaceFolder}/.venv/Scripts/python.exe",
+            "args": [
+                "${workspaceFolder}/scripts/mcp_smoke_check.py"
+            ],
+            "windows": {
+                "command": "${workspaceFolder}/.venv/Scripts/python.exe",
+                "args": [
+                    "${workspaceFolder}/scripts/mcp_smoke_check.py"
+                ]
+            },
+            "linux": {
+                "command": "${workspaceFolder}/.venv/bin/python",
+                "args": [
+                    "${workspaceFolder}/scripts/mcp_smoke_check.py"
+                ]
+            },
+            "osx": {
+                "command": "${workspaceFolder}/.venv/bin/python",
+                "args": [
+                    "${workspaceFolder}/scripts/mcp_smoke_check.py"
+                ]
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "group": "test"
         }
     ]
 }

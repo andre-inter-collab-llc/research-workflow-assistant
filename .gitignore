@@ -51,6 +51,9 @@ _freeze/
 *.env
 secrets/
 
+# RWA user config (per-user, not committed)
+.rwa-user-config.yaml
+
 # Logs
 *.log
 workflow_log.txt

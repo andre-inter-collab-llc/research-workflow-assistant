@@ -186,5 +186,5 @@ At natural project checkpoints, proactively ask:
 - Before calling any `project-tracker` tool, confirm which project the user is working on.
 - If no active project is set and the user hasn't specified one, call `list_projects` to show available projects and ask which to use.
 - Always pass `project_path` when calling tracker tools if the user has specified a project.
-- For new users with no projects, suggest running `@setup-wizard` for guided first-time setup.
+- For new users with no projects, suggest running `@setup` for guided first-time setup.
 - Log AI contributions to the `ai-contributions-log.md` inside the target project directory.

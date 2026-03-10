@@ -63,12 +63,13 @@ Each agent encodes a specialized research workflow:
 
 | Agent | Purpose | MCP Tools Used |
 |-------|---------|---------------|
-| `setup-wizard` | Guided first-time setup and environment validation | All 8 servers (for API key validation) |
+| `setup` | Guided first-time setup and environment validation | All 9 servers (for API key validation) |
 | `systematic-reviewer` | Full systematic review lifecycle | pubmed, openalex, semantic-scholar, europe-pmc, crossref, zotero, prisma-tracker |
 | `data-analyst` | Statistical analysis (R and Python) | None (uses language runtimes) |
 | `academic-writer` | Manuscript drafting with ICMJE compliance | zotero, crossref |
 | `research-planner` | Protocol development and registration | pubmed (for preliminary searches) |
 | `project-manager` | Progress tracking and reporting | project-tracker |
+| `troubleshooter` | Diagnostics, repair guidance, and how-to support | pubmed, openalex, semantic-scholar, europe-pmc, crossref, zotero, zotero-local, prisma-tracker, project-tracker |
 
 Agents inherit global instructions and add role-specific behavior, tool restrictions, and workflow sequences.
 

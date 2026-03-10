@@ -118,7 +118,7 @@ async def setup_status() -> dict[str, Any]:
 
     Returns information about which API keys are configured (without revealing
     values), whether the projects directory exists, and which projects are
-    available.  Used by the setup-wizard agent to detect existing configuration.
+    available.  Used by the setup agent to detect existing configuration.
     """
     workspace = Path(PROJECT_DIR).resolve()
     env_path = workspace / ".env"

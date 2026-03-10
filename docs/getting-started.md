@@ -3,9 +3,12 @@
 This is the complete setup and orientation guide for the research-workflow-assistant. If you followed the [Quick Start in the README](../README.md#quick-start) and everything worked, you can skip ahead to [Working with Projects](#working-with-projects).
 
 > **Prefer an interactive walkthrough?** Open Copilot Chat in VS Code and type
-> `@setup-wizard`. It will guide you through every step below — environment
+> `@setup`. It will guide you through every step below — environment
 > validation, API key configuration, MCP server verification, and first-project
 > creation — in a conversational format.
+>
+> **Already set up but something broke?** Use `@troubleshooter` for issue diagnosis,
+> targeted repair steps, and day-to-day usage guidance.
 
 ## Prerequisites
 
@@ -114,6 +117,10 @@ python scripts/validate_setup.py
 
 > **VS Code task shortcut:** `Ctrl+Shift+P` → "Tasks: Run Task" → "Validate Research Assistant Setup"
 
+For a quick startup check after interpreter/server changes, run:
+
+> `Ctrl+Shift+P` → "Tasks: Run Task" → "MCP Smoke Check (Project Tracker)"
+
 ### Troubleshooting
 
 #### MCP servers not connecting to Copilot
@@ -140,6 +147,8 @@ After editing, restart the MCP servers:
 | Problem | Solution |
 |---------|----------|
 | "Module not found" errors | Install the servers: run task "Install All MCP Servers", or `pip install -e mcp-servers/pubmed-server ...` |
+| Default interpreter path could not be resolved | Open Command Palette → "Python: Select Interpreter" → choose the `.venv` environment. If it still fails, run "Developer: Reload Window" and re-select `.venv`. |
+| Need a quick MCP startup check | Run task "MCP Smoke Check (Project Tracker)". If it fails, use `@troubleshooter` and share the task output. |
 | Servers not listed in MCP panel | Verify `.vscode/mcp.json` exists and is valid JSON. Restart VS Code. |
 | Server crashes immediately | Run `python -m <server_module>` in terminal (with venv active) to see the error. |
 | API keys not loading | The `.env` file must be at the workspace root. Servers auto-load it on startup via `python-dotenv`. |
@@ -228,11 +237,13 @@ If you work in a separate VS Code workspace, you have two options:
 
 1. Open Copilot Chat in agent mode
 2. Tag the agent you need:
+  - `@setup` for first-time setup or full environment reconfiguration
    - `@systematic-reviewer` for systematic reviews
    - `@data-analyst` for statistical analysis
    - `@academic-writer` for manuscript drafting
    - `@research-planner` for protocol and planning
    - `@project-manager` for progress tracking
+  - `@troubleshooter` for diagnosing errors, fixing environment issues, and usage support
 
 ### Example: Starting a systematic review
 
@@ -288,7 +299,7 @@ See `compliance/ai-disclosure-template.md` for ready-to-use disclosure language.
 
 ## Next Steps
 
-- Run `@setup-wizard` for a guided interactive setup
+- Run `@setup` for a guided interactive setup
 - Read [database-access.md](database-access.md) to understand what each database offers
 - Read [architecture.md](architecture.md) for a technical overview of the system
 - Explore the `compliance/` folder for PRISMA, MOOSE, and RoB 2 checklists

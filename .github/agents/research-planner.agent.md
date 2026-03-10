@@ -100,7 +100,7 @@ Present options clearly. The researcher decides.
 6. **Hand off to other agents.** When the protocol is finalized, the user can proceed to `@systematic-reviewer` (for reviews), `@data-analyst` (for analysis planning), or `@project-manager` (for timeline tracking).
 ## Project Awareness
 
-- When a user starts planning a new project, ask if they already have a project folder set up. If not, suggest using `@project-manager` to initialize one or running `@setup-wizard` for first-time setup.
+- When a user starts planning a new project, ask if they already have a project folder set up. If not, suggest using `@project-manager` to initialize one or running `@setup` for first-time setup.
 - If calling `prisma-tracker` tools (e.g., to initialize a review), confirm which project to target and pass `project_path`.
 - Log AI contributions to the `ai-contributions-log.md` inside the target project directory.
 ## Rules

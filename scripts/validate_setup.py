@@ -128,15 +128,27 @@ def _check_projects_dir(workspace_root: Path) -> dict:
     if not projects_root.exists():
         return {"status": "missing", "path": str(projects_root), "projects": []}
 
-    # List project directories (those containing project-tracking/project.yaml)
+    # List project directories and detect whether each appears initialized.
+    # Support both tracker-based initialization and lightweight project config files.
     projects = []
     if projects_root.is_dir():
         for child in sorted(projects_root.iterdir()):
             if child.is_dir() and child.name != ".gitkeep":
-                has_tracking = (child / "project-tracking" / "project.yaml").exists()
+                has_project_tracking = (child / "project-tracking" / "project.yaml").exists()
+                has_review_tracking = (child / "review-tracking" / "prisma-flow.json").exists()
+                has_project_config = (child / "project-config.yaml").exists()
+                has_ai_log = (child / "ai-contributions-log.md").exists()
+
+                # Mark as initialized if any supported project marker is present.
+                is_initialized = (
+                    has_project_tracking
+                    or has_review_tracking
+                    or has_project_config
+                    or has_ai_log
+                )
                 projects.append({
                     "name": child.name,
-                    "initialized": has_tracking,
+                    "initialized": is_initialized,
                 })
 
     return {"status": "ok", "path": str(projects_root), "projects": projects}
