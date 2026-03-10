@@ -162,7 +162,7 @@ After editing, restart the MCP servers:
 | Problem | Solution |
 |---------|----------|
 | "Module not found" errors | Install the servers: run task "Install All MCP Servers", or `pip install -e mcp-servers/pubmed-server ...` |
-| Default interpreter path could not be resolved | Open Command Palette → "Python: Select Interpreter" → choose the `.venv` environment. If it still fails, run "Developer: Reload Window" and re-select `.venv`. |
+| Default interpreter path could not be resolved | Verify `.vscode/settings.json` has `"python.defaultInterpreterPath": ".venv"`. Then run Command Palette → "Python: Select Interpreter" → choose `.venv`. If it still appears once at startup, run "Developer: Reload Window" and select `.venv` again to clear stale cache. |
 | Need a quick MCP startup check | Run task "MCP Smoke Check (Project Tracker)". If it fails, use `@troubleshooter` and share the task output. |
 | Servers not listed in MCP panel | Verify `.vscode/mcp.json` exists and is valid JSON. Restart VS Code. |
 | Server crashes immediately | Run `python -m <server_module>` in terminal (with venv active) to see the error. |
