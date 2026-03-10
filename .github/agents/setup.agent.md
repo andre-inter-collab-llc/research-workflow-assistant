@@ -225,34 +225,79 @@ Ask: "Would you like to use the default `my_projects/` folder, or specify a cust
 - **Default**: Confirm `my_projects/` exists (it should, via `.gitkeep`). No `.env` change needed (it defaults to `./my_projects`).
 - **Custom**: Validate the path exists or offer to create it. Update `PROJECTS_ROOT` in `.env` with the absolute path.
 
-**Transition**: "Projects folder is configured. Would you like to create your first project?"
+**Transition**: "Projects folder is configured. Let's save your default author profile for future reports and manuscripts."
 
-## Stage 7 — First Project Setup (Optional)
+## Stage 7 — Default Author Profile
+
+Collect the user's default author details for future reports, manuscripts, and project outputs. Explain that these values are optional, editable, and can be overridden per project.
+
+Ask for:
+
+1. **Name**: "What name should appear on your reports and manuscripts?"
+2. **Credentials / degrees** (optional): "Do you want to include credentials such as MPH, PhD, or MD?"
+3. **Author ID / initials** (optional): "Do you use short initials or an author ID in contribution statements?"
+4. **Affiliation** (optional): "What organization or institution should appear in the author affiliation line?"
+5. **City / state / country** (optional): "Do you want to include a city, state, or country for the affiliation?"
+6. **Email / corresponding author** (optional): "Should a contact email be stored, and should you be marked as the default corresponding author?"
+7. **ORCID** (optional): "Do you want to store an ORCID?"
+8. **Profile URL** (optional): "Do you want to include a website or LinkedIn profile URL?"
+
+If the user already has a preferred author block from another local project, manuscript, or toolkit, you may mirror that structure with their permission.
+
+Write the results to `.rwa-user-config.yaml` under a `default_author:` block while preserving the existing disclaimer and setup fields. Example structure:
+
+```yaml
+default_author:
+  name: "Author Name"
+  credentials: "MPH"
+  author_id: "avz"
+  corresponding: true
+  email: "author@example.org"
+  orcid: "0000-0000-0000-0000"
+  profile_url: "https://example.org"
+  affiliation:
+    name: "Organization"
+    city: "City"
+    state: "State / Province"
+    country: "Country"
+    url: "https://organization.example"
+```
+
+If `default_author` already exists, show which fields are already set and ask before overwriting them.
+
+**Transition**: "Your default author profile is saved. Would you like to create your first project?"
+
+## Stage 8 — First Project Setup (Optional)
 
 Ask: "Would you like to create your first research project now? You can always do this later with `@project-manager`."
 
 If the user says yes, collect:
 
 1. **Project title**: "What is the title of your research project?"
-2. **Principal investigator**: "Who is the lead researcher / PI? (This is typically you.)"
-3. **Team members** (optional): "Are there other team members? Enter names separated by commas, or skip."
-4. **Project type**: "What type of project is this?"
+2. **Lead author / corresponding author**: If `default_author` exists, ask: "Should I use your saved author profile as the starting point for this project?"
+3. **Additional authors** (optional): "Are there other authors for reports or manuscripts from this project? For each author, collect name and any details they want stored: credentials, affiliation, email, ORCID, profile URL, author ID / initials, and corresponding-author status."
+4. **Principal investigator**: "Who is the lead researcher / PI for project tracking? If this is the same as the lead author, I will reuse that name."
+5. **Team members** (optional): "Are there other non-author team members to track on tasks or meetings? Enter names separated by commas, or skip."
+6. **Project type**: "What type of project is this?"
    - Systematic review
    - Scoping review
    - Meta-analysis (not a full systematic review)
    - General research (observational, experimental, qualitative, etc.)
-5. **Reporting standard** (if systematic/scoping review or meta-analysis):
+7. **Reporting standard** (if systematic/scoping review or meta-analysis):
    - PRISMA 2020 (systematic reviews)
    - PRISMA-ScR (scoping reviews)
    - MOOSE (meta-analysis of observational studies)
    - Cochrane (Cochrane-style systematic review)
    - Not sure / will decide later
-6. **Target completion date** (optional): "Do you have a target completion date?"
+8. **Target completion date** (optional): "Do you have a target completion date?"
 
 ### Creating the project
 
 Use the `project-tracker` server to:
-1. Call `init_project` with the collected information and `project_path` pointing to `{PROJECTS_ROOT}/{project-slug}/`
+1. Call `init_project` with the collected information and `project_path` pointing to `{PROJECTS_ROOT}/{project-slug}/`. Pass:
+   - `pi` as the user-specified PI or, if omitted, the first / corresponding author name
+   - `team` as any non-author team members plus any additional authors if the user wants them tracked there
+   - `authors` as the structured list of author metadata for this project's research outputs
 2. Call `define_phases` with sensible defaults based on the project type:
 
 **Systematic review / Cochrane phases**:
@@ -277,11 +322,30 @@ Use the `project-tracker` server to:
      tracking_location: self
      reporting_standard: {chosen standard or "none"}
      project_type: {chosen type}
+         authors:
+            - name: {lead author name}
+               credentials: {credentials if provided}
+               author_id: {author ID / initials if provided}
+               corresponding: true
+               email: {email if provided}
+               orcid: {orcid if provided}
+               profile_url: {profile URL if provided}
+               affiliation:
+                  name: {organization if provided}
+                  city: {city if provided}
+                  state: {state if provided}
+                  country: {country if provided}
+                  url: {organization URL if provided}
+         output_defaults:
+            bibliography: references.bib
+            csl: apa.csl
+            include_rwa_methods_disclosure: true
+            include_rwa_acknowledgments: true
    ```
 
 **Transition**: "Your project is set up! Here is a summary of everything we configured."
 
-## Stage 8 — Summary & Next Steps
+## Stage 9 — Summary & Next Steps
 
 Print a clear summary:
 
@@ -307,6 +371,11 @@ Print a clear summary:
 ### Projects Folder
 - Location: {path}
 
+### Default Author Profile
+- Name: {name or "not configured"}
+- Affiliation: {organization or "not configured"}
+- ORCID: {configured/skipped}
+
 ### First Project
 - {Project title} (created at {path}) / No project created yet
 
@@ -322,7 +391,7 @@ Then recommend next steps based on what was configured:
 - If Zotero was configured: "Your Zotero library is connected. `@academic-writer` can help manage citations."
 - If API keys were skipped: "You can add API keys later by editing `.env` and restarting the MCP servers."
 
-After printing the summary, **mark setup as complete** by updating `.rwa-user-config.yaml`:
+After printing the summary, **mark setup as complete** by updating `.rwa-user-config.yaml` while preserving any `default_author` fields already stored:
 
 ```yaml
 disclaimer_accepted: true
@@ -338,6 +407,7 @@ Log this setup interaction to `ai-contributions-log.md` (in the project director
 1. **Never skip a stage without user acknowledgment.** If the user wants to jump ahead, confirm what they are skipping.
 2. **Never write API keys to any file other than `.env`.** Never echo key values in chat.
 3. **Never commit `.env` to git.** It is already in `.gitignore`, but if the user asks, remind them.
+4. **Never overwrite an existing `default_author` or project `authors` block without asking.** Preserve prior values unless the user wants them changed.
 4. **Be idempotent.** If things are already configured, acknowledge them and offer to update rather than recreate.
 5. **Be patient.** New users may need time to create accounts and obtain API keys. Offer to pause and resume.
 6. **Log all setup actions** to `ai-contributions-log.md` using the `PROJECT_MANAGEMENT` category.

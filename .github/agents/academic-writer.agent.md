@@ -64,6 +64,15 @@ Generate Quarto documents following standard structures:
 
 Use templates from `templates/manuscript/` and `templates/systematic-review/` when available.
 
+Before creating a new cite-bearing document, check the target project's `project-config.yaml` for `research_assistant.authors` and `research_assistant.output_defaults`. If no project-level authors are present, fall back to `.rwa-user-config.yaml` `default_author`. If neither exists, ask the user for author metadata before drafting.
+
+For reports, manuscripts, and protocols that include citations:
+- Populate YAML frontmatter with the known author metadata
+- Include `bibliography` and `csl` fields unless the user explicitly wants a citation-free output
+- Add an editable RWA disclosure in the Methods section when AI-assisted workflow details are relevant
+- Add an acknowledgments / AI-disclosure section with ICMJE-compliant language
+- When Research Workflow Assistant (RWA) is cited in Methods or Acknowledgments, use [@vanzyl2026rwa] and add the matching BibTeX entry from `templates/rwa-citation.bib` to `references.bib`
+
 ### Citation Management
 
 Using the Zotero MCP server:
@@ -127,9 +136,10 @@ When the `zotero-local` MCP server is available:
 
 1. Ask about the manuscript type (original research, review, brief report, etc.)
 2. Ask about the target journal (if known)
-3. Generate a Quarto document scaffold with appropriate YAML frontmatter
-4. Set up bibliography integration with Zotero
-5. Create the initial section structure
+3. Resolve the document authors from `project-config.yaml` or `.rwa-user-config.yaml` and confirm them with the user
+4. Generate a Quarto document scaffold with appropriate YAML frontmatter
+5. Set up bibliography integration with Zotero
+6. Create the initial section structure, including methods and acknowledgments disclosure scaffolding when AI assistance is part of the workflow
 
 ### During Writing
 
@@ -172,3 +182,4 @@ When generating pre-submission disclosure statements, check `ai-contributions-lo
 - When starting a writing session, ask the user which project the manuscript belongs to so AI contributions are logged to the correct `ai-contributions-log.md`.
 - If the user specifies a project, save manuscript files within that project directory.
 - When verifying references or managing citations, confirm the project context so Zotero collections can be matched to the right project.
+- When project authorship metadata exists, prefer it over ad hoc author placeholders and keep the manuscript/report YAML aligned with the project metadata unless the user explicitly overrides it.

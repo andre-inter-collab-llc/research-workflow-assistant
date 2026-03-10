@@ -104,6 +104,90 @@ def _save_yaml(filename: str, data: dict[str, Any] | list[Any], base_dir: Path |
     path.write_text(yaml.dump(data, default_flow_style=False, sort_keys=False), encoding="utf-8")
 
 
+def _strip_empty(value: Any) -> Any:
+    if isinstance(value, dict):
+        result: dict[str, Any] = {}
+        for key, item in value.items():
+            cleaned = _strip_empty(item)
+            if cleaned is None:
+                continue
+            if cleaned == "" or cleaned == [] or cleaned == {}:
+                continue
+            result[key] = cleaned
+        return result
+    if isinstance(value, list):
+        result = []
+        for item in value:
+            cleaned = _strip_empty(item)
+            if cleaned is None:
+                continue
+            if cleaned == "" or cleaned == [] or cleaned == {}:
+                continue
+            result.append(cleaned)
+        return result
+    if isinstance(value, str):
+        return value.strip()
+    return value
+
+
+def _normalize_affiliation(value: Any) -> dict[str, Any]:
+    if isinstance(value, list) and value:
+        value = value[0]
+    if not isinstance(value, dict):
+        return {}
+    return _strip_empty(
+        {
+            "name": value.get("name", ""),
+            "city": value.get("city", ""),
+            "state": value.get("state", value.get("region", "")),
+            "country": value.get("country", ""),
+            "url": value.get("url", ""),
+        }
+    )
+
+
+def _normalize_authors(
+    authors: list[dict[str, Any]] | None,
+    pi: str,
+    team: list[str] | None,
+) -> list[dict[str, Any]]:
+    normalized: list[dict[str, Any]] = []
+
+    for author in authors or []:
+        if not isinstance(author, dict):
+            continue
+
+        cleaned = _strip_empty(
+            {
+                "name": author.get("name", ""),
+                "credentials": author.get("credentials", ""),
+                "author_id": author.get("author_id", ""),
+                "corresponding": bool(author.get("corresponding", False)),
+                "email": author.get("email", ""),
+                "orcid": author.get("orcid", ""),
+                "profile_url": author.get("profile_url", author.get("url", "")),
+                "affiliation": _normalize_affiliation(author.get("affiliation", {})),
+            }
+        )
+        if cleaned.get("name"):
+            normalized.append(cleaned)
+
+    if not normalized:
+        fallback: list[dict[str, Any]] = []
+        if pi:
+            fallback.append({"name": pi, "corresponding": True})
+        for member in team or []:
+            member_name = member.strip()
+            if member_name and member_name != pi:
+                fallback.append({"name": member_name})
+        return fallback
+
+    if not any(author.get("corresponding") for author in normalized):
+        normalized[0]["corresponding"] = True
+
+    return normalized
+
+
 def _now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -392,6 +476,7 @@ async def init_project(
     team: list[str] | None = None,
     start_date: str = "",
     target_end: str = "",
+    authors: list[dict[str, Any]] | None = None,
     project_path: str = "",
 ) -> dict[str, Any]:
     """Initialize project tracking for a new research project.
@@ -402,6 +487,7 @@ async def init_project(
         team: List of team member names.
         start_date: Project start date (YYYY-MM-DD). Defaults to today.
         target_end: Target completion date (YYYY-MM-DD).
+        authors: Optional structured author metadata for report and manuscript outputs.
         project_path: Path to the project directory (absolute, or relative to
             PROJECTS_ROOT). Defaults to the active project or PROJECT_DIR.
 
@@ -411,10 +497,15 @@ async def init_project(
     base = _resolve_project_dir(project_path or None, must_exist=False)
     base.mkdir(parents=True, exist_ok=True)
 
+    project_authors = _normalize_authors(authors, pi, team)
+    project_lead = pi or (project_authors[0].get("name", "") if project_authors else "")
+    project_team = team or [author.get("name", "") for author in project_authors[1:] if author.get("name")]
+
     project = {
         "title": title,
-        "pi": pi,
-        "team": team or [],
+        "pi": project_lead,
+        "team": project_team,
+        "authors": project_authors,
         "start_date": start_date or _today(),
         "target_end": target_end,
         "created_at": _now(),
@@ -442,7 +533,13 @@ async def init_project(
             encoding="utf-8",
         )
 
-    return {"status": "initialized", "title": title, "pi": pi, "path": str(base)}
+    return {
+        "status": "initialized",
+        "title": title,
+        "pi": project_lead,
+        "authors": project_authors,
+        "path": str(base),
+    }
 
 
 @mcp.tool()

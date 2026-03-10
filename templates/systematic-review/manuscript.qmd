@@ -2,12 +2,27 @@
 title: "[Title of Systematic Review]"
 subtitle: "A Systematic Review [and Meta-Analysis]"
 author:
-  - name: "[First Author]"
-    affiliation: "[Institution]"
-    orcid: "[ORCID]"
+  - name: "[Lead Author, Credentials]"
+    affiliation:
+      - name: "[Institution / Organization]"
+        city: "[City]"
+        region: "[State / Province]"
+        country: "[Country]"
+        url: "[Organization URL]"
+    email: "[author@example.org]"
+    orcid: "[0000-0000-0000-0000]"
+    url: "[Profile URL]"
     corresponding: true
-  - name: "[Second Author]"
-    affiliation: "[Institution]"
+  - name: "[Second Author, Credentials]"
+    affiliation:
+      - name: "[Institution / Organization]"
+        city: "[City]"
+        region: "[State / Province]"
+        country: "[Country]"
+        url: "[Organization URL]"
+    email: "[author2@example.org]"
+    orcid: "[0000-0000-0000-0000]"
+    url: "[Profile URL]"
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
 abstract: |
   **Background:** [Context and rationale]
@@ -27,6 +42,9 @@ execute:
   echo: false
   warning: false
 ---
+
+<!-- If project-config.yaml defines research_assistant.authors, replace the placeholders in this front matter with those author records before rendering. -->
+<!-- If RWA is cited in this document, add the `vanzyl2026rwa` entry from templates/rwa-citation.bib to references.bib. -->
 
 # Introduction
 
@@ -86,9 +104,9 @@ This systematic review was conducted in accordance with the PRISMA 2020 guidelin
 
 [Describe qualitative and quantitative synthesis methods]
 
-## AI Tool Disclosure
+## Use of Research Workflow Assistant (RWA)
 
-[Tool name] was used to assist with [specific tasks]. All screening decisions, data extraction, and risk of bias assessments were performed independently by the research team. See AI Contributions Log (Supplementary Material) for complete details.
+[Describe how Research Workflow Assistant (RWA), accessed through GitHub Copilot in VS Code, supported this review workflow, such as search translation, workflow tracking, screening organization, extraction templates, or drafting support. All screening decisions, inclusion/exclusion determinations, data extraction, risk of bias assessments, synthesis choices, and final approval remained with the human review team. When RWA is described here, cite it as [@vanzyl2026rwa]. Verify any cited standards, database attributions, or tool references in references.bib before submission.]
 
 # Results
 
@@ -161,6 +179,8 @@ This systematic review was conducted in accordance with the PRISMA 2020 guidelin
 
 [Acknowledge non-author contributors]
 
-**AI Tool Disclosure:** [Tool name and version] was used during the preparation of this manuscript to [specific uses]. The authors reviewed and edited all AI-assisted content and take full responsibility for the content of the publication.
+**RWA disclosure:** Research Workflow Assistant (RWA), accessed through GitHub Copilot in VS Code, may have been used during the preparation of this manuscript to [specific uses]. The authors reviewed, edited, and verified all AI-assisted content and take full responsibility for the content of the publication.
+
+If you mention RWA in the acknowledgments, cite it as [@vanzyl2026rwa].
 
 # References

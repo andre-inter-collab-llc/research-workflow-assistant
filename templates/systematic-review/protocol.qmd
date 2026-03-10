@@ -2,9 +2,17 @@
 title: "Systematic Review Protocol"
 subtitle: "PROSPERO Registration Draft"
 author:
-  - name: "[Author Name]"
-    affiliation: "[Institution]"
-    orcid: "[ORCID]"
+  - name: "[Lead Author, Credentials]"
+    affiliation:
+      - name: "[Institution / Organization]"
+        city: "[City]"
+        region: "[State / Province]"
+        country: "[Country]"
+        url: "[Organization URL]"
+    email: "[author@example.org]"
+    orcid: "[0000-0000-0000-0000]"
+    url: "[Profile URL]"
+    corresponding: true
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
 format:
   docx:
@@ -14,6 +22,9 @@ format:
 bibliography: references.bib
 csl: apa.csl
 ---
+
+<!-- If project-config.yaml defines research_assistant.authors, replace the placeholders in this front matter with those author records before rendering. -->
+<!-- If RWA is cited in this document, add the `vanzyl2026rwa` entry from templates/rwa-citation.bib to references.bib. -->
 
 # Registration Information
 
@@ -150,14 +161,22 @@ csl: apa.csl
 - **Framework:** GRADE / Other
 - **Domains assessed:**
 
-# AI Tool Disclosure
+# Use of Research Workflow Assistant (RWA)
 
-This protocol was prepared with AI assistance:
+This protocol may have been prepared with assistance from Research Workflow Assistant (RWA), accessed through GitHub Copilot in VS Code:
 
-- **Tool:** [research-workflow-assistant / GitHub Copilot]
-- **Use:** [Describe specific use: search strategy development, template generation, etc.]
-- **Human oversight:** All decisions regarding research question, eligibility criteria, and methodology were made by the research team
+- **Use:** [Describe specific use: search strategy development, template generation, workflow planning, or drafting support]
+- **Human oversight:** All decisions regarding the research question, eligibility criteria, methods, and final approval were made by the research team
+- **Verification:** Cite RWA as [@vanzyl2026rwa] when it is described here, and verify any cited standards, database attributions, or tool references in references.bib before submission
 - **ICMJE compliance:** AI tools are not listed as authors; use is disclosed per ICMJE Section II.A.4
+
+# Acknowledgments And AI Disclosure
+
+[Acknowledge non-author contributors or registration support if applicable.]
+
+**RWA disclosure:** Research Workflow Assistant (RWA), accessed through GitHub Copilot in VS Code, may have been used to assist with [specific protocol-development tasks]. The authors reviewed, revised, and verified all AI-assisted content and take full responsibility for the final protocol.
+
+If you mention RWA in the acknowledgments, cite it as [@vanzyl2026rwa].
 
 # Timeline
 

@@ -84,6 +84,10 @@ The tool enforces this by:
 
 Per ICMJE Section II.A.4: AI use must be disclosed in acknowledgments (writing assistance) and methods (data analysis). This tool generates those disclosures for you.
 
+Setup also captures a default author profile in [.rwa-user-config.yaml](.rwa-user-config.yaml), and new projects can store per-project `authors` metadata in [templates/project-config.yaml](templates/project-config.yaml) so future reports and manuscripts start with the correct author front matter.
+
+When RWA itself is cited in a Methods or Acknowledgments section, use the `vanzyl2026rwa` BibTeX entry from [templates/rwa-citation.bib](templates/rwa-citation.bib).
+
 ## Disclaimer and Readiness Gate
 
 RWA enforces a disclaimer/readiness gate before non-setup agent workflows.
@@ -99,6 +103,10 @@ disclaimer_accepted: true
 disclaimer_accepted_date: "YYYY-MM-DD"
 setup_completed: true
 setup_completed_date: "YYYY-MM-DD"
+default_author:
+  name: "Author Name"
+  affiliation:
+    name: "Organization"
 ```
 
 If acceptance is missing or invalid, agents will return:
@@ -121,7 +129,9 @@ If you see this message unexpectedly:
 - Stage 2: Create `.venv` and install all MCP servers
 - Stage 3: Configure `.env` API keys and `PROJECTS_ROOT`
 - Stage 4: Run setup validation + MCP smoke check
-- Stage 5: Confirm servers in VS Code and start first project
+- Stage 5: Confirm servers in VS Code
+- Stage 6: Save a default author profile for future outputs
+- Stage 7: Optionally start a first project with project-specific authorship metadata
 
 </details>
 
@@ -293,6 +303,26 @@ Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
 ## License
 
 [MIT License](LICENSE)
+
+## How To Cite
+
+If you use Research Workflow Assistant in a manuscript, report, protocol, or other cited output, cite it as:
+
+van Zyl, A. (2026). Research Workflow Assistant [Computer software]. https://github.com/andre-inter-collab-llc/research-workflow-assistant
+
+BibTeX:
+
+```bibtex
+@misc{vanzyl2026rwa,
+  author = {van Zyl, Andre},
+  title = {Research Workflow Assistant},
+  year = {2026},
+  url = {https://github.com/andre-inter-collab-llc/research-workflow-assistant},
+  note = {GitHub repository}
+}
+```
+
+You can also copy the canonical entry directly from [templates/rwa-citation.bib](templates/rwa-citation.bib) into your project's `references.bib`.
 
 ## Acknowledgments
 

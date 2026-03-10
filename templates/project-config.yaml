@@ -25,5 +25,32 @@ research_assistant:
   # Project type: systematic-review, scoping-review, meta-analysis, general-research
   project_type: systematic-review
 
+  # Default author metadata for manuscripts and reports created in this project.
+  # Use setup-level default_author as the starting point, then tailor per project.
+  # All fields are optional except name when you add an author entry.
+  authors: []
+  # Example:
+  # authors:
+  #   - name: "Lead Author"
+  #     credentials: "MPH"
+  #     author_id: "lav"
+  #     corresponding: true
+  #     email: "author@example.org"
+  #     orcid: "0000-0000-0000-0000"
+  #     profile_url: "https://example.org"
+  #     affiliation:
+  #       name: "Organization"
+  #       city: "City"
+  #       state: "State / Province"
+  #       country: "Country"
+  #       url: "https://organization.example"
+
+  # Defaults for cite-bearing outputs created in this project.
+  output_defaults:
+    bibliography: references.bib
+    csl: apa.csl
+    include_rwa_methods_disclosure: true
+    include_rwa_acknowledgments: true
+
   # Target completion date (YYYY-MM-DD, optional)
   # target_date: 2025-12-31

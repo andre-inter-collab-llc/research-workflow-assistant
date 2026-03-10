@@ -1,12 +1,27 @@
 ---
 title: "[Manuscript Title]"
 author:
-  - name: "[First Author]"
-    affiliation: "[Institution]"
-    orcid: "[ORCID]"
+  - name: "[Lead Author, Credentials]"
+    affiliation:
+      - name: "[Institution / Organization]"
+        city: "[City]"
+        region: "[State / Province]"
+        country: "[Country]"
+        url: "[Organization URL]"
+    email: "[author@example.org]"
+    orcid: "[0000-0000-0000-0000]"
+    url: "[Profile URL]"
     corresponding: true
-  - name: "[Co-Author]"
-    affiliation: "[Institution]"
+  - name: "[Co-Author, Credentials]"
+    affiliation:
+      - name: "[Institution / Organization]"
+        city: "[City]"
+        region: "[State / Province]"
+        country: "[Country]"
+        url: "[Organization URL]"
+    email: "[coauthor@example.org]"
+    orcid: "[0000-0000-0000-0000]"
+    url: "[Profile URL]"
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
 abstract: |
   [Structured or unstructured abstract, typically 150-300 words]
@@ -21,6 +36,9 @@ execute:
   echo: false
   warning: false
 ---
+
+<!-- If project-config.yaml defines research_assistant.authors, replace the placeholders in this front matter with those author records before rendering. -->
+<!-- If RWA is cited in this document, add the `vanzyl2026rwa` entry from templates/rwa-citation.bib to references.bib. -->
 
 # Introduction
 
@@ -44,9 +62,23 @@ execute:
 
 [Describe analytical approach, software, handling of missing data]
 
+## Use of Research Workflow Assistant (RWA)
+
+[Describe whether Research Workflow Assistant (RWA), accessed through GitHub Copilot in VS Code, was used for literature searching, workflow organization, drafting support, analysis scripting, or citation management. Specify which tasks were AI-assisted, which decisions remained with the human authors, and how outputs were reviewed or verified before use. When RWA is described here, cite it as [@vanzyl2026rwa]. If you cite reporting standards, tools, or database attributions here, verify those references in references.bib before submission.]
+
 ## Ethical Considerations
 
 [IRB/ethics approval, informed consent]
+
+# Acknowledgments And AI Disclosure
+
+[Acknowledge non-author contributors, funding, or institutional support as appropriate.]
+
+**RWA disclosure:** Research Workflow Assistant (RWA), accessed through GitHub Copilot in VS Code, may have been used to assist with [describe specific tasks]. All study design, source selection, analytic decisions, interpretation, and final approval remained with the human authors. The authors reviewed, revised, and verified all AI-assisted content and take full responsibility for the final work.
+
+If you mention RWA in the acknowledgments, cite it as [@vanzyl2026rwa].
+
+# References
 
 # Results
 

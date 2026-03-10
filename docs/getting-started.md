@@ -10,6 +10,8 @@ This is the complete setup and orientation guide for the research-workflow-assis
 > **Already set up but something broke?** Use `@troubleshooter` for issue diagnosis,
 > targeted repair steps, and day-to-day usage guidance.
 
+During setup, RWA now also asks for a default author profile so future reports and manuscripts can start with the correct author metadata. New projects can then override or extend that metadata with project-specific authors.
+
 ## Quick Troubleshooting Flow
 
 Follow this when setup appears broken:
@@ -187,12 +189,39 @@ This creates the following structure inside `my_projects/my-review/`:
 ```
 my-review/
   ai-contributions-log.md
+  project-config.yaml
   project-tracking/
     project.yaml
     tasks.yaml
     decisions.yaml
   review-tracking/       (if PRISMA tracking is initialized)
     prisma-flow.json
+```
+
+When you create a project through `@setup` or `@project-manager`, RWA should also prompt for the authors who will appear on reports or manuscripts from that project. Those details belong in `project-config.yaml` under `research_assistant.authors`, while your reusable personal defaults stay in `.rwa-user-config.yaml` under `default_author`.
+
+Recommended `project-config.yaml` pattern:
+
+```yaml
+research_assistant:
+  project_type: systematic-review
+  reporting_standard: prisma-2020
+  authors:
+    - name: "Lead Author"
+      credentials: "MPH"
+      corresponding: true
+      email: "author@example.org"
+      orcid: "0000-0000-0000-0000"
+      affiliation:
+        name: "Organization"
+        city: "City"
+        state: "State / Province"
+        country: "Country"
+  output_defaults:
+    bibliography: references.bib
+    csl: apa.csl
+    include_rwa_methods_disclosure: true
+    include_rwa_acknowledgments: true
 ```
 
 ### Using an external projects folder
@@ -300,6 +329,8 @@ Render with Quarto:
 ```bash
 quarto render my-review/protocol.qmd --to docx
 ```
+
+The manuscript, protocol, and report templates now assume cite-bearing outputs should include author front matter, `bibliography`, `csl`, a Methods mention of RWA when relevant, and an acknowledgments / AI-disclosure section. Replace placeholders with verified author metadata and references before rendering.
 
 ## ICMJE Compliance
 

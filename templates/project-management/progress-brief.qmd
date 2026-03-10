@@ -1,7 +1,10 @@
 ---
 title: "Progress Brief"
 subtitle: "[Project Title]"
-author: "[PI Name]"
+author:
+  - name: "[Lead / Corresponding Author]"
+    email: "[author@example.org]"
+    corresponding: true
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
 format:
   docx:
@@ -11,6 +14,8 @@ format:
     documentclass: article
     geometry: margin=1in
 ---
+
+<!-- Use the lead author from project-config.yaml research_assistant.authors when available. -->
 
 ```{r}
 #| include: false
@@ -91,4 +96,4 @@ if(length(recent) > 0) {
 
 ---
 
-*This brief was generated with AI assistance. All project data was entered and verified by the research team.*
+*This brief was generated with assistance from the Research Workflow Assistant (RWA). All project data was entered and verified by the research team.*

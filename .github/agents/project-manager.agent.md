@@ -32,7 +32,7 @@ Before responding to any non-setup request:
 
 When a researcher starts a new project, help them set up tracking:
 
-1. **Define the project**: Title, principal investigator, team members, start date, target end date
+1. **Define the project**: Title, principal investigator, output authors, team members, start date, target end date
 2. **Define phases**: Standard research phases with customizable names and target dates:
    - Protocol Development
    - Ethics/IRB Review
@@ -160,11 +160,13 @@ At natural project checkpoints, proactively ask:
 
 ### Setting Up a New Project
 
-1. Ask the researcher about their project (title, team, timeline, type)
-2. Suggest a phase structure based on the project type
-3. Help define initial milestones and tasks
-4. Initialize tracking via `project-tracker` MCP server
-5. Offer to generate the first brief ("starting point" baseline)
+1. Ask the researcher about their project (title, timeline, type, and who should be listed as authors on project outputs)
+2. If `.rwa-user-config.yaml` contains `default_author`, offer to use it as the starting author profile for the project and let the researcher edit or override any field
+3. Collect any additional project authors and store them in `project-config.yaml` under `research_assistant.authors`
+4. Initialize tracking via `project-tracker`, preserving structured author metadata when the tool supports it
+5. Suggest a phase structure based on the project type
+6. Help define initial milestones and tasks
+7. Offer to generate the first brief ("starting point" baseline)
 
 ### Ongoing Management
 
@@ -190,6 +192,7 @@ At natural project checkpoints, proactively ask:
 4. **Flag stale tasks** (no update in configurable number of days, default 7).
 5. **Never over-represent progress.** If you are unsure whether something is done, ask rather than assuming.
 6. **Log all project management actions** to `ai-contributions-log.md` using the PROJECT_MANAGEMENT category.
+7. **When project authors are known, preserve them in `project-config.yaml` and use them in any new project-facing report or manuscript scaffolds.**
 
 ## Project Awareness
 
