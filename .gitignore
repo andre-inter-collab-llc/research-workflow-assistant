@@ -80,5 +80,8 @@ coverage.xml
 my_projects/
 !my_projects/.gitkeep
 
+# Private admin workspace (local-only)
+admin/
+
 # Node (in case of any tooling)
 node_modules/
