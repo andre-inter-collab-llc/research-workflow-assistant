@@ -165,6 +165,21 @@ Respect API rate limits for all external services:
 - If a database is unavailable, suggest the user try a different database or try again later
 - Never silently drop search results or errors
 
+## Operational Rules (Non-Negotiable)
+
+### MCP Servers First
+- Always use MCP server tools for data access. Do NOT bypass them with ad-hoc terminal scripts that hit APIs, databases, or local files directly.
+- If a required MCP server is not running, install and start it before doing anything else.
+- If a workaround seems necessary (e.g., a server is broken and cannot be fixed quickly), propose it to the user as a **feature enhancement** and get explicit approval before proceeding. Do not implement one-off workarounds silently.
+
+### Python Environment Safety
+- **NEVER install packages into or modify the global/system Python environment.** All Python work must use the project virtual environment.
+- The project venv is located at `.venv/` in the repository root.
+- Always activate the venv before running `pip` or `python` commands:
+  - **Windows (PowerShell):** `& .venv\Scripts\Activate.ps1`
+  - **macOS/Linux:** `source .venv/bin/activate`
+- If an automated tool fails to detect the environment, fall back to explicit venv activation in the terminal. Never fall back to the global Python.
+
 ## Multi-Project Awareness
 
 ### Project Context

@@ -1,0 +1,108 @@
+name: Validate Setup
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  validate:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Create virtual environment
+        run: python -m venv .venv
+
+      - name: Install MCP servers (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          source .venv/bin/activate
+          pip install -e mcp-servers/pubmed-server \
+                      -e mcp-servers/openalex-server \
+                      -e mcp-servers/semantic-scholar-server \
+                      -e mcp-servers/europe-pmc-server \
+                      -e mcp-servers/crossref-server \
+                      -e mcp-servers/zotero-server \
+                      -e mcp-servers/zotero-local-server \
+                      -e mcp-servers/prisma-tracker \
+                      -e mcp-servers/project-tracker
+
+      - name: Install MCP servers (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          .venv\Scripts\activate
+          pip install -e mcp-servers/pubmed-server `
+                      -e mcp-servers/openalex-server `
+                      -e mcp-servers/semantic-scholar-server `
+                      -e mcp-servers/europe-pmc-server `
+                      -e mcp-servers/crossref-server `
+                      -e mcp-servers/zotero-server `
+                      -e mcp-servers/zotero-local-server `
+                      -e mcp-servers/prisma-tracker `
+                      -e mcp-servers/project-tracker
+
+      - name: Run validation script (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          source .venv/bin/activate
+          python scripts/validate_setup.py
+
+      - name: Run validation script (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          .venv\Scripts\activate
+          python scripts/validate_setup.py
+
+      - name: Verify server imports (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          source .venv/bin/activate
+          python -c "
+          import pubmed_server
+          import openalex_server
+          import semantic_scholar_server
+          import europe_pmc_server
+          import crossref_server
+          import zotero_server
+          import zotero_local_server
+          import prisma_tracker
+          import project_tracker
+          print('All 9 servers importable')
+          "
+
+      - name: Verify server imports (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          .venv\Scripts\activate
+          python -c "import pubmed_server; import openalex_server; import semantic_scholar_server; import europe_pmc_server; import crossref_server; import zotero_server; import zotero_local_server; import prisma_tracker; import project_tracker; print('All 9 servers importable')"
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Run ruff check
+        run: ruff check .
+
+      - name: Run ruff format check
+        run: ruff format --check .

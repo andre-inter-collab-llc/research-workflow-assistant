@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "quarto-dev.quarto"
+    ]
+}

@@ -46,9 +46,12 @@ pip install -e mcp-servers/semantic-scholar-server
 pip install -e mcp-servers/europe-pmc-server
 pip install -e mcp-servers/crossref-server
 pip install -e mcp-servers/zotero-server
+pip install -e mcp-servers/zotero-local-server
 pip install -e mcp-servers/prisma-tracker
 pip install -e mcp-servers/project-tracker
 ```
+
+> **VS Code task shortcut:** You can also run `Ctrl+Shift+P` → "Tasks: Run Task" → "Install All MCP Servers" to install everything with a single click.
 
 ### 3. Configure API keys
 
@@ -58,7 +61,7 @@ Copy the example environment file and fill in your keys:
 cp .env.example .env
 ```
 
-Edit `.env` with your credentials:
+Edit `.env` with your credentials. Each MCP server **automatically loads** this file on startup, so you do not need to set system-level environment variables.
 
 ```ini
 # Required for PubMed (increases rate limit from 3/sec to 10/sec)
@@ -95,7 +98,7 @@ Open the workspace in VS Code and check that MCP servers start properly:
 
 1. Open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`)
 2. Select "MCP: List Servers"
-3. All 8 servers should appear and show as available
+3. All 9 servers should appear and show as available
 
 You can also test individual servers from the terminal:
 
@@ -108,6 +111,21 @@ You can also run the automated validation script:
 ```bash
 python scripts/validate_setup.py
 ```
+
+> **VS Code task shortcut:** `Ctrl+Shift+P` → "Tasks: Run Task" → "Validate Research Assistant Setup"
+
+### Troubleshooting
+
+If MCP servers are not appearing or failing to start:
+
+| Problem | Solution |
+|---------|----------|
+| "Module not found" errors | The virtual environment may not be selected. Open Command Palette → "Python: Select Interpreter" → choose `.venv`. |
+| Servers not listed in MCP panel | Verify `.vscode/mcp.json` exists and is valid JSON. Restart VS Code. |
+| Server crashes immediately | Run `python -m <server_module> --help` in terminal to see the error. |
+| API keys not loading | The `.env` file must be at the workspace root. Servers auto-load it on startup via `python-dotenv`. |
+| Windows: "python" not recognized | Ensure the `.venv` Python is on your PATH, or select it via "Python: Select Interpreter". |
+| Zotero local not detecting data | Set `ZOTERO_DATA_DIR` in `.env` to the folder containing `zotero.sqlite` (e.g., `C:\Users\you\Zotero`). |
 
 ## Working with Projects
 

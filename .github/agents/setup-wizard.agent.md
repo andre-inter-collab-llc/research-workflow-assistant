@@ -69,6 +69,8 @@ Guide the user through creating a virtual environment and installing the MCP ser
    ```
    Note: `zotero-local-server` requires PyMuPDF for PDF processing. If you see build errors for this package, it is safe to skip it and install the other 8 servers first.
 
+   > **VS Code task shortcut:** You can also run `Ctrl+Shift+P` → "Tasks: Run Task" → "Install All MCP Servers" instead of typing the command manually.
+
 4. **Verify installation**: Ask the user to confirm the install completed without errors. If there are errors, help troubleshoot (common issues: wrong Python version, missing build tools on Windows).
 
 **Transition**: "Servers are installed. Now let's configure your API keys."
@@ -168,15 +170,17 @@ Guide the user through the VS Code MCP server check:
 
 1. "Open the Command Palette: press `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (macOS)"
 2. "Type `MCP: List Servers` and select it"
-3. "You should see all 8 servers listed: pubmed, openalex, semantic-scholar, europe-pmc, crossref, zotero, prisma-tracker, project-tracker"
-4. Ask: "Do all 8 servers appear? Are any showing errors?"
+3. "You should see all 9 servers listed: pubmed, openalex, semantic-scholar, europe-pmc, crossref, zotero, zotero-local, prisma-tracker, project-tracker"
+4. Ask: "Do all 9 servers appear? Are any showing errors?"
 
 ### Troubleshooting
 
 If servers are missing or showing errors:
-- **"Module not found"**: Virtual environment may not be activated in VS Code. Ask user to check Python interpreter setting (should be `.venv/bin/python` or `.venv\Scripts\python.exe`).
+- **"Module not found"**: Virtual environment may not be activated in VS Code. Ask user to open Command Palette → "Python: Select Interpreter" → choose the `.venv` environment. The `python.defaultInterpreterPath` in settings points to `.venv` which works cross-platform.
 - **Server not listed**: Check `.vscode/mcp.json` exists and is well-formed.
 - **Server crashes on start**: Ask user to try `python -m pubmed_server --help` in the terminal to see the error message.
+- **API keys not loading**: Servers now auto-load `.env` from the workspace root via `python-dotenv`. Verify the `.env` file exists and contains the correct keys. The user does NOT need to set system-level environment variables.
+- **Windows path issues**: Ensure VS Code has selected the `.venv` interpreter (Command Palette → "Python: Select Interpreter"). The setting accepts `.venv` and resolves the platform-correct binary automatically.
 
 **Transition**: "MCP servers are verified. Let's set up your projects folder."
 
@@ -261,7 +265,7 @@ Print a clear summary:
 ### Environment
 - Python: {version} ✓
 - Virtual environment: .venv ✓
-- MCP servers: {N}/8 installed ✓
+- MCP servers: {N}/9 installed ✓
 - R: {installed/not installed}
 - Quarto: {installed/not installed}
 - Zotero: {installed/not installed}

@@ -13,8 +13,20 @@ import importlib
 import json
 import os
 import shutil
+import subprocess
 import sys
 from pathlib import Path
+
+# Load .env so that env key checks reflect what servers will actually see
+_workspace_root = Path(__file__).resolve().parent.parent
+try:
+    from dotenv import load_dotenv
+
+    _env_file = _workspace_root / ".env"
+    if _env_file.is_file():
+        load_dotenv(_env_file)
+except ImportError:
+    pass  # python-dotenv not installed yet; env key checks will use system env only
 
 
 def _check_python_version() -> dict:
@@ -35,7 +47,7 @@ def _check_server_importable(module_name: str) -> dict:
 
 
 def _check_servers() -> dict:
-    """Check all 8 MCP server packages."""
+    """Check all 9 MCP server packages."""
     servers = {
         "pubmed": "pubmed_server",
         "openalex": "openalex_server",
@@ -182,6 +194,68 @@ def _check_zotero_local() -> dict:
     return result
 
 
+def _check_server_health(module_name: str, workspace_root: Path) -> dict:
+    """Start an MCP server process and verify it responds to a JSON-RPC initialize."""
+    python = sys.executable
+    server_map = {
+        "pubmed_server": "pubmed-server",
+        "openalex_server": "openalex-server",
+        "semantic_scholar_server": "semantic-scholar-server",
+        "europe_pmc_server": "europe-pmc-server",
+        "crossref_server": "crossref-server",
+        "zotero_server": "zotero-server",
+        "zotero_local_server": "zotero-local-server",
+        "prisma_tracker": "prisma-tracker",
+        "project_tracker": "project-tracker",
+    }
+    dir_name = server_map.get(module_name, module_name)
+    cwd = workspace_root / "mcp-servers" / dir_name / "src"
+    if not cwd.is_dir():
+        return {"status": "skip", "reason": f"source directory not found: {cwd}"}
+
+    init_msg = (
+        '{"jsonrpc":"2.0","id":1,"method":"initialize",'
+        '"params":{"protocolVersion":"2024-11-05",'
+        '"capabilities":{},"clientInfo":{"name":"validate","version":"0.1"}}}'
+    )
+    try:
+        proc = subprocess.run(
+            [python, "-m", module_name],
+            input=f"Content-Length: {len(init_msg)}\r\n\r\n{init_msg}",
+            capture_output=True,
+            text=True,
+            timeout=10,
+            cwd=str(cwd),
+        )
+        if '"result"' in proc.stdout:
+            return {"status": "ok"}
+        return {
+            "status": "fail",
+            "stdout": proc.stdout[:500],
+            "stderr": proc.stderr[:500],
+        }
+    except subprocess.TimeoutExpired:
+        return {"status": "timeout"}
+    except Exception as e:
+        return {"status": "fail", "error": str(e)}
+
+
+def _check_all_server_health(workspace_root: Path) -> dict:
+    """Run health checks for all MCP servers."""
+    modules = [
+        "pubmed_server",
+        "openalex_server",
+        "semantic_scholar_server",
+        "europe_pmc_server",
+        "crossref_server",
+        "zotero_server",
+        "zotero_local_server",
+        "prisma_tracker",
+        "project_tracker",
+    ]
+    return {mod: _check_server_health(mod, workspace_root) for mod in modules}
+
+
 def main() -> None:
     """Run all checks and output a JSON report."""
     # Determine workspace root (parent of scripts/)
@@ -190,6 +264,7 @@ def main() -> None:
     report = {
         "python": _check_python_version(),
         "servers": _check_servers(),
+        "server_health": _check_all_server_health(workspace_root),
         "env_file": "exists" if (workspace_root / ".env").exists() else "missing",
         "env_keys": _check_env_keys(workspace_root),
         "zotero_local": _check_zotero_local(),

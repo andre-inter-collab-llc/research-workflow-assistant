@@ -25,7 +25,7 @@
             ],
             "cwd": "ASSISTANT_PATH/mcp-servers/openalex-server/src",
             "env": {
-                "OPENALEX_EMAIL": "${env:OPENALEX_EMAIL}"
+                "OPENALEX_API_KEY": "${env:OPENALEX_API_KEY}"
             }
         },
         "semantic-scholar": {

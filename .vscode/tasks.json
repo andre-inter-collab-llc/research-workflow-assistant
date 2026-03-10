@@ -1,0 +1,69 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Validate Research Assistant Setup",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "${workspaceFolder}/scripts/validate_setup.py"
+            ],
+            "windows": {
+                "command": "${workspaceFolder}/.venv/Scripts/python.exe",
+                "args": [
+                    "${workspaceFolder}/scripts/validate_setup.py"
+                ]
+            },
+            "linux": {
+                "command": "${workspaceFolder}/.venv/bin/python",
+                "args": [
+                    "${workspaceFolder}/scripts/validate_setup.py"
+                ]
+            },
+            "osx": {
+                "command": "${workspaceFolder}/.venv/bin/python",
+                "args": [
+                    "${workspaceFolder}/scripts/validate_setup.py"
+                ]
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "group": "test"
+        },
+        {
+            "label": "Install All MCP Servers",
+            "type": "shell",
+            "command": "pip",
+            "args": [
+                "install",
+                "-e", "${workspaceFolder}/mcp-servers/pubmed-server",
+                "-e", "${workspaceFolder}/mcp-servers/openalex-server",
+                "-e", "${workspaceFolder}/mcp-servers/semantic-scholar-server",
+                "-e", "${workspaceFolder}/mcp-servers/europe-pmc-server",
+                "-e", "${workspaceFolder}/mcp-servers/crossref-server",
+                "-e", "${workspaceFolder}/mcp-servers/zotero-server",
+                "-e", "${workspaceFolder}/mcp-servers/zotero-local-server",
+                "-e", "${workspaceFolder}/mcp-servers/prisma-tracker",
+                "-e", "${workspaceFolder}/mcp-servers/project-tracker"
+            ],
+            "windows": {
+                "command": "${workspaceFolder}/.venv/Scripts/pip.exe"
+            },
+            "linux": {
+                "command": "${workspaceFolder}/.venv/bin/pip"
+            },
+            "osx": {
+                "command": "${workspaceFolder}/.venv/bin/pip"
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "group": "build"
+        }
+    ]
+}

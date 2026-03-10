@@ -73,8 +73,14 @@ def _connect(data_dir: Path) -> sqlite3.Connection:
     uri = f"file:{db_path.as_posix()}?mode=ro"
     conn = sqlite3.connect(uri, uri=True)
     conn.row_factory = sqlite3.Row
-    # Enable WAL reading without blocking Zotero
-    conn.execute("PRAGMA journal_mode=WAL")
+    # If the database is already in WAL mode, reads work fine on a
+    # read-only connection without this pragma.  Attempting to *set*
+    # journal_mode=WAL would fail on a read-only file, so we just
+    # query the current mode and accept whatever it is.
+    try:
+        conn.execute("PRAGMA journal_mode=WAL")
+    except sqlite3.OperationalError:
+        pass  # read-only — WAL reads still work
     return conn
 
 
