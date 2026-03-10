@@ -1,40 +1,43 @@
 {
+    "//": [
+        "MCP servers for the Research Workflow Assistant.",
+        "Each server loads API keys from .env automatically via python-dotenv.",
+        "The command uses the venv Python explicitly so servers start correctly",
+        "regardless of system PATH. Adjust the command path for your OS:",
+        "  Windows:    ${workspaceFolder}/.venv/Scripts/python",
+        "  macOS/Linux: ${workspaceFolder}/.venv/bin/python"
+    ],
     "servers": {
         "pubmed": {
-            "command": "python",
+            "type": "stdio",
+            "command": "${workspaceFolder}/.venv/Scripts/python",
             "args": [
                 "-m",
                 "pubmed_server"
             ],
-            "cwd": "${workspaceFolder}/mcp-servers/pubmed-server/src",
-            "env": {
-                "NCBI_API_KEY": "${env:NCBI_API_KEY}"
-            }
+            "cwd": "${workspaceFolder}/mcp-servers/pubmed-server/src"
         },
         "openalex": {
-            "command": "python",
+            "type": "stdio",
+            "command": "${workspaceFolder}/.venv/Scripts/python",
             "args": [
                 "-m",
                 "openalex_server"
             ],
-            "cwd": "${workspaceFolder}/mcp-servers/openalex-server/src",
-            "env": {
-                "OPENALEX_API_KEY": "${env:OPENALEX_API_KEY}"
-            }
+            "cwd": "${workspaceFolder}/mcp-servers/openalex-server/src"
         },
         "semantic-scholar": {
-            "command": "python",
+            "type": "stdio",
+            "command": "${workspaceFolder}/.venv/Scripts/python",
             "args": [
                 "-m",
                 "semantic_scholar_server"
             ],
-            "cwd": "${workspaceFolder}/mcp-servers/semantic-scholar-server/src",
-            "env": {
-                "S2_API_KEY": "${env:S2_API_KEY}"
-            }
+            "cwd": "${workspaceFolder}/mcp-servers/semantic-scholar-server/src"
         },
         "europe-pmc": {
-            "command": "python",
+            "type": "stdio",
+            "command": "${workspaceFolder}/.venv/Scripts/python",
             "args": [
                 "-m",
                 "europe_pmc_server"
@@ -42,30 +45,26 @@
             "cwd": "${workspaceFolder}/mcp-servers/europe-pmc-server/src"
         },
         "crossref": {
-            "command": "python",
+            "type": "stdio",
+            "command": "${workspaceFolder}/.venv/Scripts/python",
             "args": [
                 "-m",
                 "crossref_server"
             ],
-            "cwd": "${workspaceFolder}/mcp-servers/crossref-server/src",
-            "env": {
-                "CROSSREF_EMAIL": "${env:CROSSREF_EMAIL}"
-            }
+            "cwd": "${workspaceFolder}/mcp-servers/crossref-server/src"
         },
         "zotero": {
-            "command": "python",
+            "type": "stdio",
+            "command": "${workspaceFolder}/.venv/Scripts/python",
             "args": [
                 "-m",
                 "zotero_server"
             ],
-            "cwd": "${workspaceFolder}/mcp-servers/zotero-server/src",
-            "env": {
-                "ZOTERO_API_KEY": "${env:ZOTERO_API_KEY}",
-                "ZOTERO_USER_ID": "${env:ZOTERO_USER_ID}"
-            }
+            "cwd": "${workspaceFolder}/mcp-servers/zotero-server/src"
         },
         "prisma-tracker": {
-            "command": "python",
+            "type": "stdio",
+            "command": "${workspaceFolder}/.venv/Scripts/python",
             "args": [
                 "-m",
                 "prisma_tracker"
@@ -77,7 +76,8 @@
             }
         },
         "project-tracker": {
-            "command": "python",
+            "type": "stdio",
+            "command": "${workspaceFolder}/.venv/Scripts/python",
             "args": [
                 "-m",
                 "project_tracker"
@@ -89,15 +89,13 @@
             }
         },
         "zotero-local": {
-            "command": "python",
+            "type": "stdio",
+            "command": "${workspaceFolder}/.venv/Scripts/python",
             "args": [
                 "-m",
                 "zotero_local_server"
             ],
-            "cwd": "${workspaceFolder}/mcp-servers/zotero-local-server/src",
-            "env": {
-                "ZOTERO_DATA_DIR": "${env:ZOTERO_DATA_DIR}"
-            }
+            "cwd": "${workspaceFolder}/mcp-servers/zotero-local-server/src"
         }
     }
 }

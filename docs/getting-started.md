@@ -116,16 +116,35 @@ python scripts/validate_setup.py
 
 ### Troubleshooting
 
-If MCP servers are not appearing or failing to start:
+#### MCP servers not connecting to Copilot
+
+The most common reason servers don't appear as tools in Copilot Chat is that `.vscode/mcp.json` is pointing to the wrong Python executable. The `command` field must use your **venv Python** — not just `python`, which may resolve to a system install that doesn't have the MCP packages.
+
+The shipped `mcp.json` already uses the correct path:
+
+```json
+"command": "${workspaceFolder}/.venv/Scripts/python"   // Windows
+"command": "${workspaceFolder}/.venv/bin/python"        // macOS/Linux
+```
+
+If you are on macOS/Linux, edit `.vscode/mcp.json` and change `Scripts/python` to `bin/python` for every server entry.
+
+After editing, restart the MCP servers:
+
+1. Open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`)
+2. Run **"MCP: List Servers"**
+3. Click the **Start** (▶) button next to any stopped server, or use **"MCP: Restart Servers"**
+
+#### Other common issues
 
 | Problem | Solution |
 |---------|----------|
-| "Module not found" errors | The virtual environment may not be selected. Open Command Palette → "Python: Select Interpreter" → choose `.venv`. |
+| "Module not found" errors | Install the servers: run task "Install All MCP Servers", or `pip install -e mcp-servers/pubmed-server ...` |
 | Servers not listed in MCP panel | Verify `.vscode/mcp.json` exists and is valid JSON. Restart VS Code. |
-| Server crashes immediately | Run `python -m <server_module> --help` in terminal to see the error. |
+| Server crashes immediately | Run `python -m <server_module>` in terminal (with venv active) to see the error. |
 | API keys not loading | The `.env` file must be at the workspace root. Servers auto-load it on startup via `python-dotenv`. |
-| Windows: "python" not recognized | Ensure the `.venv` Python is on your PATH, or select it via "Python: Select Interpreter". |
 | Zotero local not detecting data | Set `ZOTERO_DATA_DIR` in `.env` to the folder containing `zotero.sqlite` (e.g., `C:\Users\you\Zotero`). |
+| Servers start but tools are "not available" | Open a **new** Copilot Chat session after starting servers. Existing sessions may not pick up newly started servers. |
 
 ## Working with Projects
 

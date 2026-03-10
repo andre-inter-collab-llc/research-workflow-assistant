@@ -169,7 +169,8 @@ Respect API rate limits for all external services:
 
 ### MCP Servers First
 - Always use MCP server tools for data access. Do NOT bypass them with ad-hoc terminal scripts that hit APIs, databases, or local files directly.
-- If a required MCP server is not running, install and start it before doing anything else.
+- If a required MCP server is not running, tell the user to start it via "MCP: List Servers" in the Command Palette. If tools still aren't available, remind them to open a **new** Copilot Chat session after starting servers.
+- If the `command` in `.vscode/mcp.json` is set to just `"python"` rather than the venv-specific path, advise the user to update it (see the `//` comment block in that file for correct paths).
 - If a workaround seems necessary (e.g., a server is broken and cannot be fixed quickly), propose it to the user as a **feature enhancement** and get explicit approval before proceeding. Do not implement one-off workarounds silently.
 
 ### Python Environment Safety
@@ -241,7 +242,10 @@ When the developer opens this project for the first time, guide them through the
 
 3. **Verify MCP servers start correctly**
    - Open VS Code Command Palette > "MCP: List Servers"
-   - Test individual servers: `python -m pubmed_server --help`
+   - All 9 servers should show as started. If not, click Start (▶) or run "MCP: Restart Servers"
+   - The `command` in `.vscode/mcp.json` must point to the **venv Python** (`${workspaceFolder}/.venv/Scripts/python` on Windows, `${workspaceFolder}/.venv/bin/python` on macOS/Linux). If it says just `python`, update it.
+   - After starting or restarting servers, open a **new** Copilot Chat session — existing sessions may not pick up newly started servers
+   - Test individual servers: `python -m pubmed_server` (with venv active)
    - Fix any import or dependency issues
 
 4. **Write unit tests for MCP servers** (empty `tests/` directory exists)

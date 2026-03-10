@@ -1,46 +1,44 @@
 {
     "//": [
         "Portable MCP config for using the Research Workflow Assistant from another project.",
-        "Copy this file to your project's .vscode/mcp.json and update the paths below.",
+        "Copy this file to your project's .vscode/mcp.json and update the path below.",
         "Replace ASSISTANT_PATH with the absolute path to your research-workflow-assistant clone.",
-        "Replace PYTHON_PATH with the path to the Python executable in the assistant's .venv."
+        "Each server loads API keys from ASSISTANT_PATH/.env automatically via python-dotenv.",
+        "Adjust the python path for your OS:",
+        "  Windows:     ASSISTANT_PATH/.venv/Scripts/python",
+        "  macOS/Linux: ASSISTANT_PATH/.venv/bin/python"
     ],
     "servers": {
         "pubmed": {
-            "command": "PYTHON_PATH",
+            "type": "stdio",
+            "command": "ASSISTANT_PATH/.venv/Scripts/python",
             "args": [
                 "-m",
                 "pubmed_server"
             ],
-            "cwd": "ASSISTANT_PATH/mcp-servers/pubmed-server/src",
-            "env": {
-                "NCBI_API_KEY": "${env:NCBI_API_KEY}"
-            }
+            "cwd": "ASSISTANT_PATH/mcp-servers/pubmed-server/src"
         },
         "openalex": {
-            "command": "PYTHON_PATH",
+            "type": "stdio",
+            "command": "ASSISTANT_PATH/.venv/Scripts/python",
             "args": [
                 "-m",
                 "openalex_server"
             ],
-            "cwd": "ASSISTANT_PATH/mcp-servers/openalex-server/src",
-            "env": {
-                "OPENALEX_API_KEY": "${env:OPENALEX_API_KEY}"
-            }
+            "cwd": "ASSISTANT_PATH/mcp-servers/openalex-server/src"
         },
         "semantic-scholar": {
-            "command": "PYTHON_PATH",
+            "type": "stdio",
+            "command": "ASSISTANT_PATH/.venv/Scripts/python",
             "args": [
                 "-m",
                 "semantic_scholar_server"
             ],
-            "cwd": "ASSISTANT_PATH/mcp-servers/semantic-scholar-server/src",
-            "env": {
-                "S2_API_KEY": "${env:S2_API_KEY}"
-            }
+            "cwd": "ASSISTANT_PATH/mcp-servers/semantic-scholar-server/src"
         },
         "europe-pmc": {
-            "command": "PYTHON_PATH",
+            "type": "stdio",
+            "command": "ASSISTANT_PATH/.venv/Scripts/python",
             "args": [
                 "-m",
                 "europe_pmc_server"
@@ -48,30 +46,35 @@
             "cwd": "ASSISTANT_PATH/mcp-servers/europe-pmc-server/src"
         },
         "crossref": {
-            "command": "PYTHON_PATH",
+            "type": "stdio",
+            "command": "ASSISTANT_PATH/.venv/Scripts/python",
             "args": [
                 "-m",
                 "crossref_server"
             ],
-            "cwd": "ASSISTANT_PATH/mcp-servers/crossref-server/src",
-            "env": {
-                "CROSSREF_EMAIL": "${env:CROSSREF_EMAIL}"
-            }
+            "cwd": "ASSISTANT_PATH/mcp-servers/crossref-server/src"
         },
         "zotero": {
-            "command": "PYTHON_PATH",
+            "type": "stdio",
+            "command": "ASSISTANT_PATH/.venv/Scripts/python",
             "args": [
                 "-m",
                 "zotero_server"
             ],
-            "cwd": "ASSISTANT_PATH/mcp-servers/zotero-server/src",
-            "env": {
-                "ZOTERO_API_KEY": "${env:ZOTERO_API_KEY}",
-                "ZOTERO_USER_ID": "${env:ZOTERO_USER_ID}"
-            }
+            "cwd": "ASSISTANT_PATH/mcp-servers/zotero-server/src"
+        },
+        "zotero-local": {
+            "type": "stdio",
+            "command": "ASSISTANT_PATH/.venv/Scripts/python",
+            "args": [
+                "-m",
+                "zotero_local_server"
+            ],
+            "cwd": "ASSISTANT_PATH/mcp-servers/zotero-local-server/src"
         },
         "prisma-tracker": {
-            "command": "PYTHON_PATH",
+            "type": "stdio",
+            "command": "ASSISTANT_PATH/.venv/Scripts/python",
             "args": [
                 "-m",
                 "prisma_tracker"
@@ -83,7 +86,8 @@
             }
         },
         "project-tracker": {
-            "command": "PYTHON_PATH",
+            "type": "stdio",
+            "command": "ASSISTANT_PATH/.venv/Scripts/python",
             "args": [
                 "-m",
                 "project_tracker"
