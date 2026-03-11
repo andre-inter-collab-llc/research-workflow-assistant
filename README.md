@@ -104,8 +104,6 @@ graph TB
     class QMD,SCRIPTS,PFLOW,BRIEFS output
 ```
 
-> **Image version:** ![RWA Architecture](docs/rwa-architecture.png)
->
 > Also available as [SVG](docs/rwa-architecture.svg), [rendered HTML](docs/architecture-diagram.qmd) (`quarto render docs/architecture-diagram.qmd`), or [Mermaid source](docs/rwa-architecture.mmd).
 
 ## ICMJE Compliance: You Are the Author
