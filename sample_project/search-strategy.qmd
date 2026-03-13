@@ -1,0 +1,144 @@
+---
+title: "Search Strategy Documentation"
+subtitle: "CHW Interventions for Maternal Mental Health in LMICs"
+date: "2026-03-02"
+format:
+  html:
+    toc: true
+    self-contained: true
+bibliography: references.bib
+csl: ../apa.csl
+---
+
+# Search Strategy
+
+## Research Question
+
+**Framework:** PICO
+
+| Element | Description |
+|---------|-------------|
+| **Population** | Pregnant and postpartum women (perinatal period) in low- and middle-income countries |
+| **Intervention** | Community health worker (CHW) delivered mental health interventions |
+| **Comparison** | Standard care, enhanced usual care, or no intervention |
+| **Outcome** | Maternal depression and/or anxiety symptoms measured by validated scales |
+
+## Concept Decomposition
+
+| Concept | MeSH Terms | Free-Text Synonyms |
+|---------|-----------|-------------------|
+| Population | "Pregnant Women"[MeSH], "Postpartum Period"[MeSH], "Maternal Health"[MeSH] | maternal, perinatal, antenatal, prenatal, postnatal, postpartum, pregnancy, pregnant, mothers |
+| Mental Health | "Depression, Postpartum"[MeSH], "Depressive Disorder"[MeSH], "Anxiety Disorders"[MeSH], "Mental Health"[MeSH] | depression, depressive, anxiety, mental health, psychological distress, perinatal depression, postnatal depression |
+| CHW Intervention | "Community Health Workers"[MeSH], "Task Performance and Analysis"[MeSH] | community health worker*, CHW, lay health worker*, lay counselor*, peer supporter*, task-shifting, task-sharing, non-specialist, paraprofessional |
+| LMICs | "Developing Countries"[MeSH] | low-income, middle-income, LMIC, developing countr*, resource-limited, low-resource |
+
+## Database-Specific Strategies
+
+### PubMed/MEDLINE
+
+**Date searched:** 2026-03-02
+**Results:** 487
+
+```
+("Pregnant Women"[MeSH] OR "Postpartum Period"[MeSH] OR "Maternal Health"[MeSH]
+  OR maternal[tiab] OR perinatal[tiab] OR antenatal[tiab] OR prenatal[tiab]
+  OR postnatal[tiab] OR postpartum[tiab])
+AND
+("Depression, Postpartum"[MeSH] OR "Depressive Disorder"[MeSH]
+  OR "Anxiety Disorders"[MeSH] OR "Mental Health"[MeSH]
+  OR depression[tiab] OR anxiety[tiab] OR "mental health"[tiab]
+  OR "psychological distress"[tiab])
+AND
+("Community Health Workers"[MeSH] OR "community health worker*"[tiab]
+  OR "lay health worker*"[tiab] OR "lay counselor*"[tiab]
+  OR "peer support*"[tiab] OR "task-shifting"[tiab] OR "task-sharing"[tiab]
+  OR "non-specialist"[tiab] OR paraprofessional[tiab])
+AND
+("Developing Countries"[MeSH] OR "low-income"[tiab] OR "middle-income"[tiab]
+  OR LMIC[tiab] OR "developing countr*"[tiab] OR "resource-limited"[tiab])
+
+Filters: 2005-2026, English
+```
+
+**Web replication:** <https://pubmed.ncbi.nlm.nih.gov/?term=...> (paste full query)
+
+### OpenAlex
+
+**Date searched:** 2026-03-02
+**Results:** 341
+
+```
+Search query: "community health worker" AND "maternal depression" AND "low-income"
+Filters: from_publication_date=2005-01-01, type=article
+Fields of study: Public Health, Psychiatry, Global Health
+```
+
+### Semantic Scholar
+
+**Date searched:** 2026-03-02
+**Results:** 198
+
+```
+Search query: community health worker maternal mental health depression
+  low middle income countries intervention
+Year range: 2005-2026
+Fields of study: Medicine, Psychology
+```
+
+**Note:** Semantic Scholar data is licensed CC BY-NC [@singla2017psychological].
+
+### Europe PMC
+
+**Date searched:** 2026-03-02
+**Results:** 156
+
+```
+(TITLE_ABS:"community health worker" OR TITLE_ABS:"lay health worker"
+  OR TITLE_ABS:"task-shifting")
+AND (TITLE_ABS:"maternal depression" OR TITLE_ABS:"perinatal depression"
+  OR TITLE_ABS:"postnatal depression" OR TITLE_ABS:"maternal mental health")
+AND (TITLE_ABS:"low-income" OR TITLE_ABS:"middle-income"
+  OR TITLE_ABS:"developing countries")
+
+Filter: PUB_YEAR:[2005 TO 2026]
+```
+
+### CrossRef
+
+**Date searched:** 2026-03-02
+**Results:** 65
+
+```
+Query: community health worker maternal depression LMIC intervention
+Filter: from-pub-date=2005, type=journal-article
+```
+
+## Summary of Search Results
+
+| Database | Date Searched | Records Found |
+|----------|--------------|---------------|
+| PubMed/MEDLINE | 2026-03-02 | 487 |
+| OpenAlex | 2026-03-02 | 341 |
+| Semantic Scholar | 2026-03-02 | 198 |
+| Europe PMC | 2026-03-02 | 156 |
+| CrossRef | 2026-03-02 | 65 |
+| **Total** | | **1,247** |
+| **After deduplication** | | **935** |
+
+## Limits and Filters Applied
+
+- **Date range:** January 2005 – March 2026
+- **Language:** English
+- **Publication types:** Peer-reviewed journal articles, randomized controlled trials, quasi-experimental studies, cluster-randomized trials
+- **Excluded:** Conference abstracts only, editorials, commentaries, protocol-only papers (without results)
+
+## Grey Literature Sources
+
+| Source | Strategy | Date Searched | Results |
+|--------|----------|--------------|---------|
+| WHO publications | Manual search for CHW + mental health guidelines | 2026-03-03 | 3 |
+| Reference lists | Backward citation search of included studies | 2026-03-05 | 7 |
+
+---
+
+*This search strategy was developed with assistance from the Research Workflow Assistant (`@systematic-reviewer` agent). All search decisions were made by the human researcher. Searches are reproducible via the web interfaces listed above.*

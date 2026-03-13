@@ -1,0 +1,211 @@
+---
+title: "Systematic Review Protocol"
+subtitle: "Community Health Worker Interventions for Maternal Mental Health in Low- and Middle-Income Countries — PROSPERO Registration Draft"
+author:
+  - name: "Demo Researcher, PhD, MPH"
+    affiliation:
+      - name: "Example University School of Public Health"
+        city: "Washington"
+        region: "DC"
+        country: "United States"
+    email: "demo@example.org"
+    corresponding: true
+date: "2026-03-01"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    self-contained: true
+  docx:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+bibliography: references.bib
+csl: ../apa.csl
+---
+
+# Registration Information
+
+- **Registration platform:** PROSPERO
+- **Registration number:** CRD42026XXXXXX (pending)
+- **Date of registration:** 2026-03-01
+
+# Review Question
+
+## Research Question
+
+What is the effectiveness of community health worker (CHW) delivered mental health interventions on maternal depression and anxiety symptoms among pregnant and postpartum women in low- and middle-income countries (LMICs)?
+
+## Question Framework
+
+- **Framework used:** PICO
+- **Population:** Pregnant and postpartum women (perinatal period, from conception through 12 months postpartum) in low- and middle-income countries as defined by the World Bank classification
+- **Intervention:** Mental health interventions delivered by community health workers, lay health workers, peer supporters, or other non-specialist health workers. Includes psychoeducation, cognitive behavioral therapy (CBT)-based approaches, interpersonal therapy, problem-solving therapy, and psychosocial support
+- **Comparator:** Standard care, enhanced usual care, waitlist control, or no intervention
+- **Outcome:** Primary: Maternal depression symptoms measured by validated instruments (EPDS, PHQ-9, BDI, HDRS). Secondary: Anxiety symptoms, functional impairment, infant outcomes
+
+# Background and Rationale
+
+Perinatal depression affects an estimated 15–25% of women in low- and middle-income countries, substantially higher than the 10–15% prevalence in high-income settings [@fisher2012prevalence]. The treatment gap for mental health disorders in LMICs exceeds 90%, driven by severe shortages of mental health professionals [@lund2011poverty]. Task-shifting mental health interventions to community health workers has emerged as a promising strategy to bridge this gap [@singla2017psychological].
+
+Several landmark trials have demonstrated the feasibility and effectiveness of CHW-delivered interventions. The Thinking Healthy Programme in Pakistan showed significant reductions in perinatal depression through CHW-delivered cognitive behavioral therapy [@rahman2008cognitive]. The Healthy Activity Program in India demonstrated similar benefits using lay counselors [@patel2017effectiveness]. However, the evidence base has grown considerably, and a comprehensive synthesis is needed to inform global maternal mental health policy.
+
+This review is needed because: (1) the number of trials has increased substantially since the last comprehensive review; (2) intervention models have diversified; (3) LMICs vary widely in health system capacity; and (4) policy makers need pooled effect estimates to justify investment in task-shifting approaches.
+
+# Objectives
+
+1. To estimate the pooled effect of CHW-delivered mental health interventions on maternal depression symptoms in LMICs
+2. To estimate the pooled effect on maternal anxiety symptoms
+3. To explore heterogeneity by intervention type, delivery format, country income level, and depression measurement instrument
+4. To assess the quality of evidence using the GRADE framework
+
+# Eligibility Criteria
+
+## Inclusion Criteria
+
+| Criterion | Description |
+|-----------|-------------|
+| Population | Pregnant or postpartum women (up to 12 months) in LMICs |
+| Intervention | Mental health intervention delivered by CHW, lay health worker, peer supporter, or non-specialist |
+| Comparator | Standard care, enhanced usual care, waitlist, or no intervention |
+| Outcome | Depression and/or anxiety measured by validated instrument |
+| Study design | Randomized controlled trials (individual or cluster), quasi-experimental studies with control group |
+| Time period | Published January 2005 – March 2026 |
+| Language | English |
+
+## Exclusion Criteria
+
+- Interventions delivered exclusively by mental health professionals (psychiatrists, psychologists, psychiatric nurses)
+- Studies in high-income countries
+- Conference abstracts without full-text publication
+- Protocol papers without results
+- Studies focusing solely on infant/child outcomes without maternal mental health measures
+- Non-comparative designs (single-arm studies, case series)
+
+# Information Sources
+
+## Electronic Databases
+
+| Database | Platform | Date searched |
+|----------|----------|---------------|
+| PubMed/MEDLINE | NCBI E-utilities (via RWA MCP) | 2026-03-02 |
+| OpenAlex | REST API (via RWA MCP) | 2026-03-02 |
+| Semantic Scholar | Academic Graph API (via RWA MCP) | 2026-03-02 |
+| Europe PMC | REST API (via RWA MCP) | 2026-03-02 |
+| CrossRef | REST API (via RWA MCP) | 2026-03-02 |
+
+## Other Sources
+
+- Reference lists of included studies and relevant systematic reviews
+- WHO publications on maternal mental health and task-shifting
+- Trial registries (ClinicalTrials.gov, ISRCTN)
+
+# Search Strategy
+
+## Boolean Query Structure
+
+```
+(Perinatal/maternal population terms)
+AND (Depression/anxiety/mental health terms)
+AND (CHW/lay worker/task-shifting terms)
+AND (LMIC/developing country terms)
+```
+
+Full database-specific search strategies are documented in `search-strategy.qmd`.
+
+# Study Selection
+
+## Screening Process
+
+1. **Deduplication:** Automated deduplication across databases, followed by manual review of suspected duplicates
+2. **Title/abstract screening:** One reviewer screens all records, with 20% double-screened by a second reviewer for reliability
+3. **Full-text screening:** Two reviewers independently assess all full-text articles; disagreements resolved by discussion
+4. **Disagreement resolution:** Consensus discussion; third reviewer consulted if needed
+
+# Data Extraction
+
+## Data Items
+
+| Variable | Description | Source |
+|----------|-------------|--------|
+| Study ID | First author, year | Publication |
+| Country | Country where study was conducted | Publication |
+| Income level | World Bank classification at time of study | World Bank data |
+| Sample size | N per arm (intervention, control) | Publication |
+| Population | Pregnant vs. postpartum, gestational age or infant age | Publication |
+| Intervention type | CBT, IPT, psychoeducation, psychosocial support, other | Publication |
+| Delivery format | Individual, group, or mixed | Publication |
+| CHW training | Duration and content of CHW training | Publication |
+| Sessions | Number and frequency of sessions | Publication |
+| Depression measure | Instrument used (EPDS, PHQ-9, BDI, HDRS) | Publication |
+| Baseline depression | Mean and SD at baseline per arm | Publication |
+| Endpoint depression | Mean and SD at endpoint per arm | Publication |
+| Follow-up | Duration of follow-up in months | Publication |
+| Effect size | Reported effect size and confidence interval | Publication or calculated |
+
+# Risk of Bias Assessment
+
+- **Tool:** RoB 2.0 for individual RCTs [@sterne2019rob2]
+- **Domains assessed:** Randomization process, deviations from intended interventions, missing outcome data, measurement of the outcome, selection of the reported result
+- **Number of assessors:** Two independent assessors
+- **Disagreement resolution:** Consensus discussion
+
+# Data Synthesis
+
+## Qualitative Synthesis
+
+Narrative synthesis grouping studies by intervention type (CBT-based, IPT-based, psychoeducation, multicomponent) and describing patterns in effectiveness across settings and populations.
+
+## Quantitative Synthesis
+
+- **Software:** R 4.4+ with metafor package [@viechtbauer2010metafor]
+- **Effect measure:** Standardized mean difference (SMD, Hedges' g) for continuous depression scores
+- **Model:** Random-effects model with restricted maximum likelihood (REML) estimator
+- **Heterogeneity assessment:** $I^2$ statistic, Cochran's $Q$ test, $\tau^2$ [@higgins2003measuring]
+- **Subgroup analyses:**
+  - Intervention type (CBT-based vs. other)
+  - Country income level (low-income vs. lower-middle-income vs. upper-middle-income)
+  - Depression measurement instrument (EPDS vs. PHQ-9 vs. other)
+  - Delivery format (individual vs. group)
+- **Sensitivity analyses:**
+  - Excluding studies at high risk of bias
+  - Excluding cluster-RCTs
+  - Leave-one-out analysis
+- **Publication bias:** Funnel plot visual inspection and Egger's regression test [@egger1997bias]
+
+# Confidence in Cumulative Evidence
+
+- **Framework:** GRADE (Grading of Recommendations, Assessment, Development and Evaluations)
+- **Domains assessed:** Risk of bias, inconsistency, indirectness, imprecision, publication bias
+
+# Use of Research Workflow Assistant (RWA)
+
+This protocol was prepared with assistance from Research Workflow Assistant (RWA) [@vanzyl2026rwa], accessed through GitHub Copilot in VS Code:
+
+- **Use:** Search strategy development and translation across database-specific syntaxes, protocol template generation, workflow planning
+- **Human oversight:** All decisions regarding the research question, eligibility criteria, methods, analysis plan, and final approval were made by the research team
+- **ICMJE compliance:** AI tools are not listed as authors; use is disclosed per ICMJE Section II.A.4
+
+# Timeline
+
+| Phase | Target Start | Target End |
+|-------|-------------|-----------|
+| Protocol registration | March 2026 | March 2026 |
+| Search execution | March 2026 | March 2026 |
+| Screening | March 2026 | April 2026 |
+| Data extraction | April 2026 | May 2026 |
+| Risk of bias assessment | May 2026 | May 2026 |
+| Data synthesis | June 2026 | July 2026 |
+| Manuscript preparation | July 2026 | August 2026 |
+| Submission | September 2026 | September 2026 |
+
+# Amendments
+
+Any amendments to this protocol will be documented with date, description, and rationale.
+
+| Date | Section | Amendment | Rationale |
+|------|---------|-----------|-----------|
+| — | — | No amendments to date | — |
+
+# References

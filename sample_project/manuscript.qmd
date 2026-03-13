@@ -1,0 +1,218 @@
+---
+title: "Effectiveness of Community Health Worker Interventions for Maternal Mental Health in Low- and Middle-Income Countries"
+subtitle: "A Systematic Review and Meta-Analysis"
+author:
+  - name: "Demo Researcher, PhD, MPH"
+    affiliation:
+      - name: "Example University School of Public Health"
+        city: "Washington"
+        region: "DC"
+        country: "United States"
+    email: "demo@example.org"
+    orcid: "0000-0000-0000-0000"
+    corresponding: true
+date: "2026-03-10"
+abstract: |
+  **Background:** Perinatal depression affects 15–25% of women in low- and
+  middle-income countries (LMICs), yet over 90% of affected women receive no
+  treatment due to severe shortages of mental health professionals.
+  Task-shifting mental health interventions to community health workers (CHWs)
+  has emerged as a promising strategy to close this treatment gap.
+
+  **Objectives:** To estimate the pooled effect of CHW-delivered mental health
+  interventions on maternal depression and anxiety symptoms in LMICs, and to
+  explore sources of heterogeneity.
+
+  **Methods:** We searched PubMed, OpenAlex, Semantic Scholar, Europe PMC, and
+  CrossRef from January 2005 to March 2026. We included randomized and
+  quasi-experimental studies evaluating CHW-delivered mental health
+  interventions for pregnant or postpartum women in LMICs with validated
+  depression or anxiety outcome measures. Random-effects meta-analysis was
+  conducted using standardized mean differences (Hedges' g). Heterogeneity was
+  assessed using I-squared and tau-squared. Risk of bias was assessed using
+  RoB 2.0.
+
+  **Results:** Twenty-three studies met inclusion criteria (N = 9,847 participants
+  across 14 countries). Eighteen studies provided data for meta-analysis.
+  CHW-delivered interventions significantly reduced depression symptoms
+  (SMD = −0.42, 95% CI [−0.56, −0.28], p < 0.001) with moderate heterogeneity
+  (I² = 58%). CBT-based interventions showed the largest effects
+  (SMD = −0.51, 95% CI [−0.68, −0.34]). Effects were consistent across
+  country income levels and delivery formats.
+
+  **Conclusions:** CHW-delivered mental health interventions are effective in
+  reducing maternal depression symptoms across diverse LMIC settings.
+  CBT-based approaches showed the strongest evidence. These findings support
+  scaling task-shifting strategies for maternal mental health care in
+  resource-limited settings.
+
+  **Registration:** PROSPERO CRD42026XXXXXX
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    self-contained: true
+  docx:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+bibliography: references.bib
+csl: ../apa.csl
+execute:
+  echo: false
+  warning: false
+---
+
+# Introduction
+
+## Rationale
+
+Perinatal mental health disorders, particularly depression and anxiety, represent a major global health burden. An estimated 15–25% of women in low- and middle-income countries (LMICs) experience depression during pregnancy or the postpartum period, substantially exceeding the 10–15% prevalence observed in high-income settings [@fisher2012prevalence]. These conditions carry significant consequences for both mothers and children, including impaired maternal functioning, disrupted mother-infant bonding, poor infant growth, and adverse child developmental outcomes [@baranov2020maternal].
+
+Despite the scale of this burden, the treatment gap for perinatal mental health disorders in LMICs exceeds 90% [@lund2011poverty]. Contributing factors include severe shortages of mental health professionals (fewer than 1 psychiatrist per 100,000 population in many LMICs), stigma surrounding mental illness, competing health priorities, and limited mental health infrastructure.
+
+Task-shifting — the delegation of clinical tasks from specialist health workers to less specialized cadres — has emerged as a key strategy for expanding mental health care in resource-limited settings [@singla2017psychological]. Community health workers (CHWs), lay health workers, and peer supporters can be trained to deliver structured psychological interventions with fidelity, extending the reach of mental health services into communities where specialist care is unavailable.
+
+## Objectives
+
+The primary objective of this systematic review was to estimate the pooled effect of CHW-delivered mental health interventions on maternal depression symptoms among pregnant and postpartum women in LMICs. Secondary objectives included estimating effects on anxiety symptoms and exploring heterogeneity by intervention type, delivery format, country income level, and outcome measurement instrument.
+
+# Methods
+
+## Protocol and Registration
+
+This systematic review was conducted in accordance with the PRISMA 2020 guidelines [@page2021prisma]. The protocol was registered with PROSPERO (registration number: CRD42026XXXXXX). The full protocol is available as a supplementary file.
+
+## Eligibility Criteria
+
+### Inclusion Criteria
+
+We included studies that met the following criteria:
+
+- **Population:** Pregnant or postpartum women (up to 12 months postpartum) in LMICs as classified by the World Bank
+- **Intervention:** Mental health intervention delivered by a community health worker, lay health worker, peer supporter, or other non-specialist health worker
+- **Comparator:** Standard care, enhanced usual care, waitlist control, or no intervention
+- **Outcome:** Depression and/or anxiety symptoms measured by a validated instrument (e.g., EPDS [@cox1987detection], PHQ-9 [@kroenke2001phq9])
+- **Study design:** Randomized controlled trials (individual or cluster) or quasi-experimental studies with a control group
+- **Time period:** Published January 2005 – March 2026
+- **Language:** English
+
+### Exclusion Criteria
+
+We excluded studies where interventions were delivered exclusively by mental health specialists, studies conducted in high-income countries, conference abstracts without full-text publications, protocol papers without results, studies without maternal mental health outcomes, and non-comparative designs.
+
+## Information Sources
+
+Five electronic databases were searched via MCP (Model Context Protocol) server tools: PubMed/MEDLINE (NCBI E-utilities), OpenAlex (REST API), Semantic Scholar (Academic Graph API), Europe PMC (REST API), and CrossRef (REST API). Searches were supplemented by backward citation searching of included studies and relevant systematic reviews, and manual searching of WHO publications on maternal mental health.
+
+## Search Strategy
+
+The search strategy combined four concept blocks using Boolean AND operators: (1) perinatal/maternal population terms, (2) depression/anxiety/mental health terms, (3) CHW/lay worker/task-shifting terms, and (4) LMIC/developing country terms. MeSH terms and free-text synonyms were used for each concept. The full search strategy for all databases is available in the supplementary search strategy document. The PubMed strategy is representative:
+
+```
+("Pregnant Women"[MeSH] OR "Postpartum Period"[MeSH] OR maternal[tiab]
+  OR perinatal[tiab] OR postnatal[tiab] OR postpartum[tiab])
+AND ("Depression, Postpartum"[MeSH] OR "Depressive Disorder"[MeSH]
+  OR depression[tiab] OR anxiety[tiab] OR "mental health"[tiab])
+AND ("Community Health Workers"[MeSH] OR "community health worker*"[tiab]
+  OR "lay health worker*"[tiab] OR "task-shifting"[tiab])
+AND ("Developing Countries"[MeSH] OR "low-income"[tiab]
+  OR "middle-income"[tiab] OR LMIC[tiab])
+```
+
+## Selection Process
+
+Records were deduplicated automatically across databases, then manually reviewed for suspected duplicates. One reviewer screened all 935 unique records at the title/abstract stage, with 20% independently double-screened by a second reviewer (agreement: 94%). All 88 records advanced to full-text review were independently assessed by two reviewers. Disagreements were resolved through discussion.
+
+## Data Collection Process
+
+Data were extracted independently by two reviewers using a standardized extraction form. Discrepancies were resolved by consensus. For studies reporting multiple time points, we used the endpoint closest to the end of the intervention period. For cluster-RCTs, we used inflated standard errors or design-effect adjusted estimates as reported by the original authors.
+
+## Risk of Bias Assessment
+
+Risk of bias was assessed using the Cochrane RoB 2.0 tool [@sterne2019rob2] for individual randomized trials. Two reviewers independently assessed each study across five domains: randomization process, deviations from intended interventions, missing outcome data, measurement of the outcome, and selection of the reported result.
+
+## Effect Measures and Synthesis Methods
+
+The primary effect measure was the standardized mean difference (SMD, calculated as Hedges' *g*) for depression symptom scores at the primary endpoint. Random-effects meta-analysis was conducted using the restricted maximum likelihood (REML) estimator in the metafor package for R [@viechtbauer2010metafor]. Heterogeneity was assessed using the $I^2$ statistic, Cochran's $Q$ test, and $\tau^2$ [@higgins2003measuring]. Pre-specified subgroup analyses examined intervention type, delivery format, country income level, and depression measurement instrument. Sensitivity analyses excluded studies at high risk of bias and cluster-RCTs. Publication bias was assessed using funnel plot inspection and Egger's regression test [@egger1997bias].
+
+## Use of Research Workflow Assistant (RWA)
+
+Research Workflow Assistant (RWA) [@vanzyl2026rwa], accessed through GitHub Copilot in VS Code, was used to support the systematic review workflow. Specifically, RWA was used for: (1) translating the search strategy across database-specific query syntaxes via MCP server tools, (2) executing database searches and retrieving records, (3) organizing screening workflows, (4) generating the R meta-analysis script, and (5) drafting structural components of this manuscript. All screening decisions, inclusion/exclusion determinations, data extraction, risk of bias assessments, data synthesis decisions, interpretation of results, and final approval of this manuscript remained with the human research team. Complete records of AI-assisted processes are documented in the project's `ai-contributions-log.md`.
+
+# Results
+
+## Study Selection
+
+The database searches identified 1,247 records, supplemented by 10 records from grey literature and hand-searching. After removing 312 duplicates, 935 records were screened at the title/abstract level. Of these, 88 were advanced to full-text review. Following full-text assessment, 23 studies met all inclusion criteria and were included in the qualitative synthesis. Eighteen studies provided sufficient data for inclusion in the meta-analysis. The PRISMA flow diagram is presented in the accompanying `prisma-flow.qmd` document.
+
+## Study Characteristics
+
+The 23 included studies were conducted across 14 LMICs: Pakistan (n = 5), India (n = 4), South Africa (n = 3), Uganda (n = 2), Nigeria (n = 2), Kenya (n = 1), Ethiopia (n = 1), Bangladesh (n = 1), Nepal (n = 1), Peru (n = 1), Zimbabwe (n = 1), and Rwanda (n = 1). Total sample size was 9,847 participants. Study designs included individual RCTs (n = 14), cluster-RCTs (n = 7), and quasi-experimental studies (n = 2).
+
+Interventions included CBT-based approaches (n = 10), including the Thinking Healthy Programme [@rahman2008cognitive; @who2015thinking] and adaptations; interpersonal therapy-based approaches (n = 5); psychoeducation (n = 4); and multicomponent psychosocial support (n = 4). Delivery formats included individual sessions (n = 12), group sessions (n = 7), and mixed formats (n = 4). The number of sessions ranged from 4 to 16 (median: 8).
+
+Depression was measured using the Edinburgh Postnatal Depression Scale (EPDS) [@cox1987detection] in 14 studies, the PHQ-9 [@kroenke2001phq9] in 6 studies, and other validated instruments in 3 studies. Follow-up ranged from 2 to 36 months.
+
+## Results of Syntheses
+
+### Primary Outcome: Maternal Depression
+
+The pooled effect of CHW-delivered interventions on maternal depression symptoms across 18 studies was SMD = −0.42 (95% CI [−0.56, −0.28], *p* < 0.001), indicating a moderate and statistically significant reduction in depression symptoms favoring the intervention. Heterogeneity was moderate ($I^2$ = 58%, $Q$ = 40.5, $p$ = 0.001, $\tau^2$ = 0.05).
+
+### Subgroup Analyses
+
+**By intervention type:** CBT-based interventions (k = 9) showed the largest pooled effect (SMD = −0.51, 95% CI [−0.68, −0.34]), followed by IPT-based (k = 4, SMD = −0.38, 95% CI [−0.59, −0.17]) and psychoeducation (k = 3, SMD = −0.28, 95% CI [−0.49, −0.07]).
+
+**By delivery format:** Individual delivery (k = 10, SMD = −0.45, 95% CI [−0.62, −0.28]) and group delivery (k = 6, SMD = −0.38, 95% CI [−0.58, −0.18]) showed comparable effects.
+
+**By country income level:** Effects were consistent across low-income (k = 6, SMD = −0.44) and lower-middle-income (k = 10, SMD = −0.41) countries.
+
+### Sensitivity Analyses
+
+Excluding five studies rated at high risk of bias increased the pooled effect slightly (SMD = −0.46, 95% CI [−0.61, −0.31]). Excluding cluster-RCTs yielded similar results (SMD = −0.40, 95% CI [−0.56, −0.24]). Leave-one-out analysis confirmed that no single study drove the overall result.
+
+### Publication Bias
+
+Visual inspection of the funnel plot showed slight asymmetry. Egger's regression test was not statistically significant (*p* = 0.12), suggesting no strong evidence of publication bias.
+
+## Risk of Bias in Studies
+
+Of the 23 included studies, 8 were rated at low risk of bias, 10 at some concerns, and 5 at high risk. The most common sources of concern were lack of blinding of outcome assessors (self-reported outcomes reduce this concern) and incomplete outcome data.
+
+# Discussion
+
+## Summary of Evidence
+
+This systematic review and meta-analysis synthesized evidence from 23 studies across 14 LMICs, demonstrating that CHW-delivered mental health interventions produce a moderate, clinically meaningful reduction in maternal depression symptoms (SMD = −0.42). This effect size is comparable to meta-analyses of face-to-face psychological therapies delivered by specialists for perinatal depression [@dennis2009effect], supporting the effectiveness of task-shifting approaches.
+
+CBT-based approaches, particularly adaptations of the Thinking Healthy Programme [@rahman2008cognitive; @who2015thinking], showed the strongest effects (SMD = −0.51), consistent with the strong evidence base for CBT techniques in LMICs [@singla2017psychological]. The Healthy Activity Program [@patel2017effectiveness] and peer-delivered Thinking Healthy [@fuhr2020delivering] models further demonstrated the scalability of these approaches.
+
+The consistency of effects across country income levels and delivery formats is encouraging for policy implementation. Interventions were effective whether delivered individually or in groups, and across diverse health system contexts from Pakistan to South Africa to Peru.
+
+## Limitations
+
+Several limitations should be considered. First, we included only English-language publications, potentially excluding relevant studies from Francophone Africa, Latin America, or East Asia. Second, heterogeneity was moderate, reflecting genuine diversity in interventions, populations, and settings. Third, most studies measured depression using self-report instruments, which may be subject to social desirability bias. Fourth, long-term follow-up (beyond 12 months) was available for only a minority of studies; the sustained effects reported by @baranov2020maternal remain an important area for future research. Fifth, this review focused on depression and anxiety; broader outcomes including maternal functioning, infant development, and cost-effectiveness warrant separate synthesis.
+
+## Implications
+
+**For policy:** These findings support WHO recommendations for integrating mental health into community-based primary care in LMICs. The moderate effect sizes across diverse settings suggest that CHW-delivered mental health interventions are a viable, scalable strategy for addressing the maternal mental health treatment gap.
+
+**For practice:** CBT-based approaches with structured training manuals (e.g., Thinking Healthy Programme) have the strongest evidence base and should be prioritized for scale-up. Group delivery formats offer comparable effectiveness with potentially lower per-participant costs.
+
+**For research:** Future trials should include longer follow-up periods, cost-effectiveness analyses, and examine implementation outcomes (fidelity, supervision models, CHW retention). Head-to-head comparisons of different intervention models within the same setting would help optimize program design.
+
+# Conclusions
+
+Community health worker-delivered mental health interventions are effective in reducing maternal depression symptoms across diverse LMIC settings, with a pooled standardized mean difference of −0.42. CBT-based approaches demonstrate the strongest evidence. These findings provide robust support for task-shifting as a strategy to address the maternal mental health treatment gap in low-resource settings. Policy makers should consider integrating structured CHW-delivered psychological interventions into routine perinatal care in LMICs.
+
+# Acknowledgments
+
+The author thanks the research teams behind the original studies included in this review for making their data available.
+
+**AI Tool Disclosure:** Research Workflow Assistant (RWA) [@vanzyl2026rwa], accessed through GitHub Copilot in VS Code, was used during the preparation of this manuscript to assist with systematic literature searching across PubMed, OpenAlex, Semantic Scholar, Europe PMC, and CrossRef databases; organizing the screening workflow; generating the meta-analysis R script; and structuring initial drafts. The author reviewed, revised, and verified all AI-assisted content, including independently confirming all database search results and cited references. The author takes full responsibility for the content of this publication.
+
+**Data Source Attribution:** Literature search results were supplemented using the Semantic Scholar Open Data Platform, which provides bibliographic data under a CC BY-NC license.
+
+# References
