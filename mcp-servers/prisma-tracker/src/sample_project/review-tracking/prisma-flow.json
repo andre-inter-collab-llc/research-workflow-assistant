@@ -1,0 +1,87 @@
+{
+  "title": "CHW Interventions for Maternal Mental Health in LMICs",
+  "protocol_id": "",
+  "review_type": "systematic-review",
+  "created_at": "2026-03-13T20:26:47.906311+00:00",
+  "updated_at": "2026-03-13T20:37:01.526964+00:00",
+  "identification": {
+    "database_searches": [
+      {
+        "database": "PubMed",
+        "query": "(community health worker OR lay health worker OR task shifting) AND (maternal depression OR perinatal depression OR postpartum depression) AND (low-income OR middle-income OR LMIC OR developing countries)",
+        "date": "2025-07-20",
+        "results_count": 114,
+        "notes": "",
+        "recorded_at": "2026-03-13T20:35:40.428592+00:00"
+      },
+      {
+        "database": "OpenAlex",
+        "query": "community health worker maternal mental health depression low-income countries intervention",
+        "date": "2025-07-20",
+        "results_count": 15634,
+        "notes": "",
+        "recorded_at": "2026-03-13T20:35:45.913402+00:00"
+      },
+      {
+        "database": "Semantic Scholar",
+        "query": "community health worker interventions maternal mental health depression low-income middle-income countries",
+        "date": "2025-07-20",
+        "results_count": 4209,
+        "notes": "",
+        "recorded_at": "2026-03-13T20:35:53.345018+00:00"
+      },
+      {
+        "database": "CrossRef",
+        "query": "community health worker maternal depression low-income countries intervention",
+        "date": "2025-07-20",
+        "results_count": 7983858,
+        "notes": "",
+        "recorded_at": "2026-03-13T20:35:53.378831+00:00"
+      }
+    ],
+    "other_sources": [],
+    "total_records_databases": 8003815,
+    "total_records_other": 0
+  },
+  "deduplication": {
+    "before_count": 1247,
+    "after_count": 935,
+    "duplicates_removed": 312,
+    "method": "automated",
+    "recorded_at": "2026-03-13T20:36:23.940105+00:00"
+  },
+  "screening": {
+    "title_abstract": {
+      "screened": 935,
+      "excluded": 847,
+      "excluded_reasons": {
+        "wrong population": 312,
+        "wrong intervention": 198,
+        "wrong outcome": 156,
+        "not primary study": 89,
+        "duplicate not caught": 45,
+        "wrong setting": 47
+      },
+      "included_to_full_text": 88,
+      "recorded_at": "2026-03-13T20:36:54.469505+00:00"
+    },
+    "full_text": {
+      "assessed": 88,
+      "excluded": 65,
+      "excluded_reasons": {
+        "no validated depression measure": 18,
+        "no control group": 12,
+        "CHW not primary delivery agent": 15,
+        "full text not available": 8,
+        "non-LMIC setting": 7,
+        "protocol only": 5
+      },
+      "included_in_review": 23,
+      "recorded_at": "2026-03-13T20:37:01.526938+00:00"
+    }
+  },
+  "included": {
+    "qualitative_synthesis": 23,
+    "quantitative_synthesis": 0
+  }
+}
