@@ -39,6 +39,7 @@
             "command": "${workspaceFolder}/.venv/Scripts/pip.exe",
             "args": [
                 "install",
+                "-e", "${workspaceFolder}/mcp-servers/_shared",
                 "-e", "${workspaceFolder}/mcp-servers/pubmed-server",
                 "-e", "${workspaceFolder}/mcp-servers/openalex-server",
                 "-e", "${workspaceFolder}/mcp-servers/semantic-scholar-server",

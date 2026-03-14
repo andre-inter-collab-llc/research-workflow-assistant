@@ -1,0 +1,13 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "rwa-result-store"
+version = "0.1.0"
+description = "Shared SQLite storage for RWA MCP search results"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rwa_result_store"]

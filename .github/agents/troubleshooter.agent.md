@@ -93,6 +93,8 @@ After proposing a fix:
 
 If a workaround is needed because a capability is missing, present it as a feature enhancement and get user approval before proceeding.
 
+**Code change escalation**: If the issue requires a code change to an MCP server, agent definition, template, or shared module (not just configuration or environment fixes), recommend: *"This needs a code change. Use `@developer` to investigate and plan the fix."*
+
 ## Output Style
 
 Always include:

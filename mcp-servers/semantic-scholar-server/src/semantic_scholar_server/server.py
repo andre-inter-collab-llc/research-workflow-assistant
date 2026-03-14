@@ -13,6 +13,7 @@ from typing import Any
 
 import httpx
 from mcp.server.fastmcp import FastMCP
+from rwa_result_store import register_result_store_tools, store_results as _store_results
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +40,8 @@ mcp = FastMCP(
         "Kinney et al. (2023) 'The Semantic Scholar Open Data Platform' ArXiv abs/2301.10140."
     ),
 )
+
+register_result_store_tools(mcp)
 
 
 def _headers() -> dict[str, str]:
@@ -115,6 +118,7 @@ async def search_papers(
     fields_of_study: str | None = None,
     open_access_only: bool = False,
     limit: int = 20,
+    project_path: str | None = None,
 ) -> dict[str, Any]:
     """Search Semantic Scholar for academic papers.
 
@@ -124,6 +128,8 @@ async def search_papers(
         fields_of_study: Comma-separated fields (e.g., 'Medicine,Computer Science').
         open_access_only: If True, only return open access papers.
         limit: Maximum results (default 20, max 100).
+        project_path: Optional project directory path. When provided, results are
+            persisted to {project_path}/data/search_results.db for later analysis.
 
     Returns:
         Dictionary with 'total' count and list of 'papers'.
@@ -142,7 +148,20 @@ async def search_papers(
         data = await _get(client, f"{S2_BASE}/paper/search", params)
 
     papers = [_format_paper(p) for p in data.get("data", [])]
-    return {"total": data.get("total", 0), "papers": papers}
+    total = data.get("total", 0)
+
+    if project_path:
+        try:
+            _store_results(
+                project_path, "semantic_scholar", query, papers,
+                total_count=total,
+                parameters={"year_range": year_range, "fields_of_study": fields_of_study,
+                            "open_access_only": open_access_only, "limit": limit},
+            )
+        except Exception:
+            logger.warning("Failed to store Semantic Scholar search results", exc_info=True)
+
+    return {"total": total, "papers": papers}
 
 
 @mcp.tool()

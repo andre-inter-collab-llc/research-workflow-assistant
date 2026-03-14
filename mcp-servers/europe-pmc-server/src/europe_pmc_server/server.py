@@ -4,10 +4,14 @@ API Documentation: https://europepmc.org/RestfulWebService
 Rate limits: No explicit limit, but be respectful.
 """
 
+import logging
 from typing import Any
 
 import httpx
 from mcp.server.fastmcp import FastMCP
+from rwa_result_store import register_result_store_tools, store_results as _store_results
+
+logger = logging.getLogger(__name__)
 
 EPMC_BASE = "https://www.ebi.ac.uk/europepmc/webservices/rest"
 
@@ -15,6 +19,8 @@ mcp = FastMCP(
     "europe-pmc",
     instructions="Search Europe PMC for biomedical and life sciences literature",
 )
+
+register_result_store_tools(mcp)
 
 
 async def _get(client: httpx.AsyncClient, path: str, params: dict[str, str]) -> dict[str, Any]:
@@ -52,6 +58,7 @@ async def search_europepmc(
     page_size: int = 25,
     sort: str = "relevance",
     open_access_only: bool = False,
+    project_path: str | None = None,
 ) -> dict[str, Any]:
     """Search Europe PMC for biomedical and life sciences literature.
 
@@ -64,6 +71,8 @@ async def search_europepmc(
         page_size: Results per page (default 25, max 1000).
         sort: Sort order: 'relevance', 'date', or 'cited'. Default 'relevance'.
         open_access_only: If True, only return open access articles.
+        project_path: Optional project directory path. When provided, results are
+            persisted to {project_path}/data/search_results.db for later analysis.
 
     Returns:
         Dictionary with 'total_count' and list of 'results'.
@@ -87,8 +96,21 @@ async def search_europepmc(
 
     result_list = data.get("resultList", {}).get("result", [])
     results = [_format_result(r) for r in result_list]
+    total_count = data.get("hitCount", 0)
+
+    if project_path:
+        try:
+            _store_results(
+                project_path, "europe_pmc", query, results,
+                total_count=total_count,
+                parameters={"result_type": result_type, "page_size": page_size,
+                            "sort": sort, "open_access_only": open_access_only},
+            )
+        except Exception:
+            logger.warning("Failed to store Europe PMC search results", exc_info=True)
+
     return {
-        "total_count": data.get("hitCount", 0),
+        "total_count": total_count,
         "results": results,
     }
 

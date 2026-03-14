@@ -5,11 +5,15 @@ Authentication: Free API key required. Get yours at https://openalex.org/setting
 Rate limits: 100 requests/sec, $1/day free budget.
 """
 
+import logging
 import os
 from typing import Any
 
 import httpx
 from mcp.server.fastmcp import FastMCP
+from rwa_result_store import register_result_store_tools, store_results as _store_results
+
+logger = logging.getLogger(__name__)
 
 OPENALEX_BASE = "https://api.openalex.org"
 OPENALEX_API_KEY = os.environ.get("OPENALEX_API_KEY", "")
@@ -18,6 +22,8 @@ mcp = FastMCP(
     "openalex",
     instructions="Search OpenAlex for academic works, authors, sources, and concepts",
 )
+
+register_result_store_tools(mcp)
 
 
 def _base_params() -> dict[str, str]:
@@ -87,6 +93,7 @@ async def search_works(
     filters: str | None = None,
     sort: str = "relevance_score:desc",
     per_page: int = 20,
+    project_path: str | None = None,
 ) -> dict[str, Any]:
     """Search OpenAlex for academic works (articles, books, datasets, etc.).
 
@@ -100,6 +107,8 @@ async def search_works(
         sort: Sort order. Options: relevance_score:desc, cited_by_count:desc,
             publication_date:desc, publication_date:asc. Default: relevance_score:desc.
         per_page: Results per page (default 20, max 200).
+        project_path: Optional project directory path. When provided, results are
+            persisted to {project_path}/data/search_results.db for later analysis.
 
     Returns:
         Dictionary with 'total_count' and 'works' list.
@@ -113,8 +122,20 @@ async def search_works(
         data = await _get(client, "works", params)
 
     works = [_format_work(w) for w in data.get("results", [])]
+    total_count = data.get("meta", {}).get("count", 0)
+
+    if project_path:
+        try:
+            _store_results(
+                project_path, "openalex", query, works,
+                total_count=total_count,
+                parameters={"filters": filters, "sort": sort, "per_page": per_page},
+            )
+        except Exception:
+            logger.warning("Failed to store OpenAlex search results", exc_info=True)
+
     return {
-        "total_count": data.get("meta", {}).get("count", 0),
+        "total_count": total_count,
         "works": works,
     }
 

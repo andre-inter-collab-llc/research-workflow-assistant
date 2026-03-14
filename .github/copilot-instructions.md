@@ -263,6 +263,7 @@ The repository scaffold is complete. All files listed below are implemented and 
 - **8 MCP servers** (Python, using `mcp` SDK + `httpx`): PubMed, OpenAlex, Semantic Scholar, Europe PMC, CrossRef, Zotero, PRISMA Tracker, Project Tracker
 - **1 local MCP server** (Python, using `mcp` SDK + `pymupdf`): Zotero Local (PDF text/annotation extraction, keyword search, Better BibTeX integration)
 - **5 custom Copilot agents** (`.agent.md`): systematic-reviewer, data-analyst, academic-writer, research-planner, project-manager
+- **1 developer agent** (`.agent.md`): developer — handles bug fixes, feature requests, and repo improvements
 - **6 compliance documents**: ICMJE authorship checklist, AI disclosure template, PRISMA 2020, PRISMA-ScR, MOOSE, Cochrane RoB 2
 - **9 Quarto/Markdown templates**: review protocol, review manuscript, search strategy, PRISMA flow, IMRaD manuscript, progress briefs (Quarto + markdown), meeting notes, decision log
 - **4 documentation files** in `docs/`: getting-started, api-setup-guide, database-access, architecture
@@ -275,7 +276,7 @@ When the developer opens this project for the first time, guide them through the
 1. **Set up Python environment and install MCP servers**
    - Create a virtual environment: `python -m venv .venv`
    - Activate it: `.venv\Scripts\activate` (Windows) or `source .venv/bin/activate` (macOS/Linux)
-   - Install all servers: `pip install -e mcp-servers/pubmed-server -e mcp-servers/openalex-server -e mcp-servers/semantic-scholar-server -e mcp-servers/europe-pmc-server -e mcp-servers/crossref-server -e mcp-servers/zotero-server -e mcp-servers/zotero-local-server -e mcp-servers/prisma-tracker -e mcp-servers/project-tracker`
+   - Install all servers: `pip install -e mcp-servers/_shared -e mcp-servers/pubmed-server -e mcp-servers/openalex-server -e mcp-servers/semantic-scholar-server -e mcp-servers/europe-pmc-server -e mcp-servers/crossref-server -e mcp-servers/zotero-server -e mcp-servers/zotero-local-server -e mcp-servers/prisma-tracker -e mcp-servers/project-tracker`
 
 2. **Configure API keys**
    - Copy `.env.example` to `.env`

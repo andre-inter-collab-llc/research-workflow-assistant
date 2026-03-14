@@ -36,6 +36,7 @@ No PhD required. If you do research, this tool is for you.
 | **Project management** | `@project-manager` agent tracks phases, milestones, tasks, decisions; generates progress briefs for colleagues |
 | **End-to-end orchestration** | `@research-orchestrator` routes workflows across specialist agents, tracks stage progression, and provides ready-to-run handoff prompts |
 | **Troubleshooting and support** | `@troubleshooter` agent diagnoses environment and MCP issues, validates API keys, and provides practical how-to help for day-to-day RWA usage |
+| **Development and bug fixes** | `@developer` agent gathers requirements for bug fixes, feature requests, and codebase improvements, then directs to plan mode for implementation |
 | **ICMJE compliance** | Built into every agent: human-in-the-loop mandate, audit trail, AI disclosure generation, authorship checklist |
 
 ## Architecture
@@ -50,7 +51,7 @@ graph TB
 
     subgraph AGENTS["Specialist AI Agents"]
         direction LR
-        ORCH["@research-orchestrator<br/>End-to-end<br/>workflow routing"] ~~~ SR["@systematic-reviewer<br/>PRISMA-compliant<br/>evidence reviews"] ~~~ RP["@research-planner<br/>Protocols &<br/>study design"] ~~~ DA["@data-analyst<br/>Reproducible R / Python<br/>analysis scripts"] ~~~ AW["@academic-writer<br/>Manuscript drafting<br/>& citations"] ~~~ PM["@project-manager<br/>Milestones, decisions<br/>& progress briefs"] ~~~ TS["@troubleshooter<br/>Diagnostics &<br/>environment fixes"]
+        ORCH["@research-orchestrator<br/>End-to-end<br/>workflow routing"] ~~~ SR["@systematic-reviewer<br/>PRISMA-compliant<br/>evidence reviews"] ~~~ RP["@research-planner<br/>Protocols &<br/>study design"] ~~~ DA["@data-analyst<br/>Reproducible R / Python<br/>analysis scripts"] ~~~ AW["@academic-writer<br/>Manuscript drafting<br/>& citations"] ~~~ PM["@project-manager<br/>Milestones, decisions<br/>& progress briefs"] ~~~ TS["@troubleshooter<br/>Diagnostics &<br/>environment fixes"] ~~~ DEV["@developer<br/>Bug fixes &<br/>feature planning"]
     end
 
     VSCODE --> AGENTS
@@ -96,7 +97,7 @@ graph TB
 
     class YOU researcher
     class VSCODE vscode
-    class ORCH,SR,RP,DA,AW,PM,TS agent
+    class ORCH,SR,RP,DA,AW,PM,TS,DEV agent
     class ICMJE compliance
     class PUB,OA,SS,EPMC,CR litdb
     class ZOT,ZLOC refmgmt
@@ -206,7 +207,8 @@ python -m venv .venv
 # source .venv/bin/activate
 
 # Install all 9 MCP servers in development mode
-pip install -e mcp-servers/pubmed-server \
+pip install -e mcp-servers/_shared \
+            -e mcp-servers/pubmed-server \
             -e mcp-servers/openalex-server \
             -e mcp-servers/semantic-scholar-server \
             -e mcp-servers/europe-pmc-server \
@@ -302,6 +304,7 @@ research-workflow-assistant/
 │   ├── settings.json
 │   └── mcp.json                     # MCP server configuration
 ├── mcp-servers/                     # MCP server implementations (Python)
+│   ├── _shared/                     # Shared SQLite result storage module
 │   ├── pubmed-server/
 │   ├── openalex-server/
 │   ├── semantic-scholar-server/
@@ -361,7 +364,7 @@ BibTeX:
 
 ```bibtex
 @misc{vanzyl2026rwa,
-  author = {van Zyl, Andre},
+  author = {{Van Zyl}, Andre},
   title = {Research Workflow Assistant},
   year = {2026},
   url = {https://github.com/andre-inter-collab-llc/research-workflow-assistant},

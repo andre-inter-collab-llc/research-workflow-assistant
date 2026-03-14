@@ -4,12 +4,16 @@ API Documentation: https://www.ncbi.nlm.nih.gov/books/NBK25501/
 Rate limits: 3 requests/sec without API key, 10 requests/sec with key.
 """
 
+import logging
 import os
 import xml.etree.ElementTree as ET
 from typing import Any
 
 import httpx
 from mcp.server.fastmcp import FastMCP
+from rwa_result_store import register_result_store_tools, store_results as _store_results
+
+logger = logging.getLogger(__name__)
 
 EUTILS_BASE = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
 API_KEY = os.environ.get("NCBI_API_KEY", "")
@@ -18,6 +22,8 @@ mcp = FastMCP(
     "pubmed",
     instructions="Search PubMed/MEDLINE via NCBI E-utilities",
 )
+
+register_result_store_tools(mcp)
 
 
 def _base_params() -> dict[str, str]:
@@ -144,6 +150,7 @@ async def search_pubmed(
     max_results: int = 20,
     date_range: str | None = None,
     article_types: str | None = None,
+    project_path: str | None = None,
 ) -> dict[str, Any]:
     """Search PubMed and return article summaries.
 
@@ -152,6 +159,8 @@ async def search_pubmed(
         max_results: Maximum number of results to return (default 20, max 200).
         date_range: Optional date filter as 'YYYY/MM/DD:YYYY/MM/DD' (mindate:maxdate).
         article_types: Optional publication type filter (e.g., 'Review', 'Clinical Trial').
+        project_path: Optional project directory path. When provided, results are
+            persisted to {project_path}/data/search_results.db for later analysis.
 
     Returns:
         Dictionary with 'total_count' and 'articles' list containing summaries.
@@ -183,7 +192,20 @@ async def search_pubmed(
         summary_xml = await _get(client, "esummary.fcgi", summary_params)
         articles = _parse_esummary(summary_xml)
 
-    return {"total_count": total_count, "articles": articles}
+    result = {"total_count": total_count, "articles": articles}
+
+    if project_path:
+        try:
+            _store_results(
+                project_path, "pubmed", query, articles,
+                total_count=total_count,
+                parameters={"max_results": max_results, "date_range": date_range,
+                            "article_types": article_types},
+            )
+        except Exception:
+            logger.warning("Failed to store PubMed search results", exc_info=True)
+
+    return result
 
 
 @mcp.tool()

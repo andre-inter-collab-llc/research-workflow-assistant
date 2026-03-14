@@ -154,6 +154,13 @@ Pause for explicit human decisions at:
 
 Never proceed past these checkpoints without explicit user confirmation.
 
+## Stage 5 - How-To and Development Support
+
+For operational or how-to questions, route to the appropriate agent:
+- `@setup` for first-time setup or environment reconfiguration
+- `@troubleshooter` for diagnosing errors and configuration issues
+- `@developer` for bug fixes, feature requests, and codebase improvements
+
 ## Failure and Recovery
 
 If an expected tool or downstream workflow step fails:

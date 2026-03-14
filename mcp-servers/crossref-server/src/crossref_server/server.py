@@ -4,11 +4,15 @@ API Documentation: https://api.crossref.org/swagger-ui/index.html
 Rate limits: Polite pool (50 req/sec) with mailto parameter, otherwise lower.
 """
 
+import logging
 import os
 from typing import Any
 
 import httpx
 from mcp.server.fastmcp import FastMCP
+from rwa_result_store import register_result_store_tools, store_results as _store_results
+
+logger = logging.getLogger(__name__)
 
 CROSSREF_BASE = "https://api.crossref.org"
 CONTACT_EMAIL = os.environ.get("CROSSREF_EMAIL", "")
@@ -17,6 +21,8 @@ mcp = FastMCP(
     "crossref",
     instructions="Search CrossRef for DOI metadata, reference verification, and bibliographic data",
 )
+
+register_result_store_tools(mcp)
 
 
 def _base_params() -> dict[str, str]:
@@ -84,6 +90,7 @@ async def search_works(
     filters: str | None = None,
     rows: int = 20,
     sort: str = "relevance",
+    project_path: str | None = None,
 ) -> dict[str, Any]:
     """Search CrossRef for bibliographic works.
 
@@ -94,6 +101,8 @@ async def search_works(
             has-orcid, is-update. See https://api.crossref.org/swagger-ui/index.html
         rows: Number of results per page (default 20, max 1000).
         sort: Sort field: 'relevance', 'published', 'indexed', 'is-referenced-by-count'.
+        project_path: Optional project directory path. When provided, results are
+            persisted to {project_path}/data/search_results.db for later analysis.
 
     Returns:
         Dictionary with 'total_count' and list of 'works'.
@@ -109,8 +118,20 @@ async def search_works(
     message = data.get("message", {})
     items = message.get("items", [])
     works = [_format_work(item) for item in items]
+    total_count = message.get("total-results", 0)
+
+    if project_path:
+        try:
+            _store_results(
+                project_path, "crossref", query, works,
+                total_count=total_count,
+                parameters={"filters": filters, "rows": rows, "sort": sort},
+            )
+        except Exception:
+            logger.warning("Failed to store CrossRef search results", exc_info=True)
+
     return {
-        "total_count": message.get("total-results", 0),
+        "total_count": total_count,
         "works": works,
     }
 

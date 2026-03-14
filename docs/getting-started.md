@@ -60,6 +60,7 @@ python -m venv .venv
 source .venv/bin/activate
 
 # Install all MCP servers
+pip install -e mcp-servers/_shared
 pip install -e mcp-servers/pubmed-server
 pip install -e mcp-servers/openalex-server
 pip install -e mcp-servers/semantic-scholar-server
@@ -289,6 +290,7 @@ If you work in a separate VS Code workspace, you have two options:
    - `@research-planner` for protocol and planning
    - `@project-manager` for progress tracking
   - `@troubleshooter` for diagnosing errors, fixing environment issues, and usage support
+  - `@developer` for bug fixes, feature requests, and codebase improvements
 
 ### Example: Starting a systematic review
 
@@ -347,6 +349,48 @@ This tool enforces ICMJE authorship guidelines. Key points:
 - All AI assistance must be disclosed in the Methods section or Acknowledgments
 - The `compliance/` folder contains checklists and templates for proper disclosure
 - Agents will remind you of these requirements and help generate disclosure statements
+
+## Search Result Storage
+
+When you run a literature search with a `project_path` parameter, results are automatically persisted to a per-project SQLite database at `{project}/data/search_results.db`. This enables downstream analysis in both R and Python without re-running searches.
+
+### How it works
+
+- **Opt-in**: Results are only stored when `project_path` is provided to a search tool. Searches without a project context remain ephemeral.
+- **All 5 search servers** support storage: PubMed, OpenAlex, Semantic Scholar, Europe PMC, and CrossRef.
+- **Deduplication**: A built-in `deduplicated_results` view groups results by DOI or PMID across sources.
+- **Query & export tools**: Each search server also provides `get_stored_results` and `export_stored_results` tools.
+
+### Accessing results from R
+
+```r
+library(DBI)
+library(RSQLite)
+con <- dbConnect(SQLite(), "my_projects/my-review/data/search_results.db")
+results <- dbReadTable(con, "results")
+deduped  <- dbReadTable(con, "deduplicated_results")
+dbDisconnect(con)
+```
+
+### Accessing results from Python
+
+```python
+import sqlite3
+import pandas as pd
+
+con = sqlite3.connect("my_projects/my-review/data/search_results.db")
+results = pd.read_sql("SELECT * FROM results", con)
+deduped  = pd.read_sql("SELECT * FROM deduplicated_results", con)
+con.close()
+```
+
+### Schema
+
+The database contains two tables and one view:
+
+- **`searches`**: Log of every search executed (source, query, timestamp, total_count, parameters).
+- **`results`**: Individual records with normalized fields (doi, pmid, title, authors_json, journal, year, volume, issue, pages, abstract) plus an `extra_json` column for source-specific metadata.
+- **`deduplicated_results`** (view): Groups results by DOI or PMID to identify cross-database duplicates.
 
 See `compliance/ai-disclosure-template.md` for ready-to-use disclosure language.
 
