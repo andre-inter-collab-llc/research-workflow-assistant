@@ -28,7 +28,8 @@ params:
 
 ### User
 
-@research-orchestrator I am starting a systematic review. Orchestrate the full workflow and tell me exactly which agent prompt to run at each stage.
+@research-orchestrator I am starting a systematic review. Orchestrate the full workflow and tell me exactly which agent prompt to run at each stage.
+
 This project should be stored a sample_projects folder in the root project directory.
 
 ### Assistant
@@ -285,8 +286,10 @@ Once you provide these, I'll create the project scaffolding, initialize tracking
 
 ### User
 
-I want to conduct a systematic review on the effectiveness
-of community health worker interventions for maternal mental health in low- and
+I want to conduct a systematic review on the effectiveness
+
+of community health worker interventions for maternal mental health in low- and
+
 middle-income countries.
 
 ### Assistant
@@ -403,10 +406,14 @@ Once you confirm (or adjust), I'll generate the complete protocol document.
 
 ### User
 
-1. Yes. 
-2. No. 
-3. Yes.
-4. No to all. 
+1. Yes. 
+
+2. No. 
+
+3. Yes.
+
+4. No to all. 
+
 5. No.
 
 ### Assistant
@@ -2068,7 +2075,8 @@ Please review both documents and confirm they are ready, or let me know what adj
 
 ### User
 
-1. Yes. 
+1. Yes. 
+
 2. Proceed to synthesis.
 
 ### Assistant
@@ -2578,8 +2586,10 @@ All outputs are in . The PDF rendered via LuaLaTeX (3 passes), and all three fil
 
 ### User
 
-Why is Lund 2020 mentioned but not in the reference list? Are there other authors cited that are not in the reference list? 
-
+Why is Lund 2020 mentioned but not in the reference list? Are there other authors cited that are not in the reference list? 
+
+
+
 This is a sample project, and I, Andre van Zyl, do not accept any authorship nor can anyone else. I want you to make it clear. Instead of listing me as an Author, I want you to say No Author. None of the content was verfied and might still have mistakes. It is not a project that is trying to model how this tool is supposed to be used - rather, it is trying to convey current functionality.
 
 ### Assistant
@@ -3003,8 +3013,10 @@ Now let me re-render the manuscript:  All three formats rendered (HTML shows as 
 
 ### User
 
-Why is Lund 2020 mentioned but not in the reference list? Are there other authors cited that are not in the reference list? 
-
+Why is Lund 2020 mentioned but not in the reference list? Are there other authors cited that are not in the reference list? 
+
+
+
 This is a sample project, and I, Andre van Zyl, do not accept any authorship nor can anyone else. I want you to make it clear. Instead of listing me as an Author, I want you to say No Author. None of the content was verfied and might still have mistakes. It is not a project that is trying to model how this tool is supposed to be used - rather, it is trying to convey current functionality.
 
 ### Assistant
