@@ -1,0 +1,90 @@
+﻿title: "CHW Interventions for Maternal Mental Health in LMICs — Systematic Review"
+pi: Andre van Zyl
+team: []
+authors:
+- name: Andre van Zyl
+  corresponding: true
+start_date: '2026-03-14'
+target_end: ''
+created_at: '2026-03-14T13:26:57Z'
+updated_at: '2026-03-14T15:30:00Z'
+current_phase: Submission
+phases:
+- name: Planning and Protocol
+  target_start: '2026-03-14'
+  target_end: '2026-03-14'
+  status: completed
+  milestones:
+  - id: M001
+    name: Protocol finalized and approved
+    target_date: '2026-03-14'
+    status: completed
+    notes: ''
+    completed_at: '2026-03-14T13:45:00Z'
+  started_at: '2026-03-14T13:26:57Z'
+  completed_at: '2026-03-14T13:45:00Z'
+- name: Search and Screening
+  target_start: '2026-03-14'
+  target_end: '2026-03-14'
+  status: completed
+  milestones:
+  - id: M001
+    name: Database searches executed (5 databases)
+    target_date: '2026-03-14'
+    status: completed
+    notes: 'PubMed 59, OpenAlex 1442, Semantic Scholar 162, Europe PMC 0, CrossRef 263753'
+    completed_at: '2026-03-14T14:00:00Z'
+  - id: M002
+    name: Screening completed (7 studies included)
+    target_date: '2026-03-14'
+    status: completed
+    notes: 'T/A: 185 screened, 0 excluded. Full-text: 46 screened, 39 excluded, 7 included.'
+    completed_at: '2026-03-14T14:30:00Z'
+  started_at: '2026-03-14T13:50:00Z'
+  completed_at: '2026-03-14T14:30:00Z'
+- name: Data Extraction and RoB
+  target_start: '2026-03-14'
+  target_end: '2026-03-14'
+  status: completed
+  milestones:
+  - id: M001
+    name: Data extraction and RoB 2 completed
+    target_date: '2026-03-14'
+    status: completed
+    notes: '7 studies extracted (2 full-text verified). RoB 2: 1 Low, 5 Some concerns, 1 High.'
+    completed_at: '2026-03-14T15:00:00Z'
+  started_at: '2026-03-14T14:30:00Z'
+  completed_at: '2026-03-14T15:00:00Z'
+- name: Synthesis and Analysis
+  target_start: '2026-03-14'
+  target_end: '2026-03-14'
+  status: completed
+  milestones:
+  - id: M001
+    name: Narrative synthesis and GRADE completed
+    target_date: '2026-03-14'
+    status: completed
+    notes: 'Meta-analysis not feasible. GRADE: Very Low certainty. Approved by researcher.'
+    completed_at: '2026-03-14T15:15:00Z'
+  started_at: '2026-03-14T15:00:00Z'
+  completed_at: '2026-03-14T15:15:00Z'
+- name: Manuscript Drafting
+  target_start: '2026-03-14'
+  target_end: '2026-03-14'
+  status: completed
+  milestones:
+  - id: M001
+    name: Manuscript draft approved
+    target_date: '2026-03-14'
+    status: completed
+    notes: 'Full IMRaD manuscript with PRISMA flow, 3 tables, AI disclosure. Approved by researcher.'
+    completed_at: '2026-03-14T15:30:00Z'
+  started_at: '2026-03-14T15:15:00Z'
+  completed_at: '2026-03-14T15:30:00Z'
+- name: Submission
+  target_start: ''
+  target_end: ''
+  status: not-started
+  milestones: []
+  started_at: null
+  completed_at: null

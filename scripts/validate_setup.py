@@ -51,7 +51,7 @@ def _check_server_importable(module_name: str) -> dict:
 
 
 def _check_servers() -> dict:
-    """Check all 9 MCP server packages."""
+    """Check all 10 MCP server packages."""
     servers = {
         "pubmed": "pubmed_server",
         "openalex": "openalex_server",
@@ -62,6 +62,7 @@ def _check_servers() -> dict:
         "zotero-local": "zotero_local_server",
         "prisma-tracker": "prisma_tracker",
         "project-tracker": "project_tracker",
+        "chat-exporter": "chat_exporter",
     }
     return {name: _check_server_importable(mod) for name, mod in servers.items()}
 

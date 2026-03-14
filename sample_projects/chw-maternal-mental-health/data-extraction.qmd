@@ -1,0 +1,447 @@
+---
+title: "Data Extraction: CHW Interventions for Maternal Mental Health in LMICs"
+subtitle: "Systematic Review — Extracted Data from Included Studies"
+author:
+  - name: "Andre van Zyl, MPH"
+    orcid: "0000-0001-6872-5276"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    self-contained: true
+  docx:
+    toc: true
+    toc-depth: 3
+bibliography: references.bib
+csl: ../../apa.csl
+---
+
+# Data Extraction Form
+
+## Fields Extracted
+
+The extraction form captures variables aligned with the protocol's PICO framework, planned subgroup analyses, and Cochrane Handbook guidance for systematic reviews of interventions.
+
+| Category | Variable | Description |
+|----------|----------|-------------|
+| **Identifiers** | Study ID | First Author (Year) |
+| | PMID | PubMed ID |
+| | DOI | Digital Object Identifier |
+| | Country | Country where the study was conducted |
+| | Income classification | World Bank income group at time of study |
+| | Trial registration | Registration ID (e.g., ISRCTN, NCT) |
+| **Design** | Study design | Individual RCT or Cluster RCT |
+| | Sample size (randomized) | Total participants randomized |
+| | Sample size (analyzed) | Total participants in primary analysis |
+| | No. of clusters | Number of clusters (cluster RCTs only) |
+| | Follow-up duration | Time from baseline to primary endpoint |
+| | Follow-up rate | Proportion completing primary endpoint (%) |
+| | Analysis approach | ITT, modified ITT, per-protocol |
+| **Population** | Perinatal stage | Antenatal, postnatal, or both |
+| | Age | Mean (SD) or range |
+| | Baseline severity | Scale used and mean score at baseline |
+| | Setting | Urban, rural, or peri-urban |
+| **Intervention** | Intervention name | Named program (if applicable) |
+| | Intervention type | CBT-based, psychoeducation, peer support, integrated, other |
+| | Deliverer type | CHW, lay health worker, peer counselor, paraprofessional |
+| | Delivery format | Individual, group, or mixed |
+| | No. of sessions | Total planned sessions |
+| | Session frequency | How often sessions were delivered |
+| | Intervention duration | Total time span of intervention |
+| | Supervision model | How deliverers were supervised |
+| **Comparator** | Comparator type | Usual care, enhanced usual care, active control, no intervention |
+| | Comparator description | Brief description |
+| **Primary outcome** | Depression/anxiety scale | Validated instrument used |
+| | Time points | When outcomes were measured |
+| | Intervention group result | Mean (SD), or proportion, or other summary |
+| | Control group result | Mean (SD), or proportion, or other summary |
+| | Effect estimate | Type (MD, SMD, aOR, β, etc.) and value |
+| | 95% CI | Confidence interval |
+| | p-value | Statistical significance |
+| **Secondary outcomes** | Other measures | Additional scales and results reported |
+| **Notes** | Key findings | Notable moderators, subgroup results |
+| | Limitations | Study limitations noted by authors |
+
+::: {.callout-warning}
+## Abstract-Level Extraction
+
+All data in this document was extracted from published abstracts retrieved via PubMed. **Full-text verification is required** for all fields. Cells marked "NR (abstract)" indicate information not reported in the abstract that must be obtained from the full text.
+:::
+
+---
+
+# Summary Table of Included Studies
+
+| Study ID | Country | Income | Design | N (rand.) | N (anal.) | Perinatal Stage | Intervention Type | Scale | Key Finding |
+|----------|---------|--------|--------|-----------|-----------|-----------------|-------------------|-------|-------------|
+| Wang 2025 | China | UMIC | Cluster RCT^a^ | 592 (302 T, 290 C) | 527 | Antenatal | Home visiting | DASS-21 | Null overall; moderator effects by family support |
+| Hossain 2024 | Bangladesh | LMIC | Cluster RCT | 587 (297 I, 290 C) | 547 | Postnatal | Psychoeducation + cash | SRQ-20 | Significant reduction (β = −1.53, d = −0.20) |
+| Rotheram-Borus 2023 | South Africa | UMIC | Cluster RCT | NR (abstract) | NR (abstract) | Antenatal–postnatal | Home visiting | Depression measure^b^ | Early gains dissipated by 5 and 8 years |
+| Rossouw 2021 | South Africa | UMIC | Pilot RCT | 72 | 72 | Antenatal–postnatal | Psychosocial + incentive | Depressive scale^c^ | 0.928-point reduction |
+| Husain 2021 | Pakistan | LMIC | Cluster RCT | 774 | 774 | Postnatal | Integrated parenting (LTP+) | EPDS | Large effect: ES = −7.2 (3 mo), −4.6 (6 mo) |
+| Vanobberghen 2020 | India & Pakistan | LMIC | Pooled 2 RCTs | 850 | 704 | Antenatal–postnatal | CBT-based (THP) | PHQ-9 | aOR 1.35 for remission; AMD −0.78 |
+| Lund 2020 | South Africa | UMIC | RCT (double-blind) | 425 | 384 | Antenatal–postnatal | Structured psychological | HDRS/EPDS | Null finding |
+
+^a^ 79 townships cluster-randomized. ^b^ Not explicitly named in abstract; prior publications report EPDS. ^c^ Scale not named in abstract (range 1–8).
+
+**Income classifications**: UMIC = Upper-middle-income country; LMIC = Lower-middle-income country (World Bank classification).
+
+---
+
+# Individual Study Extraction Forms
+
+## Study 1: Wang 2025 {#sec-wang2025}
+
+::: {.callout-note}
+## Full-Text Verified
+Full text retrieved via Europe PMC (PMC12752055). Data below verified against full text.
+:::
+
+| Field | Extracted Data | Source |
+|-------|---------------|--------|
+| **Study ID** | Wang 2025 | — |
+| **PMID** | 41466232 | — |
+| **DOI** | 10.1186/s12884-025-08297-2 | — |
+| **Country** | China (rural, northwest — single province) | Full text |
+| **Income classification** | Upper-middle income | — |
+| **Trial registration** | ISRCTN98898991 (registered 26/03/2019) | — |
+| **Study design** | Cluster RCT (79 townships randomized) | Full text |
+| **Sample size (randomized)** | 592 (Treatment: 302 from 41 townships; Control: 290 from 38 townships) | Full text |
+| **Sample size (analyzed)** | 527 (Treatment: ~274; Control: ~253) — 65 dropped out | Full text |
+| **Follow-up duration** | ~8 months (baseline March 2021, midline Dec 2021) | Full text |
+| **Follow-up rate** | 89.0% overall (Treatment: 90.7%; Control: 87.2%) | Full text |
+| **Analysis approach** | ITT (OLS regression, primary) + TOT (IV/2SLS regression, secondary); robust SEs clustered at township level | Full text |
+| **Perinatal stage** | Antenatal (pregnant women) | — |
+| **Age** | Treatment: 28.72 (SD 4.30); Control: 28.80 (SD 4.28) | Full text |
+| **Baseline severity** | Depression prevalence: T 19.0%, C 21.2% (p=0.498); Anxiety: T 24.0%, C 24.3% (p=0.929); Stress: T 13.3%, C 11.0% (p=0.377). Continuous baseline means used as covariates but not reported. | Full text |
+| **Setting** | Rural, western China (single province) | Full text |
+| **Intervention name** | Community-based home-visiting program | — |
+| **Intervention type** | Psychosocial support (stage-based home visiting) | Full text |
+| **Deliverer type** | Female women-and-children specialists from township health centers; avg age 33; >80% junior college education | Full text |
+| **Delivery format** | Individual (home visits + follow-up phone calls) | Full text |
+| **No. of sessions** | Monthly home visits, pregnancy to 6 months postpartum | Full text |
+| **Session duration** | 40–60 minutes per home visit | Full text |
+| **Session frequency** | Monthly | Full text |
+| **Intervention duration** | Pregnancy through 6 months postpartum (variable by enrollment gestational age) | Full text |
+| **Compliance** | 65% overall in treatment group | Full text |
+| **CHW training** | 5-day TOT training; advanced refresher every 3 months | Full text |
+| **Supervision model** | County-level supervisors collected CHW records (photos + written reports); research team analyzed visit quality | Full text |
+| **Comparator type** | No intervention (standard care only) | Full text |
+| **Comparator description** | Standard care; no home visits | Full text |
+| **Depression/anxiety scale** | DASS-21 (scores doubled per manual; subscale range 0–42) | Full text |
+| **Time points** | Baseline (March 2021), midline (December 2021) | Full text |
+| **ITT effect — Depression** | β = 0.51 (SE 0.49), NS | Full text |
+| **ITT effect — Anxiety** | β = 0.40 (SE 0.33), NS | Full text |
+| **ITT effect — Stress** | β = 0.27 (SE 0.51), NS | Full text |
+| **TOT effects** | Depression 0.10 (SE 0.11), Anxiety 0.08 (SE 0.08), Stress 0.05 (SE 0.11) — all NS | Full text |
+| **Moderator — husband accompanies ANC** | Treatment × Husband: Depression β = −1.93 (SE 0.98, p < 0.10); Anxiety β = −1.32 (SE 0.77, p < 0.10); Stress β = −1.84 (SE 1.01, p < 0.10) | Full text |
+| **Moderator — satisfactory marital relationship** | Treatment × Satisf. relationship: Depression β = −1.76 (SE 0.95, p < 0.10); Anxiety β = −1.46 (SE 0.74, p < 0.10) | Full text |
+| **Mother-in-law/mother accomp.** | No significant heterogeneous effect | Full text |
+| **Limitations** | (1) Single rural province — limited external validity; (2) Preventive (not treatment) focus; (3) Potential Hawthorne effect; (4) Low compliance (65%) possibly due to pandemic, inadequate supervision, insufficient incentives; (5) Inadequate dosage may explain null results | Full text |
+| **Key notes** | Cluster RCT (not individual as stated in abstract). Null overall finding but moderator effects at p < 0.10 only. Low compliance (65%) undermines TOT interpretation. DASS-21 subscale means not reported — regression coefficients only. Cannot compute SMD for meta-analysis without group means and SDs. | — |
+
+---
+
+## Study 2: Hossain 2024 {#sec-hossain2024}
+
+::: {.callout-note}
+## Full-Text Verified
+Full text retrieved via Europe PMC (PMC11578405). Data below verified against full text.
+:::
+
+| Field | Extracted Data | Source |
+|-------|---------------|--------|
+| **Study ID** | Hossain 2024 | — |
+| **PMID** | 39560615 | — |
+| **DOI** | 10.1080/16549716.2024.2426784 | — |
+| **Country** | Bangladesh (urban) | Full text |
+| **Income classification** | Lower-middle income | — |
+| **Trial registration** | NCT03753646 (ClinicalTrials.gov) | Full text |
+| **Ethics** | icddr,b Ethical Review Board (Protocol 18,035) | Full text |
+| **Study design** | Cluster RCT (2-arm; 20 wards randomized) | Full text |
+| **No. of clusters** | 20 wards (10 per arm) | Full text |
+| **Sample size (randomized)** | 587 (Intervention: 297; Comparison: 290) — 12 non-mothers excluded from 599 enrolled | Full text |
+| **Sample size (analyzed)** | 547 mothers (93.2% retention) | Full text |
+| **Follow-up duration** | 12 months | — |
+| **Follow-up rate** | 93.2% (attrition: 6.81%, 40/587 lost) | Full text |
+| **Analysis approach** | ITT; multiple linear regression adjusted for baseline outcome, violence, maternal activities, tester effects, clusters as random effect; multiple imputation (MICE, 10 datasets, Rubin's rules); sensitivity analyses with additional covariates (Stata 12.1) | Full text |
+| **Perinatal stage** | Postnatal (mothers with children 6–16 months at enrollment) | Full text |
+| **Age** | Intervention: 25.61 (SD 4.77); Comparison: 25.62 (SD 5.13) | Full text |
+| **Baseline depression (SRQ-20)** | Intervention: 8.91 (SD 4.87); Comparison: 8.43 (SD 4.65). Prevalence SRQ ≥ 7: 54.7% overall (I: 55.6%, C: 53.8%) | Full text |
+| **Baseline QoL (WHOQOL-BREF, 0–100)** | Physical: I 52.01 (12.42), C 53.09 (12.01); Psychological: I 61.02 (12.01), C 60.74 (12.67); Social: I 58.57 (14.73), C 58.93 (14.05); Environment: I 50.68 (10.69), C 49.48 (11.52) | Full text |
+| **Setting** | Urban, Bangladesh | — |
+| **Intervention name** | Parenting with nutrition education + unconditional cash (adapted from Reach Up and Play model) | Full text |
+| **Intervention type** | Psychoeducation (parenting + nutrition) with cash transfer | — |
+| **Deliverer type** | CHWs recruited from ward residents; ≥12 years education | Full text |
+| **Delivery format** | Individual (household sessions) using culturally appropriate, locally made toys | Full text |
+| **No. of sessions** | ~26 (fortnightly for 12 months) | — |
+| **Session frequency** | Fortnightly (every 2 weeks) | — |
+| **Session duration** | Not reported in full text | Full text |
+| **Intervention duration** | 12 months | — |
+| **CHW training** | 10 days training on integrated parenting and nutrition curriculum | Full text |
+| **Supervision model** | Not detailed in full text | Full text |
+| **Father involvement** | Fathers and caregivers encouraged to participate when present | Full text |
+| **Comparator type** | Active control (unconditional cash only — 800 BDT/~9.4 USD/month, gov't lactating allowance) | Full text |
+| **Comparator description** | Same cash transfer; separate government health education (not mandatory) | Full text |
+| **Depression scale** | SRQ-20 (WHO Self-Reporting Questionnaire-20; range 0–20) | — |
+| **Time points** | Baseline, 12 months | — |
+| **Endline group means** | Not reported (adjusted regression coefficients only) | Full text |
+| **Effect — MDS (SRQ-20)** | β = −1.53 (95% CI: −2.28, −0.80), p < 0.001, Cohen's d = −0.20 (−0.03, −0.37) | Full text |
+| **Effect — QoL Physical** | β = 4.21 (95% CI: 1.71, 6.73), p = 0.002, d = 0.30 | Full text |
+| **Effect — QoL Psychological** | β = 3.14 (95% CI: 1.10, 5.19), p = 0.004, d = 0.25 | Full text |
+| **Effect — QoL Social** | β = 3.21 (95% CI: 0.76, 5.66), p = 0.013, d = 0.21 | Full text |
+| **Effect — QoL Environment** | β = 3.40 (95% CI: 1.37, 5.44), p = 0.002, d = 0.28 | Full text |
+| **Mediator** | Household violence as mediator for MDS (SEM analysis): β = 1.04 (95% CI: 0.29, 1.80) | Full text |
+| **Limitations** | (1) SRQ-20 is screening tool, not clinical diagnosis; (2) Recall-based violence data (1m) may be underreported; (3) 1-month recall for MDS limits longitudinal tracking; (4) Cannot isolate cash-only effect (both groups received it); (5) Assessors not fully blinded | Full text |
+| **Key notes** | Both groups received cash; study estimates additive effect of parenting+nutrition education. Depression outcome is secondary — primary trial outcome was child development. Baseline depression prevalence 54.7% (high). Cohen's d = −0.20 is a small effect. | — |
+
+---
+
+## Study 3: Rotheram-Borus 2023
+
+| Field | Extracted Data | Verification |
+|-------|---------------|--------------|
+| **Study ID** | Rotheram-Borus 2023 | — |
+| **PMID** | 37001280 | — |
+| **DOI** | 10.1016/j.socscimed.2023.115853 | — |
+| **Country** | South Africa | — |
+| **Income classification** | Upper-middle income | — |
+| **Trial registration** | NR (abstract) | Needs full-text |
+| **Study design** | Cluster RCT | — |
+| **No. of clusters** | NR (abstract) | Needs full-text |
+| **Sample size (randomized)** | NR (abstract) | Needs full-text |
+| **Sample size (analyzed)** | NR (abstract) | Needs full-text |
+| **Follow-up duration** | 8 years post-birth (assessments at pre-birth, 3y, 5y, 8y) | — |
+| **Follow-up rate** | NR (abstract) | Needs full-text |
+| **Analysis approach** | Longitudinal Bayesian mixed-effects models | — |
+| **Perinatal stage** | Antenatal (initiated) to postnatal | — |
+| **Age** | NR (abstract) | Needs full-text |
+| **Baseline severity** | Depression prevalence 35.1% prenatally | — |
+| **Setting** | NR (abstract) — South Africa | Needs full-text |
+| **Intervention name** | Philani Intervention Program (PIP) | — |
+| **Intervention type** | Psychosocial support (home visiting) | — |
+| **Deliverer type** | Paraprofessional home visitors | — |
+| **Delivery format** | Individual (home visits) | — |
+| **No. of sessions** | NR (abstract) | Needs full-text |
+| **Session frequency** | NR (abstract) | Needs full-text |
+| **Intervention duration** | Prenatal through 6 months postpartum | — |
+| **Supervision model** | NR (abstract) | Needs full-text |
+| **Comparator type** | Standard care | — |
+| **Comparator description** | Standard care (SC) | — |
+| **Depression scale** | Not named in abstract (prior publications report EPDS) | Needs full-text |
+| **Time points** | Pre-birth, 6 mo, 18 mo, 3 y, 5 y, 8 y | — |
+| **Effect on depression** | Reduced depression in PIP vs SC at 3 years; effect disappeared by 5 and 8 years | — |
+| **Effect estimate** | NR (abstract) — Bayesian models, no single point estimate reported | Needs full-text |
+| **95% CI** | NR (abstract) | Needs full-text |
+| **Secondary outcomes** | Alcohol use: fewer PIP mothers drank at 5y but not 8y; HIV+ prevalence increased 26%→45% (no group difference) | — |
+| **Limitations** | NR (abstract) | Needs full-text |
+| **Key notes** | 8-year follow-up of original PIP trial; early depression benefits transient; depression prevalence declined to 5.5% at 8y in both groups; important for understanding sustainability of CHW interventions | — |
+
+---
+
+## Study 4: Rossouw 2021
+
+| Field | Extracted Data | Verification |
+|-------|---------------|--------------|
+| **Study ID** | Rossouw 2021 | — |
+| **PMID** | 34618311 | — |
+| **DOI** | 10.1007/s10995-021-03229-w | — |
+| **Country** | South Africa (Cape Town) | — |
+| **Income classification** | Upper-middle income | — |
+| **Trial registration** | NR (abstract) | Needs full-text |
+| **Study design** | Pilot RCT (individual) | — |
+| **Sample size (randomized)** | 72 (39 treatment, 33 control) | — |
+| **Sample size (analyzed)** | 72 | — |
+| **Follow-up duration** | Baseline (after recruitment) to ~1 week post-birth | — |
+| **Follow-up rate** | NR (abstract) — appears 100% (all 72 analyzed) | Needs full-text |
+| **Analysis approach** | NR (abstract) | Needs full-text |
+| **Perinatal stage** | Antenatal (recruited) to early postnatal (endline) | — |
+| **Age** | Adult women (no further detail) | Needs full-text |
+| **Baseline severity** | NR (abstract) — not depression-selected | Needs full-text |
+| **Setting** | Low-income, peri-urban, Cape Town | — |
+| **Intervention name** | Thula Baba Box (TBB) + CHW programme | — |
+| **Intervention type** | Psychosocial support + incentive-based | — |
+| **Deliverer type** | Community health workers (CHWs) | — |
+| **Delivery format** | Individual | — |
+| **No. of sessions** | NR (abstract) | Needs full-text |
+| **Session frequency** | NR (abstract) | Needs full-text |
+| **Intervention duration** | NR (abstract) | Needs full-text |
+| **Supervision model** | NR (abstract) | Needs full-text |
+| **Comparator type** | Control (not described in abstract) | Needs full-text |
+| **Comparator description** | NR (abstract) | Needs full-text |
+| **Depression scale** | "Maternal depressive symptom scale" (not named; range 1–8) | Needs full-text |
+| **Time points** | Baseline, endline (1 week post-birth) | — |
+| **Effect estimate** | 0.928-point reduction in depressive symptom scale | — |
+| **95% CI** | NR (abstract) | Needs full-text |
+| **p-value** | NR (abstract) | Needs full-text |
+| **Secondary outcomes** | Maternal nutrition (MUAC): no effect. Breastfeeding intention: no effect among women with refrigerators; +3.349 points for women without (scale 1–8) | — |
+| **Limitations** | Pilot study, small sample size (n = 72) | — |
+| **Key notes** | Pilot study; underpowered; unnamed depression scale is a limitation for meta-analysis; incentive component mixed with CHW psychosocial support | — |
+
+---
+
+## Study 5: Husain 2021
+
+| Field | Extracted Data | Verification |
+|-------|---------------|--------------|
+| **Study ID** | Husain 2021 | — |
+| **PMID** | 34010505 | — |
+| **DOI** | 10.1002/da.23169 | — |
+| **Country** | Pakistan (Karachi) | — |
+| **Income classification** | Lower-middle income | — |
+| **Trial registration** | NR (abstract) | Needs full-text |
+| **Study design** | Cluster RCT | — |
+| **No. of clusters** | 120 villages | — |
+| **Sample size (randomized)** | 774 depressed mothers | — |
+| **Sample size (analyzed)** | 774 (implied from abstract) | Needs full-text |
+| **Follow-up duration** | 6 months | — |
+| **Follow-up rate** | NR (abstract) | Needs full-text |
+| **Analysis approach** | NR (abstract) | Needs full-text |
+| **Perinatal stage** | Postnatal (mothers with children 0–30 months) | — |
+| **Age** | 18–44 years | — |
+| **Baseline severity** | Depressed (inclusion criterion; scale and threshold NR in abstract) | Needs full-text |
+| **Setting** | NR (abstract) — Karachi, Pakistan | Needs full-text |
+| **Intervention name** | Learning Through Play Plus (LTP+) | — |
+| **Intervention type** | Integrated parenting (psychosocial + child development) | — |
+| **Deliverer type** | Lay health workers | — |
+| **Delivery format** | NR (abstract) | Needs full-text |
+| **No. of sessions** | NR (abstract) | Needs full-text |
+| **Session frequency** | NR (abstract) | Needs full-text |
+| **Intervention duration** | Jan 2014 – Dec 2015 (study period) | Needs full-text |
+| **Supervision model** | NR (abstract) | Needs full-text |
+| **Comparator type** | Treatment as usual (TAU) | — |
+| **Comparator description** | TAU (not further described in abstract) | Needs full-text |
+| **Depression scale** | Edinburgh Postnatal Depression Scale (EPDS) | — |
+| **Time points** | 3 months, 6 months | — |
+| **Intervention result — 3 mo** | Mean EPDS = 6.6 | — |
+| **Control result — 3 mo** | Mean EPDS = 13.8 | — |
+| **Effect estimate — 3 mo** | ES = −7.2 | — |
+| **95% CI — 3 mo** | −8.2 to −6.1 | — |
+| **Intervention result — 6 mo** | Mean EPDS = 7.2 | — |
+| **Control result — 6 mo** | Mean EPDS = 12.0 | — |
+| **Effect estimate — 6 mo** | ES = −4.6 | — |
+| **95% CI — 6 mo** | −5.9 to −3.4 | — |
+| **Secondary outcomes** | Child socio-emotional development (ASQ): significantly better on all domains at 6 mo. Maternal anxiety, QoL, social support, parenting competence, child development knowledge: all significantly improved at 3 and 6 mo | — |
+| **Limitations** | NR (abstract) | Needs full-text |
+| **Key notes** | Largest effect size in the review; depression-selected sample; integrated parenting + mental health intervention; children 0–30 months is broader than typical perinatal window | — |
+
+---
+
+## Study 6: Vanobberghen 2020
+
+| Field | Extracted Data | Verification |
+|-------|---------------|--------------|
+| **Study ID** | Vanobberghen 2020 | — |
+| **PMID** | 32090783 | — |
+| **DOI** | 10.1016/j.jad.2019.11.110 | — |
+| **Country** | India and Pakistan (pooled) | — |
+| **Income classification** | Lower-middle income (both) | — |
+| **Trial registration** | NR (abstract) — see original trial publications | Needs full-text |
+| **Study design** | Pooled analysis of 2 RCTs (peer-delivered) | — |
+| **No. of clusters** | NR (abstract) — see original trials | Needs full-text |
+| **Sample size (randomized)** | 850 (280 India, 570 Pakistan) | — |
+| **Sample size (analyzed)** | 704 (83% at 6-month follow-up) | — |
+| **Follow-up duration** | 6 months post-childbirth | — |
+| **Follow-up rate** | 83% | — |
+| **Analysis approach** | Pooled individual participant data analysis | — |
+| **Perinatal stage** | Antenatal (recruited) to 6 months postnatal | — |
+| **Age** | ≥18 years | — |
+| **Baseline severity** | PHQ-9 ≥ 10 (depression inclusion criterion) | — |
+| **Setting** | NR (abstract) — community settings in India and Pakistan | Needs full-text |
+| **Intervention name** | Thinking Healthy Programme Peer-delivered (THPP) | — |
+| **Intervention type** | CBT-based (adapted cognitive behavioral therapy) | — |
+| **Deliverer type** | Peer volunteers (community women) | — |
+| **Delivery format** | Individual | — |
+| **No. of sessions** | NR (abstract) | Needs full-text |
+| **Session frequency** | NR (abstract) | Needs full-text |
+| **Intervention duration** | NR (abstract) | Needs full-text |
+| **Supervision model** | NR (abstract) | Needs full-text |
+| **Comparator type** | Enhanced usual care (EUC) | — |
+| **Comparator description** | EUC only (not further described in abstract) | Needs full-text |
+| **Depression scale** | PHQ-9 (Patient Health Questionnaire-9) | — |
+| **Primary outcome — severity** | Adjusted mean difference = −0.78 | — |
+| **95% CI — severity** | −1.47 to −0.09 | — |
+| **Primary outcome — remission** | PHQ-9 < 5: adjusted OR = 1.35 | — |
+| **95% CI — remission** | 1.02 to 1.78 | — |
+| **Time points** | 3 months and 6 months post-childbirth | — |
+| **Moderators** | Greater effect on remission among: short chronicity of depression; primiparous women | — |
+| **Secondary outcomes** | Beneficial effects across multiple secondary outcomes (disability, social support; details in full text) | Needs full-text |
+| **Limitations** | Not powered for effect-modification analyses; 10–20% missing outcome data | — |
+| **Key notes** | WHO-recommended THP adapted for peer delivery; pooled IPD analysis provides stronger evidence; moderate effect size; both LMIC settings | — |
+
+---
+
+## Study 7: Lund 2020
+
+| Field | Extracted Data | Verification |
+|-------|---------------|--------------|
+| **Study ID** | Lund 2020 | — |
+| **PMID** | 31733813 | — |
+| **DOI** | 10.1016/j.brat.2019.103466 | — |
+| **Country** | South Africa (Khayelitsha, Cape Town) | — |
+| **Income classification** | Upper-middle income | — |
+| **Trial registration** | NCT01977326 | — |
+| **Study design** | Individual RCT (double-blind) | — |
+| **Sample size (randomized)** | 425 | — |
+| **Sample size (analyzed)** | 384 (modified intention-to-treat) | — |
+| **Follow-up duration** | 3 months postpartum | — |
+| **Follow-up rate** | 90.4% (384/425) | — |
+| **Analysis approach** | Modified intention-to-treat (excluded pregnancy/infant loss) | — |
+| **Perinatal stage** | Antenatal (recruited EPDS ≥ 13) to 3 months postnatal | — |
+| **Age** | Adult pregnant women | Needs full-text |
+| **Baseline severity** | EPDS ≥ 13 (depression inclusion criterion) | — |
+| **Setting** | Peri-urban (Khayelitsha), two antenatal clinics | — |
+| **Intervention name** | Structured six-session psychological treatment | — |
+| **Intervention type** | Structured psychological treatment (task-sharing) | — |
+| **Deliverer type** | Non-specialist community health workers | — |
+| **Delivery format** | Individual | — |
+| **No. of sessions** | 6 | — |
+| **Session frequency** | NR (abstract) | Needs full-text |
+| **Intervention duration** | NR (abstract) — 6 sessions during pregnancy | Needs full-text |
+| **Supervision model** | NR (abstract) | Needs full-text |
+| **Comparator type** | Enhanced usual care | — |
+| **Comparator description** | Routine antenatal health care + 3 monthly phone calls | — |
+| **Depression scale (primary)** | Hamilton Depression Rating Scale (HDRS) | — |
+| **Depression scale (secondary)** | Edinburgh Postnatal Depression Scale (EPDS) — used for screening | — |
+| **Primary outcome** | Response on HDRS (≥ 40% score reduction from baseline) at 3 months postpartum | — |
+| **Effect estimate** | No significant differences between arms | — |
+| **95% CI** | NR (abstract) | Needs full-text |
+| **p-value** | Not significant | — |
+| **Secondary outcomes** | NR (abstract) | Needs full-text |
+| **Limitations** | NR (abstract) | Needs full-text |
+| **Key notes** | Double-blind design is unusual for psychosocial interventions; HDRS is clinician-rated (reduces self-report bias); null finding despite adequate sample; 19.4% screened positive from 2187 eligible; reflects challenges of task-sharing model | — |
+
+---
+
+# Data Gaps Requiring Full-Text Review
+
+The following critical gaps must be resolved through full-text retrieval before meta-analysis:
+
+| Study | Key Missing Data |
+|-------|-----------------|
+| Wang 2025 | ~~Group means and SDs~~ Not reported even in full text (regression coefficients only). **Cannot compute SMD for meta-analysis.** |
+| Hossain 2024 | ~~Group means; registration; baseline~~ **Resolved via full text.** Endline group means still not reported (regression coefficients only). Cohen's d = −0.20 provided by authors. |
+| Rotheram-Borus 2023 | Sample size; depression scale name; quantitative effect estimates; follow-up rates at each timepoint |
+| Rossouw 2021 | Depression scale identity; CIs and p-values; comparator details; session dose |
+| Husain 2021 | Standard deviations for EPDS scores; follow-up rate; intervention dose details; trial registration |
+| Vanobberghen 2020 | Intervention dose/frequency; standard deviations; original trial registrations |
+| Lund 2020 | Group means and SDs for HDRS; session frequency; full results table |
+
+**For meta-analysis**, standardized mean differences (Hedges' g) will need to be computed from group means, SDs, and sample sizes. Full-text retrieval is essential for all 7 studies.
+
+---
+
+# Extraction Audit
+
+- **Extraction performed by:** AI assistant (systematic-reviewer agent)
+- **Extraction date:** 2026-03-14
+- **Data source:** PubMed abstracts (all 7 studies)
+- **Human review status:** APPROVED by Andre van Zyl, MPH (2026-03-14)
+- **Full-text verification status:** 2 of 7 studies verified (Wang 2025, Hossain 2024); 5 remain abstract-level
+
+::: {.callout-note}
+## Human Review Complete
+
+All extracted data has been reviewed and approved by the lead researcher. Studies 1–2 are full-text verified; Studies 3–7 remain abstract-level pending full-text access.
+:::

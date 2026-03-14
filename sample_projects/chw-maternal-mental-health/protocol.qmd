@@ -1,0 +1,224 @@
+---
+title: "Systematic Review Protocol: Effectiveness of Community Health Worker Interventions for Maternal Mental Health in Low- and Middle-Income Countries"
+subtitle: "Review Protocol"
+author:
+  - name: "Andre van Zyl, MPH"
+    affiliation:
+      - name: "Intersect Collaborations LLC"
+        city: "Cincinnati"
+        region: "OH"
+        country: "US"
+        url: "https://www.intersectcollaborations.com/"
+    orcid: "0000-0001-6872-5276"
+    url: "https://www.linkedin.com/in/andre-van-zyl/"
+    corresponding: true
+date: today
+format:
+  docx:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+  html:
+    toc: true
+    self-contained: true
+bibliography: references.bib
+csl: ../../apa.csl
+---
+
+# Registration Information
+
+- **Registration platform:** Not registered
+- **Registration number:** N/A
+- **Date of registration:** N/A
+
+# Review Question
+
+## Research Question
+
+What is the effectiveness of community health worker-delivered psychosocial and psychological interventions, compared to usual care or no intervention, in reducing symptoms of depression and anxiety among perinatal women in low- and middle-income countries?
+
+## Question Framework
+
+- **Framework used:** PICO
+- **Population:** Pregnant and postpartum women (perinatal period, up to 12 months postpartum) in low- and middle-income countries (World Bank classification)
+- **Intervention:** Psychosocial or psychological interventions (e.g., CBT-based, behavioral activation, psychoeducation, peer support, problem-solving therapy) delivered primarily by community health workers, lay health workers, or peer counselors
+- **Comparator:** Usual care, enhanced usual care, waitlist control, or no intervention
+- **Outcome:** Primary: Maternal depression and/or anxiety symptoms measured by validated scales (e.g., PHQ-9, EPDS, GAD-7, SRQ-20). Secondary: Functional impairment, quality of life, treatment uptake/adherence, infant outcomes
+
+# Background and Rationale
+
+Maternal mental health disorders, particularly depression and anxiety during the perinatal period, represent a significant global health burden. The prevalence of perinatal depression in low- and middle-income countries (LMICs) is estimated to be substantially higher than in high-income countries, with pooled estimates ranging from 15% to over 25%. These disorders have adverse consequences for maternal well-being, infant development, and family functioning.
+
+In LMICs, access to professional mental health services is severely limited by a critical shortage of trained mental health professionals, stigma, cost barriers, and geographic inaccessibility. Task-shifting mental health interventions to community health workers (CHWs) — including lay health workers, peer counselors, and community volunteers with health training — has emerged as a promising strategy to bridge this treatment gap.
+
+Several individual trials have evaluated CHW-delivered psychosocial and psychological interventions for perinatal mental health, but the evidence base has grown considerably and warrants a comprehensive systematic review to assess the overall effectiveness of these approaches, identify which intervention types and delivery formats are most effective, and examine contextual factors that influence outcomes.
+
+# Objectives
+
+1. To systematically review and synthesize evidence on the effectiveness of CHW-delivered psychosocial and psychological interventions for reducing symptoms of maternal depression and anxiety in LMICs
+2. To describe the types of interventions, training models, and delivery formats used
+3. To identify moderators of intervention effectiveness (e.g., intervention type, dose, timing, country income level, baseline symptom severity)
+4. To assess the quality and risk of bias of the included evidence
+
+# Eligibility Criteria
+
+## Inclusion Criteria
+
+| Criterion | Description |
+|-----------|-------------|
+| Population | Pregnant women or women up to 12 months postpartum in LMICs (as classified by the World Bank at the time of the study) |
+| Intervention | Any psychosocial or psychological intervention (e.g., CBT-based, behavioral activation, psychoeducation, peer support, problem-solving therapy) delivered primarily by CHWs, lay health workers, or peer counselors |
+| Comparator | Usual care, enhanced usual care, waitlist control, active control (non-CHW delivered), or no intervention |
+| Outcome | At least one validated measure of maternal depression or anxiety symptoms (e.g., PHQ-9, EPDS, GAD-7, SRQ-20, BDI, HADS) |
+| Study design | Randomized controlled trials (RCTs) and cluster-randomized trials |
+| Time period | No date restriction (database inception to present) |
+| Language | English (including non-English studies with English abstracts) |
+| Publication type | Peer-reviewed journal articles |
+
+## Exclusion Criteria
+
+- Interventions delivered exclusively by professional mental health providers (psychiatrists, psychologists, psychiatric nurses) without CHW involvement
+- Studies where CHWs only perform screening or referral without a therapeutic or psychosocial intervention component
+- Conference abstracts, editorials, commentaries, or protocols without results
+- Studies conducted exclusively in high-income countries
+- Studies without a control or comparison group
+- Non-randomized study designs (pre-post, cross-sectional, cohort without randomization)
+
+# Information Sources
+
+## Electronic Databases
+
+| Database | Platform | Date searched |
+|----------|----------|---------------|
+| PubMed/MEDLINE | NCBI | Pending |
+| OpenAlex | API | Pending |
+| Semantic Scholar | API (CC BY-NC data license) | Pending |
+| Europe PMC | EBI | Pending |
+| CrossRef | API | Pending |
+
+## Other Sources
+
+- Reference lists of included studies
+- Reference lists of relevant existing systematic reviews
+- Grey literature: WHO IRIS, World Bank Open Knowledge Repository
+- Trial registries: ClinicalTrials.gov, WHO ICTRP
+
+# Search Strategy
+
+## Concept Decomposition
+
+| Concept | MeSH Terms | Free-text Synonyms |
+|---------|-----------|-------------------|
+| Population | Pregnant Women; Postpartum Period; Mothers | perinatal, antenatal, prenatal, postnatal, postpartum, maternal, pregnancy, pregnant, mothers |
+| Intervention | Community Health Workers; Psychotherapy; Counseling | community health worker*, lay health worker*, lay counselor*, peer counselor*, peer support*, task shifting, task sharing, CHW, village health worker* |
+| Outcome | Depression; Anxiety; Mental Health | depression, depressive, anxiety, mental health, psychological distress, perinatal depression, postpartum depression, antenatal depression, maternal depression |
+| Setting | Developing Countries | low-income, middle-income, LMIC*, developing countr*, resource-limited, low-resource |
+
+## Boolean Query Structure
+
+```
+(Population terms) AND (Intervention terms) AND (Outcome terms) AND (Setting terms)
+```
+
+## Full Search Strategy
+
+[To be developed and executed with the @systematic-reviewer agent at the Search and Screening stage]
+
+# Study Selection
+
+## Screening Process
+
+1. **Deduplication:** Automated matching by DOI, PMID, and title/year/first author, followed by manual verification
+2. **Title/abstract screening:** Single reviewer with AI-assisted presentation of records; all decisions made by the human reviewer
+3. **Full-text screening:** Single reviewer assessing against eligibility criteria; exclusion reasons documented for each excluded study
+4. **Disagreement resolution:** N/A (single reviewer); uncertain records flagged for re-review
+
+# Data Extraction
+
+## Data Items
+
+| Variable | Description | Source |
+|----------|-------------|--------|
+| Study identifiers | Authors, year, country, journal | Publication |
+| Study design | RCT, cluster-RCT, sample size, follow-up duration | Methods section |
+| Population | Perinatal stage, age, baseline symptom severity, sociodemographic characteristics | Methods/Results |
+| Intervention | Type, content, duration, frequency, delivery format (individual/group), CHW training model | Methods section |
+| CHW characteristics | Type of worker, education level, supervision model | Methods section |
+| Comparator | Description of control condition | Methods section |
+| Outcomes | Depression/anxiety scale used, timepoints, mean scores, effect sizes | Results section |
+| Risk of bias | Domain-level judgments | Full text assessment |
+
+## Data Extraction Form
+
+[To be designed at the Data Extraction stage with the @systematic-reviewer agent]
+
+# Risk of Bias Assessment
+
+- **Tool:** Cochrane Risk of Bias 2.0 (RoB 2) for individually randomized trials; adapted for cluster-randomized trials
+- **Domains assessed:** Randomization process, deviations from intended interventions, missing outcome data, measurement of the outcome, selection of reported result
+- **Number of assessors:** 1 (with documentation for transparency)
+- **Disagreement resolution:** N/A (single reviewer)
+
+# Data Synthesis
+
+## Qualitative Synthesis
+
+A narrative synthesis will describe included studies, organized by intervention type, population characteristics, and outcomes. Summary tables will present key study characteristics and findings.
+
+## Quantitative Synthesis (if applicable)
+
+- **Software:** R (metafor package) or Python
+- **Effect measure:** Standardized mean difference (SMD, Hedges' g) for continuous outcomes; risk ratio (RR) for dichotaneous outcomes
+- **Model:** Random-effects model (DerSimonian-Laird or REML estimator)
+- **Heterogeneity assessment:** I-squared statistic, Cochran's Q test, tau-squared; interpretation following Cochrane guidance (I² 0-40% might not be important, 30-60% moderate, 50-90% substantial, 75-100% considerable)
+- **Subgroup analyses planned:**
+  - Intervention type (CBT-based vs. psychoeducation vs. peer support vs. other)
+  - Timing (antenatal vs. postnatal vs. both)
+  - Depression vs. anxiety outcomes
+  - Country income classification (low-income vs. lower-middle-income vs. upper-middle-income)
+- **Sensitivity analyses planned:**
+  - Excluding studies at high risk of bias
+  - Excluding cluster-RCTs
+  - Restricting to studies using the EPDS as the primary outcome measure
+- **Publication bias:** Funnel plot and Egger's test (if ≥10 studies)
+
+# Confidence in Cumulative Evidence
+
+- **Framework:** GRADE (Grading of Recommendations, Assessment, Development, and Evaluations)
+- **Domains assessed:** Risk of bias, inconsistency, indirectness, imprecision, publication bias
+
+# Use of Research Workflow Assistant (RWA)
+
+This protocol was prepared with assistance from Research Workflow Assistant (RWA) [@vanzyl2026rwa], accessed through GitHub Copilot in VS Code:
+
+- **Use:** Protocol template generation, PICO framework structuring, search concept decomposition, and workflow planning
+- **Human oversight:** All decisions regarding the research question, eligibility criteria, methods, and final approval were made by the lead researcher
+- **Verification:** All protocol content was reviewed and approved by the researcher
+- **ICMJE compliance:** AI tools are not listed as authors; use is disclosed per ICMJE Section II.A.4
+
+# Acknowledgments and AI Disclosure
+
+Research Workflow Assistant (RWA) [@vanzyl2026rwa], accessed through GitHub Copilot in VS Code, was used to assist with protocol template generation, structuring the PICO framework, and organizing the search concept decomposition. The author reviewed, revised, and verified all AI-assisted content and takes full responsibility for the final protocol.
+
+# Timeline
+
+| Phase | Target Start | Target End |
+|-------|-------------|-----------|
+| Protocol development | 2026-03-14 | 2026-03-14 |
+| Search execution | 2026-03-14 | 2026-03-14 |
+| Screening (title/abstract + full-text) | 2026-03-14 | 2026-03-14 |
+| Data extraction & RoB 2 | 2026-03-14 | 2026-03-14 |
+| Evidence synthesis & GRADE | 2026-03-14 | 2026-03-14 |
+| Manuscript draft | 2026-03-14 | 2026-03-14 |
+| Risk of bias assessment | | |
+| Data synthesis | | |
+| Manuscript preparation | | |
+| Submission | | |
+
+# Amendments
+
+Any amendments to this protocol will be documented with date, description, and rationale.
+
+| Date | Section | Amendment | Rationale |
+|------|---------|-----------|-----------|
+| | | | |

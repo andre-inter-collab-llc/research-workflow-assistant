@@ -79,14 +79,15 @@ jobs:
           import zotero_local_server
           import prisma_tracker
           import project_tracker
-          print('All 9 servers importable')
+          import chat_exporter
+          print('All 10 servers importable')
           "
 
       - name: Verify server imports (Windows)
         if: runner.os == 'Windows'
         run: |
           .venv\Scripts\activate
-          python -c "import pubmed_server; import openalex_server; import semantic_scholar_server; import europe_pmc_server; import crossref_server; import zotero_server; import zotero_local_server; import prisma_tracker; import project_tracker; print('All 9 servers importable')"
+          python -c "import pubmed_server; import openalex_server; import semantic_scholar_server; import europe_pmc_server; import crossref_server; import zotero_server; import zotero_local_server; import prisma_tracker; import project_tracker; import chat_exporter; print('All 10 servers importable')"
 
   lint:
     runs-on: ubuntu-latest

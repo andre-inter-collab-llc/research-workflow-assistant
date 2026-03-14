@@ -174,6 +174,7 @@ When tracking project progress or generating briefs:
 - **zotero-local-server**: Access local Zotero data: PDF text/annotation extraction, full-text keyword search across stored PDFs, and optional Better BibTeX integration
 - **prisma-tracker**: Track PRISMA flow diagram data locally
 - **project-tracker**: Track project phases, milestones, tasks, decisions, meetings
+- **chat-exporter**: Export Copilot Chat sessions to QMD files for reproducibility audit trails
 
 ### Rate Limiting
 Respect API rate limits for all external services:
@@ -262,6 +263,7 @@ The repository scaffold is complete. All files listed below are implemented and 
 
 - **8 MCP servers** (Python, using `mcp` SDK + `httpx`): PubMed, OpenAlex, Semantic Scholar, Europe PMC, CrossRef, Zotero, PRISMA Tracker, Project Tracker
 - **1 local MCP server** (Python, using `mcp` SDK + `pymupdf`): Zotero Local (PDF text/annotation extraction, keyword search, Better BibTeX integration)
+- **1 utility MCP server** (Python, using `mcp` SDK): Chat Exporter (export Copilot Chat sessions to QMD for reproducibility)
 - **5 custom Copilot agents** (`.agent.md`): systematic-reviewer, data-analyst, academic-writer, research-planner, project-manager
 - **1 developer agent** (`.agent.md`): developer — handles bug fixes, feature requests, and repo improvements
 - **6 compliance documents**: ICMJE authorship checklist, AI disclosure template, PRISMA 2020, PRISMA-ScR, MOOSE, Cochrane RoB 2
@@ -276,7 +278,7 @@ When the developer opens this project for the first time, guide them through the
 1. **Set up Python environment and install MCP servers**
    - Create a virtual environment: `python -m venv .venv`
    - Activate it: `.venv\Scripts\activate` (Windows) or `source .venv/bin/activate` (macOS/Linux)
-   - Install all servers: `pip install -e mcp-servers/_shared -e mcp-servers/pubmed-server -e mcp-servers/openalex-server -e mcp-servers/semantic-scholar-server -e mcp-servers/europe-pmc-server -e mcp-servers/crossref-server -e mcp-servers/zotero-server -e mcp-servers/zotero-local-server -e mcp-servers/prisma-tracker -e mcp-servers/project-tracker`
+   - Install all servers: `pip install -e mcp-servers/_shared -e mcp-servers/pubmed-server -e mcp-servers/openalex-server -e mcp-servers/semantic-scholar-server -e mcp-servers/europe-pmc-server -e mcp-servers/crossref-server -e mcp-servers/zotero-server -e mcp-servers/zotero-local-server -e mcp-servers/prisma-tracker -e mcp-servers/project-tracker -e mcp-servers/chat-exporter`
 
 2. **Configure API keys**
    - Copy `.env.example` to `.env`
@@ -286,7 +288,7 @@ When the developer opens this project for the first time, guide them through the
 
 3. **Verify MCP servers start correctly**
    - Open VS Code Command Palette > "MCP: List Servers"
-   - All 9 servers should show as started. If not, click Start (▶) or run "MCP: Restart Servers"
+   - All 10 servers should show as started. If not, click Start (▶) or run "MCP: Restart Servers"
    - The `command` in `.vscode/mcp.json` must point to the **venv Python** (`${workspaceFolder}/.venv/Scripts/python` on Windows, `${workspaceFolder}/.venv/bin/python` on macOS/Linux). If it says just `python`, update it.
    - After starting or restarting servers, open a **new** Copilot Chat session — existing sessions may not pick up newly started servers
    - Test individual servers: `python -m pubmed_server` (with venv active)

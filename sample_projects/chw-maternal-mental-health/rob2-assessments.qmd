@@ -1,0 +1,619 @@
+---
+title: "Risk of Bias Assessment (RoB 2): CHW Interventions for Maternal Mental Health in LMICs"
+subtitle: "Cochrane Risk of Bias 2.0 — Individual Study Assessments"
+author:
+  - name: "Andre van Zyl, MPH"
+    orcid: "0000-0001-6872-5276"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    self-contained: true
+  docx:
+    toc: true
+    toc-depth: 3
+bibliography: references.bib
+csl: ../../apa.csl
+---
+
+# Risk of Bias Assessment Overview
+
+Risk of bias was assessed using the Cochrane Risk of Bias 2.0 (RoB 2) tool for individually randomized trials. For cluster-randomized trials, additional considerations for randomization at the cluster level are noted.
+
+::: {.callout-warning}
+## Abstract-Level Assessment
+
+These assessments are based on information available in published abstracts only. Many signalling questions could not be answered from abstracts alone. **Full-text review is required** to finalize all RoB 2 judgements. Questions marked "No information" should be re-assessed with full-text access.
+:::
+
+**Outcome assessed:** Primary outcome — maternal depression/anxiety symptoms (continuous scale scores)
+
+**Effect of interest:** Effect of assignment to intervention (intention-to-treat effect)
+
+---
+
+# Summary of Risk of Bias Judgements
+
+| Study | D1: Randomization | D2: Deviations | D3: Missing Data | D4: Measurement | D5: Reporting | Overall |
+|-------|:-----------------:|:--------------:|:----------------:|:---------------:|:-------------:|:-------:|
+| Wang 2025 | Some concerns | Some concerns | Low | Some concerns | Some concerns | Some concerns |
+| Hossain 2024 | Some concerns | Some concerns | Low | Some concerns | No information | Some concerns |
+| Rotheram-Borus 2023 | Some concerns | Some concerns | No information | Some concerns | Some concerns | Some concerns |
+| Rossouw 2021 | Some concerns | Some concerns | Low | High | Some concerns | High |
+| Husain 2021 | Some concerns | Some concerns | No information | Some concerns | No information | Some concerns |
+| Vanobberghen 2020 | Some concerns | Some concerns | Some concerns | Some concerns | Low | Some concerns |
+| Lund 2020 | Low | Low | Low | Low | Low | Low |
+
+---
+
+# Individual Study Assessments
+
+## Study 1: Wang 2025
+
+**Study reference:** Wang N, et al. (2025). BMC Pregnancy Childbirth. PMID: 41466232
+
+**Assessor:** AI-assisted (systematic-reviewer agent) — requires human verification
+
+**Effect of interest:** Effect of assignment to CHW home-visiting intervention on DASS-21 scores
+
+### Domain 1: Randomization process
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 1.1 Was the allocation sequence random? | Probably yes | Cluster RCT (79 townships randomized); registered (ISRCTN98898991); specific randomization method NR |
+| 1.2 Was the allocation sequence concealed until participants were enrolled and assigned? | No information | Not described; township-level assignment means participants may have known assignment before enrollment |
+| 1.3 Did baseline differences between groups suggest a problem with the randomization process? | No | Full text Table 2: age, education, income, parity, gestational age — no significant differences (all p > 0.10); depression/anxiety/stress prevalence balanced |
+
+**Risk of bias judgement:** Some concerns
+
+**Rationale:** Cluster RCT with balanced baseline characteristics. But allocation concealment unclear, and cluster-level randomization at township level could allow foreknowledge of assignment.
+
+### Domain 2: Deviations from intended interventions
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 2.1 Were participants aware of their assigned intervention during the trial? | Probably yes | Home visiting intervention cannot be blinded to participants |
+| 2.2 Were carers and people delivering the interventions aware of participants' assigned intervention? | Yes | CHWs delivered the intervention; inherently unblinded |
+| 2.3 If Y/PY/NI to 2.1 or 2.2: Were there deviations from the intended intervention that arose because of the trial context? | No information | Not reported in abstract |
+| 2.4 If Y/PY to 2.3: Were these deviations likely to have affected the outcome? | — | — |
+| 2.5 If Y/PY/NI to 2.4: Were these deviations from intended intervention balanced between groups? | — | — |
+| 2.6 Was an appropriate analysis used to estimate the effect of assignment to intervention? | Probably yes | Average treatment effect analysis mentioned |
+| 2.7 If N/PN/NI to 2.6: Was there potential for a substantial impact of the failure to analyze participants in the group to which they were randomized? | — | — |
+
+**Risk of bias judgement:** Some concerns
+
+**Rationale:** Open-label by nature of intervention. ITT-type analysis used, but no data on protocol deviations from abstract.
+
+### Domain 3: Missing outcome data
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 3.1 Were data for this outcome available for all, or nearly all, participants randomized? | Probably yes | 527/592 analyzed (89.0%); T attrition 9.3%, C attrition 12.8% — balanced (per full text) |
+| 3.2–3.4 | — | Not needed (3.1 = Probably yes) |
+
+**Risk of bias judgement:** Low
+
+**Rationale:** 89% retention with balanced attrition between groups. 65 dropouts unlikely to substantially bias results.
+
+### Domain 4: Measurement of the outcome
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 4.1 Was the method of measuring the outcome inappropriate? | No | DASS-21 is a validated measure |
+| 4.2 Could measurement or ascertainment of the outcome have differed between groups? | Probably no | Same instrument applied to both groups |
+| 4.3 Were outcome assessors aware of the intervention received by study participants? | Probably yes | DASS-21 is self-report; participants were unblinded |
+| 4.4 Could assessment of the outcome have been influenced by knowledge of intervention received? | Probably yes | Self-report instruments are susceptible to expectation bias |
+| 4.5 Is it likely that assessment of the outcome was influenced by knowledge of intervention received? | Probably no | Depression/anxiety scales are subjective but validated; unclear magnitude of bias |
+
+**Risk of bias judgement:** Some concerns
+
+**Rationale:** Self-report outcome (DASS-21) in an open-label trial creates potential for expectation bias, though DASS-21 is well-validated.
+
+### Domain 5: Selection of the reported result
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 5.1 Were data analysed in accordance with a pre-specified analysis plan? | No information | Trial registered, but cannot confirm pre-specified SAP from abstract |
+| 5.2 Is the numerical result likely selected from multiple eligible outcome measurements? | Probably no | DASS-21 has 3 subscales; all appear reported |
+| 5.3 Is the numerical result likely selected from multiple eligible analyses? | No information | Both ATE and LATE reported; cannot confirm pre-specification |
+
+**Risk of bias judgement:** Some concerns
+
+**Rationale:** Registered trial, but cannot confirm pre-specified analysis plan from abstract. Multiple analysis approaches used (ATE and LATE).
+
+### Overall Risk of Bias: **Some concerns**
+
+**Rationale:** Key sources of concern include lack of blinding (inherent to intervention design), self-report outcome, and insufficient information on allocation concealment, missing data, and pre-specified analysis. Full-text needed for definitive assessment.
+
+---
+
+## Study 2: Hossain 2024
+
+**Study reference:** Hossain SJ, et al. (2024). Global Health Action. PMID: 39560615
+
+**Assessor:** AI-assisted (systematic-reviewer agent) — requires human verification
+
+**Effect of interest:** Effect of assignment to parenting + nutrition + cash intervention on SRQ-20 scores
+
+### Domain 1: Randomization process
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 1.1 Was the allocation sequence random? | Probably yes | Cluster RCT; 20 wards randomized; registered NCT03753646 |
+| 1.2 Was the allocation sequence concealed until participants were enrolled? | No information | Not described; ward-level randomization may have allowed foreknowledge |
+| 1.3 Did baseline differences suggest a problem with randomization? | No | Full text: age, education, SRQ-20, QoL balanced between groups |
+
+**Risk of bias judgement:** Some concerns
+
+**Rationale:** Cluster RCT with balanced baseline characteristics. Only 20 clusters — limited but adequate. Concealment details absent.
+
+### Domain 2: Deviations from intended interventions
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 2.1 Were participants aware of their assigned intervention? | Probably yes | Intervention clusters received additional sessions; both received cash |
+| 2.2 Were carers/deliverers aware? | Yes | CHWs delivered sessions in intervention clusters only |
+| 2.3 Were there deviations from intended intervention? | No information | — |
+| 2.6 Was an appropriate analysis used? | Probably yes | Linear regression analysis reported |
+
+**Risk of bias judgement:** Some concerns
+
+**Rationale:** Open-label cluster design. Appropriate analysis used. No data on protocol deviations.
+
+### Domain 3: Missing outcome data
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 3.1 Were data available for all or nearly all participants? | Probably yes | 93% completed the study (547 of ~588) |
+
+**Risk of bias judgement:** Low
+
+**Rationale:** 93% retention is high. Minimal missing data unlikely to substantially bias results.
+
+### Domain 4: Measurement of the outcome
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 4.1 Was the method of measuring the outcome inappropriate? | No | SRQ-20 is a validated WHO screening instrument |
+| 4.2 Could measurement differ between groups? | Probably no | Same instrument in both arms |
+| 4.3 Were assessors aware of intervention? | Probably yes | Self-report; participants unblinded |
+| 4.4 Could assessment be influenced by knowledge? | Probably yes | Self-report susceptible to expectation bias |
+| 4.5 Is it likely assessment was influenced? | Probably no | SRQ-20 is well-validated; unclear magnitude of bias |
+
+**Risk of bias judgement:** Some concerns
+
+**Rationale:** Self-report instrument (SRQ-20) in open-label trial.
+
+### Domain 5: Selection of the reported result
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 5.1 Pre-specified analysis plan? | Probably yes | Registered NCT03753646; multiple sensitivity analyses consistent with pre-specification |
+| 5.2 Selected from multiple measurements? | Probably no | SRQ-20 is a single summary score |
+| 5.3 Selected from multiple analyses? | Probably no | Sensitivity analyses with additional covariates did not change results |
+
+**Risk of bias judgement:** Low
+
+**Rationale:** Pre-registered trial; consistent results across sensitivity analyses.
+
+### Overall Risk of Bias: **Some concerns**
+
+**Rationale:** Cluster RCT with good retention (93.2%), pre-registration, and balanced baselines. Main concerns are open-label design with self-report outcome (SRQ-20) and assessors not fully blinded. Depression was a secondary outcome of a child development trial — potential for under-powering or secondary analysis framing. Small effect size (d = −0.20).
+
+---
+
+## Study 3: Rotheram-Borus 2023
+
+**Study reference:** Rotheram-Borus MJ, et al. (2023). Social Science & Medicine. PMID: 37001280
+
+**Assessor:** AI-assisted (systematic-reviewer agent) — requires human verification
+
+**Effect of interest:** Effect of assignment to PIP home visiting on depression trajectories over 8 years
+
+### Domain 1: Randomization process
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 1.1 Was the allocation sequence random? | Probably yes | Described as "randomized controlled trial" |
+| 1.2 Was the allocation concealed? | No information | Not described in abstract |
+| 1.3 Did baseline differences suggest a problem? | No information | Not reported for this follow-up paper |
+
+**Risk of bias judgement:** Some concerns
+
+**Rationale:** Cluster RCT design; randomization details not in this long-term follow-up report's abstract.
+
+### Domain 2: Deviations from intended interventions
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 2.1 Were participants aware? | Probably yes | Home visiting intervention; open-label |
+| 2.2 Were deliverers aware? | Yes | Paraprofessionals delivered the intervention |
+| 2.3 Were there deviations? | No information | Over 8 years, protocol deviations highly likely |
+| 2.6 Appropriate analysis? | Probably yes | Bayesian mixed-effects models |
+
+**Risk of bias judgement:** Some concerns
+
+**Rationale:** 8-year follow-up with inherently open-label design. Substantial time for contamination or co-interventions. Bayesian models are appropriate but complex.
+
+### Domain 3: Missing outcome data
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 3.1 Were data available for nearly all participants? | No information | Follow-up rate at 5y and 8y not reported in abstract |
+
+**Risk of bias judgement:** No information
+
+**Rationale:** Long-term follow-up (8 years) typically associated with substantial attrition; rates not reported in abstract.
+
+### Domain 4: Measurement of the outcome
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 4.1 Was the method inappropriate? | No information | Depression scale not named in abstract |
+| 4.2 Could measurement differ between groups? | Probably no | Same assessment in both arms |
+| 4.3 Were assessors aware? | No information | Cannot determine blinding of assessors from abstract |
+| 4.4 Could knowledge influence assessment? | Probably yes | If self-report (likely), susceptible to bias |
+| 4.5 Likely influenced? | No information | — |
+
+**Risk of bias judgement:** Some concerns
+
+**Rationale:** Depression measurement tool not named in abstract; likely self-report based on related publications. Cannot assess blinding of outcome assessment.
+
+### Domain 5: Selection of the reported result
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 5.1 Pre-specified analysis plan? | No information | This is a long-term follow-up report; original protocol unclear from abstract |
+| 5.2 Selected from multiple measurements? | Probably no | Depression appears to be the primary maternal outcome |
+| 5.3 Selected from multiple analyses? | Some concerns | Multiple timepoints (5y, 8y); Bayesian models with multiple specifications possible |
+
+**Risk of bias judgement:** Some concerns
+
+**Rationale:** Long-term follow-up paper with multiple timepoints and potential for analytical flexibility.
+
+### Overall Risk of Bias: **Some concerns**
+
+**Rationale:** 8-year follow-up introduces substantial uncertainty about attrition, co-interventions, and analytical pre-specification. Open-label design. Multiple critical data points unavailable from abstract.
+
+---
+
+## Study 4: Rossouw 2021
+
+**Study reference:** Rossouw L, et al. (2021). Maternal and Child Health Journal. PMID: 34618311
+
+**Assessor:** AI-assisted (systematic-reviewer agent) — requires human verification
+
+**Effect of interest:** Effect of assignment to TBB + CHW intervention on depressive symptom scores
+
+### Domain 1: Randomization process
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 1.1 Was the allocation sequence random? | Probably yes | Described as "pilot randomised controlled trial" |
+| 1.2 Was the allocation concealed? | No information | Not described in abstract |
+| 1.3 Did baseline differences suggest a problem? | No information | Not reported; small sample (n = 72) increases risk of imbalance |
+
+**Risk of bias judgement:** Some concerns
+
+**Rationale:** Small pilot RCT (n = 72) with unequal group sizes (39 vs 33). No allocation concealment details. Small sample increases risk of baseline imbalance.
+
+### Domain 2: Deviations from intended interventions
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 2.1 Were participants aware? | Probably yes | Received physical box (TBB) + CHW visits; impossible to blind |
+| 2.2 Were deliverers aware? | Yes | CHWs delivered the intervention |
+| 2.3 Were there deviations? | No information | — |
+| 2.6 Appropriate analysis? | No information | Analysis approach not described in abstract |
+
+**Risk of bias judgement:** Some concerns
+
+**Rationale:** Open-label pilot. No information on analysis approach or deviations.
+
+### Domain 3: Missing outcome data
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 3.1 Were data available for nearly all participants? | Probably yes | All 72 appear to be analyzed (abstract implies complete cases) |
+
+**Risk of bias judgement:** Low
+
+**Rationale:** Small sample with apparently complete follow-up.
+
+### Domain 4: Measurement of the outcome
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 4.1 Was the method inappropriate? | No information | Depression scale not named; range 1–8 is unusual and non-standard |
+| 4.2 Could measurement differ? | Probably no | Same instrument in both arms |
+| 4.3 Were assessors aware? | Probably yes | Likely self-report; participants unblinded |
+| 4.4 Could knowledge influence? | Probably yes | Self-report in open-label trial |
+| 4.5 Likely influenced? | Probably yes | Unnamed scale; validation status unknown from abstract |
+
+**Risk of bias judgement:** High
+
+**Rationale:** Depression outcome measured on an unnamed scale with non-standard range (1–8). Validation status uncertain from abstract. Self-report in open-label design. This combination raises serious concerns about measurement quality and bias.
+
+### Domain 5: Selection of the reported result
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 5.1 Pre-specified analysis plan? | No information | Trial registration not mentioned; pilot study |
+| 5.2 Selected from multiple measurements? | Probably yes | Multiple outcomes reported (depression, nutrition, breastfeeding); depression is one of several |
+| 5.3 Selected from multiple analyses? | No information | Moderator by refrigerator ownership appears post-hoc |
+
+**Risk of bias judgement:** Some concerns
+
+**Rationale:** Pilot study with multiple outcomes. Moderator analysis by refrigerator ownership appears exploratory.
+
+### Overall Risk of Bias: **High**
+
+**Rationale:** High risk in measurement domain due to unnamed, potentially non-validated depression scale. Pilot study (n = 72) with no trial registration information, multiple outcomes, and apparent post-hoc analyses. Full-text needed to identify the depression measure and assess validation.
+
+---
+
+## Study 5: Husain 2021
+
+**Study reference:** Husain N, et al. (2021). Depression and Anxiety. PMID: 34010505
+
+**Assessor:** AI-assisted (systematic-reviewer agent) — requires human verification
+
+**Effect of interest:** Effect of assignment to LTP+ on EPDS scores at 3 and 6 months
+
+### Domain 1: Randomization process
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 1.1 Was the allocation sequence random? | Probably yes | Described as "cluster randomized control trial" with 120 villages randomized |
+| 1.2 Was the allocation concealed? | No information | Not described in abstract; village-level randomization |
+| 1.3 Did baseline differences suggest a problem? | No information | Not reported in abstract |
+
+**Risk of bias judgement:** Some concerns
+
+**Rationale:** Large number of clusters (120) reduces imbalance risk. But concealment details absent from abstract.
+
+### Domain 2: Deviations from intended interventions
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 2.1 Were participants aware? | Probably yes | Received additional intervention sessions; open-label |
+| 2.2 Were deliverers aware? | Yes | Lay health workers delivered LTP+ |
+| 2.3 Were there deviations? | No information | — |
+| 2.6 Appropriate analysis? | No information | Analysis approach not specified in abstract |
+
+**Risk of bias judgement:** Some concerns
+
+**Rationale:** Open-label cluster design. Analysis details insufficient for full assessment.
+
+### Domain 3: Missing outcome data
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 3.1 Were data available for nearly all participants? | No information | Follow-up rate not reported in abstract; 774 enrolled |
+
+**Risk of bias judgement:** No information
+
+**Rationale:** Cannot assess from abstract. Full-text needed.
+
+### Domain 4: Measurement of the outcome
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 4.1 Was the method inappropriate? | No | EPDS is well-validated for perinatal populations |
+| 4.2 Could measurement differ? | Probably no | Same instrument in both arms |
+| 4.3 Were assessors aware? | Probably yes | EPDS is self-report; participants unblinded |
+| 4.4 Could knowledge influence? | Probably yes | Self-report in open-label trial |
+| 4.5 Likely influenced? | Probably no | EPDS is well-validated; although large effect size (ES = −7.2) is notable |
+
+**Risk of bias judgement:** Some concerns
+
+**Rationale:** Self-report (EPDS) in open-label trial. The very large effect size (ES = −7.2 at 3 months) is unusually large and warrants scrutiny — could reflect measurement bias, demand characteristics, or genuine large effect. Full-text needed to assess blinding of data collectors.
+
+### Domain 5: Selection of the reported result
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 5.1 Pre-specified analysis plan? | No information | Trial registration not mentioned in abstract |
+| 5.2 Selected from multiple measurements? | Probably no | EPDS is the named primary for depression; ASQ for child development |
+| 5.3 Selected from multiple analyses? | No information | — |
+
+**Risk of bias judgement:** No information
+
+**Rationale:** Cannot determine pre-specification from abstract.
+
+### Overall Risk of Bias: **Some concerns**
+
+**Rationale:** Large cluster RCT with substantial effect sizes. Main concerns are open-label design with self-report outcome and lack of information on allocation concealment, attrition, and pre-registration. The very large effect size warrants additional scrutiny in full-text review.
+
+---
+
+## Study 6: Vanobberghen 2020
+
+**Study reference:** Vanobberghen F, et al. (2020). Journal of Affective Disorders. PMID: 32090783
+
+**Assessor:** AI-assisted (systematic-reviewer agent) — requires human verification
+
+**Effect of interest:** Effect of assignment to THPP on PHQ-9 severity and remission at 6 months post-childbirth
+
+### Domain 1: Randomization process
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 1.1 Was the allocation sequence random? | Probably yes | Pooled from two RCTs; both described as randomized |
+| 1.2 Was the allocation concealed? | No information | Not described in this pooled analysis abstract; refer to original trials |
+| 1.3 Did baseline differences suggest a problem? | No information | Not reported in abstract |
+
+**Risk of bias judgement:** Some concerns
+
+**Rationale:** Pooled analysis of two separate RCTs. Randomization details deferred to original trial publications.
+
+### Domain 2: Deviations from intended interventions
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 2.1 Were participants aware? | Probably yes | Psychosocial intervention; open-label |
+| 2.2 Were deliverers aware? | Yes | Peer volunteers delivered THPP |
+| 2.3 Were there deviations? | No information | — |
+| 2.6 Appropriate analysis? | Probably yes | Pooled individual participant data analysis with adjusted estimates |
+
+**Risk of bias judgement:** Some concerns
+
+**Rationale:** Open-label by nature. Appropriate pooled analysis with adjustment.
+
+### Domain 3: Missing outcome data
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 3.1 Were data available for nearly all participants? | Probably no | 704/850 (83%) attended 6-month follow-up; 17% missing |
+| 3.2 Is there evidence the result was not biased by missing data? | No information | Not addressed in abstract |
+| 3.3 Could missingness depend on true value? | Probably yes | Depressed women may be more likely to drop out |
+| 3.4 Is it likely missingness depended on true value? | No information | — |
+
+**Risk of bias judgement:** Some concerns
+
+**Rationale:** 17% missing outcome data. Authors note 10–20% missing as a limitation. Differential dropout by depression status is plausible.
+
+### Domain 4: Measurement of the outcome
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 4.1 Was the method inappropriate? | No | PHQ-9 is well-validated |
+| 4.2 Could measurement differ? | Probably no | Same instrument in both arms and both countries |
+| 4.3 Were assessors aware? | Probably yes | PHQ-9 is self-report; participants unblinded |
+| 4.4 Could knowledge influence? | Probably yes | Self-report in open-label trial |
+| 4.5 Likely influenced? | Probably no | PHQ-9 validated; effect is modest (AMD = −0.78) |
+
+**Risk of bias judgement:** Some concerns
+
+**Rationale:** Self-report (PHQ-9) in open-label trials. Modest effect size suggests measurement bias may not be dominant.
+
+### Domain 5: Selection of the reported result
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 5.1 Pre-specified analysis plan? | Probably yes | Pooled analysis appears planned a priori; pre-defined covariates for effect modification |
+| 5.2 Selected from multiple measurements? | Probably no | PHQ-9 severity and remission both primary; clearly stated |
+| 5.3 Selected from multiple analyses? | Probably no | Adjusted analysis with pre-defined covariates |
+
+**Risk of bias judgement:** Low
+
+**Rationale:** Appears to follow a pre-specified pooled analysis plan with pre-defined outcomes and covariates.
+
+### Overall Risk of Bias: **Some concerns**
+
+**Rationale:** Strong pooled analysis design with pre-specified plan, but concerns about 17% missing data and inherently open-label design with self-report outcome. Individual trial-level RoB should also be consulted.
+
+---
+
+## Study 7: Lund 2020
+
+**Study reference:** Lund C, et al. (2020). Behaviour Research and Therapy. PMID: 31733813
+
+**Assessor:** AI-assisted (systematic-reviewer agent) — requires human verification
+
+**Effect of interest:** Effect of assignment to CHW psychological treatment on HDRS response at 3 months postpartum
+
+### Domain 1: Randomization process
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 1.1 Was the allocation sequence random? | Yes | Individual RCT; registered (NCT01977326) |
+| 1.2 Was the allocation concealed? | Probably yes | Double-blind design implies adequate concealment |
+| 1.3 Did baseline differences suggest a problem? | No information | Not reported in abstract; but double-blind reduces risk |
+
+**Risk of bias judgement:** Low
+
+**Rationale:** Registered double-blind individual RCT. Allocation concealment implied by double-blind design.
+
+### Domain 2: Deviations from intended interventions
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 2.1 Were participants aware? | Probably no | Double-blind design |
+| 2.2 Were deliverers aware? | No information | "Double-blind" — but blinding CHW deliverers to psychosocial content is difficult; may refer to assessor blinding |
+| 2.3 Were there deviations? | No information | — |
+| 2.6 Appropriate analysis? | Probably yes | Modified ITT (excluding pregnancy/infant loss) |
+
+**Risk of bias judgement:** Low
+
+**Rationale:** Double-blind design. Modified ITT analysis with clear, clinically justifiable exclusion criterion. Note: "double-blind" may not mean deliverers were blinded (difficult in psychosocial trials) — likely refers to participant and assessor blinding. Full-text clarification needed.
+
+### Domain 3: Missing outcome data
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 3.1 Were data available for nearly all participants? | Probably yes | 384/425 (90.4%) in modified ITT; 41 excluded for pregnancy/infant loss, not attrition |
+
+**Risk of bias judgement:** Low
+
+**Rationale:** 90.4% analyzed; exclusions were for pre-specified clinical reasons (pregnancy/infant loss), not differential attrition.
+
+### Domain 4: Measurement of the outcome
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 4.1 Was the method inappropriate? | No | HDRS is a well-validated, clinician-rated depression scale |
+| 4.2 Could measurement differ? | Probably no | Standardized assessment in both arms |
+| 4.3 Were assessors aware? | Probably no | Double-blind design; "response on Hamilton Depression Rating Scale" implies blinded assessment |
+| 4.4 Could knowledge influence? | — | Not applicable if assessors were blinded |
+
+**Risk of bias judgement:** Low
+
+**Rationale:** Clinician-rated outcome (HDRS) in a double-blind trial. Unlike self-report scales used in other included studies, HDRS with blinded assessors substantially reduces measurement bias.
+
+### Domain 5: Selection of the reported result
+
+| Signalling question | Response | Notes |
+|---------------------|----------|-------|
+| 5.1 Pre-specified analysis plan? | Yes | Registered on ClinicalTrials.gov (NCT01977326); primary outcome clearly stated |
+| 5.2 Selected from multiple measurements? | Probably no | HDRS response is the pre-specified primary outcome |
+| 5.3 Selected from multiple analyses? | Probably no | Modified ITT is the pre-specified approach |
+
+**Risk of bias judgement:** Low
+
+**Rationale:** Pre-registered trial with clearly defined primary outcome and analysis plan.
+
+### Overall Risk of Bias: **Low**
+
+**Rationale:** This is the strongest study methodologically in the review. Double-blind individual RCT with pre-registration, clinician-rated primary outcome (HDRS), adequate sample size, and low attrition. Notably, this is also the study that found no significant intervention effect — the low risk of bias lends credibility to the null finding.
+
+---
+
+# Methodological Notes
+
+## Key Patterns Across Studies
+
+1. **Blinding**: Only Lund 2020 achieved double-blinding. All other studies are open-label, which is inherent to most psychosocial interventions. This creates systematic risk of self-report bias across the evidence base.
+
+2. **Outcome measurement**: 6 of 7 studies use self-report instruments (DASS-21, SRQ-20, EPDS, PHQ-9, unnamed scale). Only Lund 2020 uses a clinician-rated scale (HDRS). Self-report in open-label trials is a consistent concern.
+
+3. **Effect sizes and risk of bias**: An inverse pattern is notable — the study with lowest risk of bias (Lund 2020) found null results, while studies with higher uncertainty and open-label designs reported positive effects. This pattern does not prove bias but warrants discussion.
+
+4. **Cluster RCTs**: Three studies (Hossain 2024, Rotheram-Borus 2023, Husain 2021) used cluster randomization. Additional RoB considerations for cluster trials (e.g., recruitment bias, identification bias) should be assessed with full-text access.
+
+5. **Missing information**: Substantial data gaps exist for all studies except Lund 2020. Full-text retrieval is essential before finalizing these assessments.
+
+## Sensitivity Analysis Implications
+
+Based on these preliminary RoB assessments, the protocol-specified sensitivity analyses are well-justified:
+
+- **Excluding high risk of bias studies**: Rossouw 2021 would be excluded (high overall RoB)
+- **Excluding cluster RCTs**: Hossain 2024, Rotheram-Borus 2023, Husain 2021 would be excluded
+- **Restricting to EPDS studies**: Husain 2021, Lund 2020 (and possibly Rotheram-Borus 2023) would be included
+
+---
+
+# Assessment Audit
+
+- **Assessment performed by:** AI assistant (systematic-reviewer agent)
+- **Assessment date:** 2026-03-14
+- **Data source:** PubMed abstracts (all 7 studies)
+- **Human review status:** APPROVED by Andre van Zyl, MPH (2026-03-14) — requires review and approval by Andre van Zyl, MPH
+- **Full-text verification status:** NOT YET COMPLETED
+
+::: {.callout-important}
+## Human Review Required
+
+Per Cochrane Handbook and ICMJE guidelines, all risk of bias assessments must be reviewed, verified, and approved by the lead researcher. These AI-generated preliminary assessments should be treated as a starting point for human judgement, not a final determination. Many signalling questions marked "No information" will likely be answerable from full-text review.
+:::

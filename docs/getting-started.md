@@ -70,6 +70,7 @@ pip install -e mcp-servers/zotero-server
 pip install -e mcp-servers/zotero-local-server
 pip install -e mcp-servers/prisma-tracker
 pip install -e mcp-servers/project-tracker
+pip install -e mcp-servers/chat-exporter
 ```
 
 > **VS Code task shortcut:** You can also run `Ctrl+Shift+P` → "Tasks: Run Task" → "Install All MCP Servers" to install everything with a single click.
@@ -119,7 +120,7 @@ Open the workspace in VS Code and check that MCP servers start properly:
 
 1. Open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`)
 2. Select "MCP: List Servers"
-3. All 9 servers should appear and show as available
+3. All 10 servers should appear and show as available
 
 You can also test individual servers from the terminal:
 
@@ -274,7 +275,46 @@ If you work in a separate VS Code workspace, you have two options:
 
 1. **Multi-root workspace** — add both the assistant repo and your project as workspace folders. Use the template at `templates/research-workspace.code-workspace.example`.
 
-2. **Portable MCP config** — copy `templates/portable-mcp-config.json` to your project's `.vscode/mcp.json` and update the paths. This gives your project access to all 9 MCP servers without needing the assistant repo open.
+2. **Portable MCP config** — copy `templates/portable-mcp-config.json` to your project's `.vscode/mcp.json` and update the paths. This gives your project access to all 10 MCP servers without needing the assistant repo open.
+
+## Chat Session Export
+
+RWA can export your Copilot Chat conversations to QMD (Quarto Markdown) files for reproducibility and audit trails. This captures user requests, model responses, tool calls, and optionally model thinking blocks.
+
+### CLI script
+
+List all chat sessions for this workspace:
+
+```bash
+python scripts/export_chat_session.py --list
+```
+
+Export the most recent session to a project's `chat-logs/` directory:
+
+```bash
+python scripts/export_chat_session.py --latest --project my_projects/my-review
+```
+
+Export a specific session by ID:
+
+```bash
+python scripts/export_chat_session.py --session-id <id> --project my_projects/my-review
+```
+
+Options:
+- `--verbose` — include full tool call input/output (default: summary only)
+- `--no-thinking` — exclude model thinking blocks (default: included in collapsible `<details>` sections)
+
+### MCP server
+
+The `chat-exporter` MCP server exposes the same functionality as tools in Copilot Chat:
+- `list_sessions` — list available sessions for this workspace
+- `export_session` — export a specific session by ID
+- `export_latest` — export the most recent session
+
+### Third-party alternative
+
+[SpecStory](https://specstory.com/) is a VS Code extension that automatically saves all Copilot Chat conversations to Markdown files in your repository. It runs continuously in the background and requires no manual export steps. Consider using it alongside or instead of the built-in export tools.
 
 ## Using the Agents
 

@@ -1,0 +1,36 @@
+# Research Workflow Assistant — Project Configuration
+#
+# Project: CHW Interventions for Maternal Mental Health in LMICs
+# Type: Systematic Review
+
+research_assistant:
+  tracking_location: self
+  reporting_standard: prisma-2020
+  project_type: systematic-review
+
+  authors:
+    - name: "Andre van Zyl"
+      credentials: "MPH"
+      author_id: "avz"
+      corresponding: true
+      orcid: "0000-0001-6872-5276"
+      profile_url: "https://www.linkedin.com/in/andre-van-zyl/"
+      affiliation:
+        name: "Intersect Collaborations LLC"
+        city: "Cincinnati"
+        state: "OH"
+        url: "https://www.intersectcollaborations.com/"
+
+  output_defaults:
+    bibliography: references.bib
+    csl: apa.csl
+    include_rwa_methods_disclosure: true
+    include_rwa_acknowledgments: true
+
+  workflow_state:
+    workflow_type: systematic-review
+    current_stage: planning-and-protocol
+    completed_stages:
+      - planning-and-protocol
+    next_agent: systematic-reviewer
+    last_updated: 2026-03-14

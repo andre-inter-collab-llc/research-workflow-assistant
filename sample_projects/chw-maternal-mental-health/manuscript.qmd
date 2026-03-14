@@ -1,0 +1,274 @@
+---
+title: "Effectiveness of Community Health Worker Interventions for Maternal Mental Health in Low- and Middle-Income Countries: A Systematic Review"
+author: "No Author"
+date: today
+abstract: |
+  **Background:** Maternal depression and anxiety during the perinatal period affect an estimated 15–25% of women in low- and middle-income countries (LMICs), yet access to professional mental health services remains severely limited. Task-shifting interventions to community health workers (CHWs) has emerged as a strategy to address this treatment gap.
+
+  **Objective:** To systematically review evidence on the effectiveness of CHW-delivered psychosocial and psychological interventions in reducing symptoms of depression and anxiety among perinatal women in LMICs.
+
+  **Methods:** Five electronic databases (PubMed, OpenAlex, Semantic Scholar, Europe PMC, CrossRef) were searched from inception through March 2026. Eligible studies were randomized controlled trials evaluating CHW-delivered mental health interventions for perinatal women in LMICs, with depression or anxiety measured by validated scales. Risk of bias was assessed using the Cochrane RoB 2 tool. Evidence certainty was evaluated using the GRADE framework. PRISMA 2020 guidelines were followed.
+
+  **Results:** Seven RCTs (five cluster-RCTs, one individual RCT, one pilot RCT) involving approximately 4,274 randomized participants from six countries met inclusion criteria. Three studies in lower-middle-income countries reported significant reductions in depression symptoms (effect sizes ranging from small [Cohen's d = −0.20] to very large [mean difference = −7.2 EPDS points]). All four studies in upper-middle-income countries reported null or transient effects. Six different outcome scales precluded meta-analysis. Risk of bias ranged from low (1 study) to high (1 study), with 5 at some concerns. Notably, the lowest-risk-of-bias study (double-blind, clinician-rated) found null results. GRADE certainty was rated very low.
+
+  **Conclusions:** CHW-delivered interventions may reduce maternal depression symptoms in lower-middle-income settings, particularly when integrated with parenting or nutrition programs and targeted to clinically depressed women. However, evidence certainty is very low due to heterogeneity in interventions, outcome measures, and study quality. Standardized outcome reporting and high-quality trials in low-income countries are needed.
+
+  **Registration:** Not registered.
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    self-contained: true
+    number-sections: true
+  docx:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+  pdf:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    documentclass: article
+    geometry:
+      - margin=1in
+    fontsize: 12pt
+    linestretch: 1.5
+bibliography: references.bib
+csl: ../../apa.csl
+execute:
+  echo: false
+  warning: false
+---
+
+::: {.callout-warning}
+## Sample Project Disclaimer
+
+This manuscript is a **sample project** created to demonstrate the current functionality of the Research Workflow Assistant (RWA). It is **not** a model of how the tool is intended to be used in practice. No author claims authorship of this work. None of the content has been independently verified and may contain errors, inaccuracies, or incomplete information. This document should not be cited, used for clinical decision-making, or treated as a valid systematic review.
+:::
+
+# Introduction
+
+Maternal mental health disorders during the perinatal period — encompassing pregnancy through the first year postpartum — represent a significant and growing global health concern. Depression and anxiety are the most common perinatal mental health conditions, with prevalence estimates in low- and middle-income countries (LMICs) consistently exceeding those in high-income settings. Pooled estimates suggest that 15–25% of perinatal women in LMICs experience clinically significant depressive symptoms, with some studies reporting rates above 30% in resource-limited communities [@fisher2012; @woody2017]. These disorders are associated with adverse outcomes for mothers (impaired functioning, reduced quality of life, increased suicidality), infants (low birth weight, impaired cognitive and socio-emotional development), and families (disrupted caregiving, economic consequences) [@surkan2011; @stein2014].
+
+Despite this burden, the vast majority of affected women in LMICs receive no treatment. A critical shortage of mental health professionals — fewer than 1 psychiatrist per 100,000 population in many low-income countries — combined with stigma, cost, and geographic barriers makes conventional mental health care inaccessible for most perinatal women [@who2021atlas]. Task-shifting, defined as the delegation of clinical tasks from specialist providers to less specialized health workers, has been widely advocated as a strategy to address this gap [@who2008taskshifting]. Community health workers (CHWs), lay health workers, and peer counselors — who live in and are trusted by the communities they serve — are well positioned to deliver basic psychosocial and psychological interventions in routine perinatal care settings.
+
+A growing body of evidence from individual randomized controlled trials (RCTs) has evaluated CHW-delivered interventions targeting perinatal depression and anxiety in LMICs. These interventions range from structured cognitive-behavioral therapy (CBT) adaptations such as the WHO Thinking Healthy Programme [@rahman2008] to integrated parenting and mental health programs, psychoeducation, and psychosocial home visiting. However, the evidence base is characterized by substantial heterogeneity in intervention type, outcome measurement, population characteristics, and study quality.
+
+This systematic review aimed to (1) synthesize evidence on the effectiveness of CHW-delivered psychosocial and psychological interventions for reducing symptoms of maternal depression and anxiety in LMICs, (2) describe the types of interventions, training models, and delivery formats used, (3) identify patterns in effectiveness by intervention type, setting, and population characteristics, and (4) assess the quality and certainty of the available evidence.
+
+# Methods
+
+This systematic review was conducted in accordance with the Preferred Reporting Items for Systematic Reviews and Meta-Analyses (PRISMA) 2020 guidelines [@page2021prisma]. The protocol was developed a priori but was not registered in a public registry.
+
+## Eligibility Criteria
+
+Studies were eligible if they met all of the following criteria: (1) population — pregnant women or women up to 12 months postpartum in LMICs as classified by the World Bank at the time of the study; (2) intervention — any psychosocial or psychological intervention delivered primarily by CHWs, lay health workers, or peer counselors; (3) comparator — usual care, enhanced usual care, active control, or no intervention; (4) outcome — at least one validated measure of maternal depression or anxiety symptoms; and (5) design — randomized controlled trial or cluster-randomized trial published in a peer-reviewed journal.
+
+Studies were excluded if interventions were delivered exclusively by professional mental health providers without CHW involvement, if CHWs performed only screening or referral without a therapeutic component, or if the study was conducted exclusively in a high-income country.
+
+## Information Sources and Search Strategy
+
+Five electronic databases were searched from inception through March 14, 2026: PubMed/MEDLINE (via NCBI), OpenAlex (via API), Semantic Scholar (via API), Europe PMC (via EBI), and CrossRef (via API). A Boolean search strategy was developed using a combination of MeSH terms and free-text synonyms across four concept blocks: population (perinatal women), intervention (community health workers), outcome (depression/anxiety), and setting (LMICs). The complete search strategy is available in the review protocol.
+
+## Study Selection
+
+Records were deduplicated by DOI and PMID matching. Title and abstract screening was performed by a single user with AI assistance. All records passing title/abstract screening were assessed at full text against the eligibility criteria, with exclusion reasons documented for each excluded study.
+
+## Data Extraction
+
+Data were extracted using a standardized form capturing: study identifiers, design (including randomization, sample size, follow-up, analysis approach), population characteristics (perinatal stage, age, baseline severity, setting), intervention details (type, deliverer, format, dose, training, supervision), comparator, primary outcome (scale, timepoints, effect estimates with confidence intervals), and secondary outcomes. Full-text data extraction was completed for two studies with open-access publications available via Europe PMC; the remaining five studies were extracted from published abstracts.
+
+## Risk of Bias Assessment
+
+Risk of bias was assessed using the Cochrane Risk of Bias 2 (RoB 2) tool [@sterne2019rob2] across five domains: randomization process, deviations from intended interventions, missing outcome data, measurement of the outcome, and selection of the reported result. Each domain was rated as low risk, some concerns, or high risk, with an overall judgment for each study. Two studies were reassessed after full-text verification.
+
+## Data Synthesis
+
+A narrative synthesis was planned as the primary synthesis method, organized by intervention type, population characteristics, and outcomes. A random-effects meta-analysis using standardized mean differences (Hedges' g) was pre-specified but subject to a feasibility assessment based on data availability and heterogeneity.
+
+The certainty of evidence was assessed using the GRADE framework [@guyatt2011grade] across five domains: risk of bias, inconsistency, indirectness, imprecision, and publication bias.
+
+## Use of Research Workflow Assistant (RWA)
+
+Research Workflow Assistant (RWA) [@vanzyl2026rwa], accessed through GitHub Copilot in VS Code, was used to assist with: literature search execution across databases, record deduplication, presentation of records for screening, data extraction form design, abstract-based data extraction, risk of bias assessment scaffolding, PRISMA flow tracking, and manuscript drafting. As this is a sample project demonstrating tool functionality, no independent human verification of AI-assisted outputs was performed. Outputs may contain errors.
+
+# Results
+
+## Study Selection
+
+Database searches yielded 265,416 records: PubMed (n = 59), OpenAlex (n = 1,442), Semantic Scholar (n = 162), Europe PMC (n = 0, API issue), and CrossRef (n = 263,753). After retrieving the top-ranked records from each database (n = 200) and removing 15 duplicates by DOI and PMID matching, 185 unique records underwent title and abstract screening. All 185 advanced to full-text assessment. Of the 46 records available for full-text screening, 39 were excluded: wrong design — systematic review, meta-analysis, or scoping review (n = 9); protocol without results (n = 12); wrong design — non-RCT or qualitative (n = 7); wrong outcome (n = 6); high-income country setting (n = 3); wrong population (n = 1); unable to retrieve (n = 1). Seven studies met all inclusion criteria and were included in the qualitative synthesis (@fig-prisma).
+
+::: {#fig-prisma}
+**PRISMA 2020 Flow Diagram**
+
+```
+Records identified from databases (n = 265,416)
+  PubMed: 59 | OpenAlex: 1,442 | Semantic Scholar: 162 | CrossRef: 263,753
+                          |
+            Top records retrieved (n = 200)
+                          |
+            Duplicates removed (n = 15)
+                          |
+         Records screened at title/abstract (n = 185)
+                          |
+            Records excluded (n = 0)
+                          |
+        Full-text records assessed (n = 46)
+              |                        |
+     Excluded (n = 39)          Included (n = 7)
+       Wrong design - SR/MA (9)        |
+       Protocol only (12)        Qualitative synthesis (n = 7)
+       Wrong design - non-RCT (7)     |
+       Wrong outcome (6)         Quantitative synthesis (n = 0)
+       HIC setting (3)            (meta-analysis not feasible)
+       Wrong population (1)
+       Unable to retrieve (1)
+```
+
+PRISMA 2020 flow diagram of study selection.
+:::
+
+## Study Characteristics
+
+@tbl-characteristics summarizes the seven included studies. Five were cluster-RCTs, one was an individual RCT, and one was a pilot RCT. Studies were conducted in six countries: Bangladesh (n = 1), China (n = 1), India and Pakistan pooled (n = 1), Pakistan (n = 1), and South Africa (n = 3). Four studies were conducted in upper-middle-income countries (UMIC) and three in lower-middle-income countries (LMIC). No studies from low-income countries met inclusion criteria. Total sample sizes ranged from 72 to 850, with approximately 4,274 participants randomized across all studies and 3,392 analyzed. Follow-up ranged from immediate postpartum to 8 years.
+
+| Study | Country (Income) | Design | N randomized | N analyzed | Perinatal stage | Intervention | Scale | Key finding |
+|-------|--------|--------|------|------|---------|------|-------|-------------|
+| @wang2025^a^ | China (UMIC) | Cluster RCT | 592 | 527 | Antenatal | Home visiting | DASS-21 | Null overall |
+| @hossain2024^a^ | Bangladesh (LMIC) | Cluster RCT | 587 | 547 | Postnatal | Psychoeducation + cash | SRQ-20 | d = −0.20, p < .001 |
+| @rotheramborus2023 | South Africa (UMIC) | Cluster RCT | NR | NR | Both | Home visiting (Philani) | NR (likely EPDS) | Gains dissipated by 5y |
+| @rossouw2021 | South Africa (UMIC) | Pilot RCT | 72 | 72 | Both | Psychosocial + incentive | Unnamed (1–8) | 0.928-pt reduction |
+| @husain2021 | Pakistan (LMIC) | Cluster RCT | 774 | 774 | Postnatal | Integrated parenting (LTP+) | EPDS | ES = −7.2 (3 mo) |
+| @vanobberghen2020 | India & Pakistan (LMIC) | Pooled 2 RCTs | 850 | 704 | Both | CBT-based (THP) | PHQ-9 | aOR 1.35 remission |
+| @lund2020 | South Africa (UMIC) | Individual RCT | 425 | 384 | Both | Structured psychological | HDRS/EPDS | Null finding |
+
+: Characteristics of included studies. ^a^Full-text verified; remaining studies extracted from abstracts. NR = not reported; UMIC = upper-middle-income country; LMIC = lower-middle-income country. {#tbl-characteristics}
+
+Three studies enrolled only women with clinically significant depression at baseline [@husain2021, EPDS-selected; @vanobberghen2020, PHQ-9 ≥ 10; @lund2020, EPDS ≥ 13], while the remaining four enrolled women regardless of depression status.
+
+## Interventions
+
+Interventions were heterogeneous in type, dose, and delivery model. They included CBT-based therapy [@vanobberghen2020, Thinking Healthy Programme], structured psychological treatment [@lund2020, 6 sessions], integrated parenting and mental health programs [@husain2021, Learning Through Play Plus; @hossain2024, parenting + nutrition + cash], psychosocial home visiting [@wang2025; @rotheramborus2023, Philani Intervention Program], and psychosocial support with incentive [@rossouw2021, Thula Baba Box]. All interventions used individual delivery; no group-based interventions were identified.
+
+Session dose ranged from 6 planned sessions [@lund2020] to approximately 26 fortnightly sessions over 12 months [@hossain2024]. @wang2025 had monthly visits but achieved only 65% compliance. CHW training ranged from 5 days [@wang2025] to 10 days [@hossain2024]; training duration was not reported for five studies.
+
+## Outcome Measures
+
+Six different validated instruments were used across the seven studies: DASS-21 [@wang2025], SRQ-20 [@hossain2024], EPDS [@husain2021], PHQ-9 [@vanobberghen2020], HDRS [@lund2020, primary] with EPDS as secondary, and an unnamed 1–8 scale [@rossouw2021]. @rotheramborus2023 did not name the depression measure but prior publications from the same trial report the EPDS. Only one study [@lund2020] used a clinician-rated instrument; all others relied on self-report measures.
+
+## Effectiveness
+
+### Studies Reporting Significant Benefits
+
+Three studies, all conducted in LMICs, found statistically significant reductions in depression symptoms.
+
+@husain2021 evaluated Learning Through Play Plus (LTP+) delivered by lay health workers to 774 depressed mothers (EPDS-selected) across 120 villages in Pakistan. Depression scores decreased by a mean difference of −7.2 EPDS points at 3 months (95% CI: −8.2 to −6.1) and −4.6 points at 6 months (95% CI: −5.9 to −3.4), representing a very large clinical effect with intervention group means falling below the clinical threshold.
+
+@vanobberghen2020 pooled individual participant data from two RCTs of peer-delivered Thinking Healthy Programme (THP) in India and Pakistan (n = 850 randomized, 704 analyzed). Among women with PHQ-9 ≥ 10 at baseline, the intervention produced an adjusted mean difference of −0.78 (95% CI: −1.47 to −0.09) and an adjusted odds ratio for remission (PHQ-9 < 5) of 1.35 (95% CI: 1.02 to 1.78).
+
+@hossain2024 evaluated a psychoeducation plus unconditional cash transfer intervention in urban Bangladesh (n = 587 randomized, 547 analyzed). Depression scores on the SRQ-20 decreased significantly (β = −1.53, 95% CI: −2.28 to −0.80, p < .001; Cohen's d = −0.20). All four quality-of-life domains also improved significantly. Depression was a secondary outcome; the trial was primarily designed to assess child development.
+
+### Studies Reporting Null or Transient Effects
+
+Four studies, all conducted in UMICs, found no significant or sustained intervention effect.
+
+@wang2025 evaluated a community home-visiting program for pregnant women across 79 townships in rural China (n = 592 randomized, 527 analyzed). No significant effects were found on DASS-21 depression (β = 0.51, NS), anxiety (β = 0.40, NS), or stress (β = 0.27, NS). Exploratory moderator analyses suggested benefits among women whose husbands accompanied antenatal visits (p < .10). Low compliance (65%) may have attenuated effects.
+
+@lund2020 conducted the only double-blind trial in this review, evaluating six sessions of CHW-delivered psychological treatment for depressed pregnant women in peri-urban South Africa (n = 425 randomized, 384 analyzed). No significant difference in HDRS response was found at 3 months postpartum.
+
+@rotheramborus2023 reported 8-year follow-up of the Philani home visiting program in South Africa. Initial depression reductions observed at 3 years had dissipated by 5 and 8 years, with depression prevalence declining to 5.5% in both groups.
+
+@rossouw2021 was a pilot RCT (n = 72) of the Thula Baba Box plus CHW program in South Africa. A 0.928-point reduction on an unnamed 1–8 depression scale was reported without confidence intervals or significance testing.
+
+## Risk of Bias
+
+@tbl-rob2 presents the risk of bias assessments. One study was rated low risk of bias [@lund2020], five at some concerns, and one at high risk [@rossouw2021].
+
+| Study | Domain 1: Randomization | Domain 2: Deviations | Domain 3: Missing data | Domain 4: Measurement | Domain 5: Reporting | Overall |
+|-------|---------|---------|---------|---------|---------|---------|
+| @wang2025 | Some concerns | Some concerns | Low | Some concerns | Some concerns | Some concerns |
+| @hossain2024 | Some concerns | Some concerns | Low | Some concerns | Low | Some concerns |
+| @rotheramborus2023 | Some concerns | Some concerns | No information | Some concerns | No information | Some concerns |
+| @rossouw2021 | High | Some concerns | No information | High | No information | High |
+| @husain2021 | Low | Some concerns | No information | Some concerns | No information | Some concerns |
+| @vanobberghen2020 | Low | Some concerns | Some concerns | Some concerns | Probably yes | Some concerns |
+| @lund2020 | Low | Low | Low | Low | Low | Low |
+
+: Risk of bias assessments using Cochrane RoB 2. {#tbl-rob2}
+
+The most common concerns were related to measurement of the outcome (Domain 4), reflecting the open-label design of most studies combined with self-report outcome measures. @lund2020 was the only study to achieve low risk across all domains, owing to its double-blind design and use of clinician-rated HDRS as the primary outcome.
+
+A notable pattern emerged: the lowest-risk-of-bias study [@lund2020] found null results, while the highest-risk-of-bias study [@rossouw2021] reported positive results. Among the five studies at some concerns, results were mixed.
+
+## Meta-Analysis Feasibility
+
+The pre-specified random-effects meta-analysis was determined to be infeasible for three principal reasons. First, only three of seven studies [@hossain2024; @husain2021; @vanobberghen2020] reported effect estimates from which standardized mean differences could potentially be computed; the remaining four either reported only regression coefficients without group means and standard deviations [@wang2025], Bayesian posteriors without point estimates [@rotheramborus2023], unstandardized differences without variance measures [@rossouw2021], or binary response rates without continuous estimates [@lund2020]. Second, six different outcome instruments were used, and several — SRQ-20, DASS-21, and the unnamed 1–8 scale — measure related but distinct constructs, limiting the interpretability of pooled standardized differences. Third, studies varied substantially in population (treatment vs. prevention samples), intervention type, comparator, follow-up duration, and design, producing clinical and methodological heterogeneity that would undermine the validity of a pooled estimate even if effect sizes were available. With only seven studies, planned subgroup and sensitivity analyses would be underpowered.
+
+## Certainty of Evidence (GRADE)
+
+The overall certainty of evidence was rated **very low** (@tbl-grade). Starting from high (randomized trials), evidence was downgraded one level each for risk of bias (mixed risk profiles; the lowest-risk study found null results), inconsistency (highly variable direction and magnitude of effects across studies), and imprecision (wide confidence intervals, incomplete numeric reporting, small samples in some studies). Publication bias was not formally assessable with fewer than 10 studies.
+
+| GRADE domain | Rating | Rationale |
+|-------------|--------|-----------|
+| Starting level | High | All RCTs |
+| Risk of bias | −1 | Mixed RoB; lowest-RoB study null; most studies abstract-level assessment |
+| Inconsistency | −1 | Direction varies (3 positive, 3 null, 1 unclear); magnitude ranges from d = −0.20 to ES = −7.2 |
+| Indirectness | 0 | Studies directly address PICO |
+| Imprecision | −1 | Wide CIs; insufficient data from most studies; small sample in pilot study |
+| Publication bias | Not assessable | < 10 studies |
+| **Overall certainty** | **Very low** | |
+
+: GRADE evidence certainty assessment. {#tbl-grade}
+
+# Discussion
+
+## Summary of Evidence
+
+This systematic review identified seven RCTs evaluating CHW-delivered psychosocial and psychological interventions for perinatal women across six LMICs. The evidence revealed a mixed and heterogeneous picture: three studies in lower-middle-income countries found significant depression reductions, while all four studies in upper-middle-income countries found null or transient effects. Meta-analysis was not feasible due to heterogeneity in outcome measures, insufficient reporting of effect-size components, and clinical diversity across studies. The certainty of evidence was rated very low using the GRADE framework.
+
+## Patterns in Effectiveness
+
+Several patterns merit discussion. First, the apparent difference in effectiveness between LMIC and UMIC settings may reflect genuinely greater impact where formal mental health services are scarce — consistent with the broader task-shifting literature suggesting that CHW interventions are most effective where they fill an unmet need. However, this pattern is confounded by differences in population selection (two of three LMIC studies enrolled clinically depressed women) and intervention type, limiting causal interpretation.
+
+Second, interventions integrating mental health support with parenting education, nutrition, or economic components [@husain2021; @hossain2024] appeared more effective than single-focus psychosocial or structured psychological interventions. This aligns with evidence from the broader perinatal health literature suggesting that addressing multiple determinants simultaneously may enhance engagement and effectiveness. However, the small number of studies precludes definitive conclusions.
+
+Third, the association between lower risk of bias and null findings is concerning and may indicate that positive effects reported in higher-risk studies are partially attributable to methodological limitations — particularly the combination of unblinded interventions with self-report outcomes, which is susceptible to expectancy and social desirability bias.
+
+## Strengths and Limitations
+
+This review has several strengths: a comprehensive search across five databases, systematic screening with documented exclusion reasons, use of the Cochrane RoB 2 tool for risk of bias assessment, GRADE evidence certainty assessment, and transparent documentation of AI-assisted processes.
+
+Key limitations include: (1) reliance on abstract-level data for five of seven studies, as full text was not openly accessible for most included studies — this may result in incomplete or imprecise data extraction; (2) search strategy limitations, as Europe PMC returned no results due to an API issue, and the high-volume CrossRef results suggest the query may have been overly broad for that database; (3) single-reviewer screening and extraction, which increases the risk of errors; (4) inability to perform meta-analysis, limiting the strength of quantitative conclusions; and (5) the small number of included studies (n = 7), which limits subgroup analysis and formal assessment of publication bias.
+
+## Comparison with Previous Reviews
+
+The findings are broadly consistent with prior systematic reviews examining task-shifting mental health interventions in LMICs. The Thinking Healthy Programme [represented in this review by @vanobberghen2020] has been recognized by the WHO as an evidence-based intervention for perinatal depression. The null findings in UMIC settings, particularly the high-quality @lund2020 trial, add to a growing recognition that CHW mental health interventions do not universally improve outcomes and that context, implementation quality, and study design significantly influence results.
+
+## Implications for Practice
+
+Given the very low certainty of evidence, practice recommendations must be tentative. Integration of mental health components into existing CHW parenting or nutrition programs appears promising in lower-middle-income settings. Screening for depression and targeting interventions to symptomatic women may improve effectiveness over universal prevention approaches. Adequate CHW training (at least 10 days) and compliance monitoring appear to be important implementation factors.
+
+## Implications for Research
+
+Future trials should prioritize: (1) reporting of group means, standard deviations, and standardized effect sizes to enable meta-analysis; (2) use of common validated outcome measures such as the EPDS for perinatal populations; (3) blinded outcome assessment where feasible; (4) long-term follow-up beyond 12 months; (5) inclusion of low-income country settings; and (6) designs with maternal mental health as the primary outcome rather than a secondary endpoint of child development trials.
+
+# Conclusions
+
+This systematic review found very low certainty evidence that CHW-delivered interventions may reduce depression symptoms among perinatal women in LMICs. Effectiveness appeared more consistent in lower-middle-income settings and with integrated intervention approaches targeting clinically depressed women. However, the evidence is limited by substantial heterogeneity in interventions, outcome measures, and study quality. The inability to conduct meta-analysis due to inconsistent effect-size reporting underscores the need for standardized outcome reporting in future trials. High-quality trials in low-income countries, with long-term follow-up and standardized outcome measures, are urgently needed to strengthen this evidence base.
+
+# Acknowledgments and AI Disclosure {.unnumbered}
+
+::: {.callout-warning}
+## Disclaimer
+
+This is a sample project created solely to demonstrate the functionality of the Research Workflow Assistant (RWA). No person claims authorship. None of the content has been independently verified and may contain errors. This document should not be cited, used for clinical decision-making, or treated as a valid systematic review.
+:::
+
+**AI disclosure (per ICMJE Section II.A.4):** This sample manuscript was generated entirely by Research Workflow Assistant (RWA) [@vanzyl2026rwa], accessed through GitHub Copilot in VS Code, to demonstrate tool capabilities including: literature search execution across databases, record deduplication, screening presentation, data extraction, risk of bias assessment scaffolding, PRISMA flow tracking, synthesis drafting, and manuscript preparation. No author reviewed, verified, or approved the outputs. A detailed log of AI contributions is maintained in the project repository.
+
+**Data source attribution:** Literature search results were supplemented using the Semantic Scholar Open Data Platform [@kinney2023], which provides data under a CC BY-NC license.
+
+# References {.unnumbered}
+
+::: {#refs}
+:::

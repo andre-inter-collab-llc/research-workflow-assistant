@@ -3,11 +3,11 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "rwa-result-store"
-version = "0.1.0"
-description = "Shared SQLite storage for RWA MCP search results"
+name = "rwa-shared"
+version = "0.2.0"
+description = "Shared libraries for RWA MCP servers"
 requires-python = ">=3.11"
 dependencies = []
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/rwa_result_store"]
+packages = ["src/rwa_result_store", "src/rwa_chat_parser"]

@@ -1,0 +1,47 @@
+{
+  "title": "Effectiveness of CHW Interventions for Maternal Mental Health in LMICs",
+  "protocol_id": "",
+  "review_type": "systematic-review",
+  "created_at": "2026-03-14T14:00:27.655446+00:00",
+  "updated_at": "2026-03-14T14:16:20.717161+00:00",
+  "identification": {
+    "database_searches": [],
+    "other_sources": [],
+    "total_records_databases": 0,
+    "total_records_other": 0
+  },
+  "deduplication": {
+    "before_count": 0,
+    "after_count": 0,
+    "duplicates_removed": 0,
+    "method": "",
+    "recorded_at": null
+  },
+  "screening": {
+    "title_abstract": {
+      "screened": 185,
+      "excluded": 0,
+      "excluded_reasons": {},
+      "included_to_full_text": 185,
+      "recorded_at": "2026-03-14T14:00:31.554574+00:00"
+    },
+    "full_text": {
+      "assessed": 46,
+      "excluded": 39,
+      "excluded_reasons": {
+        "Wrong study design (SR/MA/non-RCT)": 16,
+        "Protocol without results": 12,
+        "Wrong outcome": 6,
+        "HIC setting": 3,
+        "Wrong population": 1,
+        "Unable to retrieve": 1
+      },
+      "included_in_review": 7,
+      "recorded_at": "2026-03-14T14:16:20.717146+00:00"
+    }
+  },
+  "included": {
+    "qualitative_synthesis": 7,
+    "quantitative_synthesis": 0
+  }
+}

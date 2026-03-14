@@ -48,7 +48,8 @@
                 "-e", "${workspaceFolder}/mcp-servers/zotero-server",
                 "-e", "${workspaceFolder}/mcp-servers/zotero-local-server",
                 "-e", "${workspaceFolder}/mcp-servers/prisma-tracker",
-                "-e", "${workspaceFolder}/mcp-servers/project-tracker"
+                "-e", "${workspaceFolder}/mcp-servers/project-tracker",
+                "-e", "${workspaceFolder}/mcp-servers/chat-exporter"
             ],
             "windows": {
                 "command": "${workspaceFolder}/.venv/Scripts/pip.exe"
@@ -89,6 +90,42 @@
                 "command": "${workspaceFolder}/.venv/bin/python",
                 "args": [
                     "${workspaceFolder}/scripts/mcp_smoke_check.py"
+                ]
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "group": "test"
+        },
+        {
+            "label": "Export Chat Session (List)",
+            "type": "shell",
+            "command": "${workspaceFolder}/.venv/Scripts/python.exe",
+            "args": [
+                "${workspaceFolder}/scripts/export_chat_session.py",
+                "--list"
+            ],
+            "windows": {
+                "command": "${workspaceFolder}/.venv/Scripts/python.exe",
+                "args": [
+                    "${workspaceFolder}/scripts/export_chat_session.py",
+                    "--list"
+                ]
+            },
+            "linux": {
+                "command": "${workspaceFolder}/.venv/bin/python",
+                "args": [
+                    "${workspaceFolder}/scripts/export_chat_session.py",
+                    "--list"
+                ]
+            },
+            "osx": {
+                "command": "${workspaceFolder}/.venv/bin/python",
+                "args": [
+                    "${workspaceFolder}/scripts/export_chat_session.py",
+                    "--list"
                 ]
             },
             "problemMatcher": [],

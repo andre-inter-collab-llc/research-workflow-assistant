@@ -1,0 +1,341 @@
+---
+title: "Synthesis: CHW Interventions for Maternal Mental Health in LMICs"
+subtitle: "Systematic Review — Evidence Synthesis"
+author:
+  - name: "Andre van Zyl, MPH"
+    orcid: "0000-0001-6872-5276"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    self-contained: true
+  docx:
+    toc: true
+    toc-depth: 3
+bibliography: references.bib
+csl: ../../apa.csl
+---
+
+# Overview
+
+This document presents the evidence synthesis for the systematic review: **"Effectiveness of community health worker interventions for maternal mental health in low- and middle-income countries."** The synthesis follows the pre-specified plan in the protocol and is organized as (1) narrative synthesis, (2) meta-analysis feasibility assessment, and (3) certainty of evidence (GRADE).
+
+Seven RCTs (5 cluster-RCTs, 1 individual RCT, 1 pilot RCT) with a total of approximately 4,274 participants randomized and 3,392 analyzed met inclusion criteria. Studies were conducted in six LMICs: Bangladesh, China, India, Pakistan (×2), and South Africa (×3). Follow-up ranged from immediate postpartum to 8 years.
+
+::: {.callout-warning}
+## Data Limitations
+Two of seven studies (Wang 2025, Hossain 2024) were verified against full text. The remaining five are extracted from abstracts only. Interpretation should be considered preliminary.
+:::
+
+---
+
+# Narrative Synthesis
+
+## Study Characteristics
+
+### Settings and Populations
+
+| Study | Country (Income) | Setting | Population | N randomized | N analyzed |
+|-------|-----------------|---------|------------|-------------|-----------|
+| Wang 2025 | China (UMIC) | Rural | Pregnant women | 592 | 527 |
+| Hossain 2024 | Bangladesh (LMIC) | Urban | Mothers with children 6–16 mo | 587 | 547 |
+| Rotheram-Borus 2023 | South Africa (UMIC) | NR | Pregnant women → 8y follow-up | NR | NR |
+| Rossouw 2021 | South Africa (UMIC) | Peri-urban | Pregnant women | 72 | 72 |
+| Husain 2021 | Pakistan (LMIC) | NR (Karachi) | Depressed mothers, children 0–30 mo | 774 | 774 |
+| Vanobberghen 2020 | India & Pakistan (LMIC) | Community | Depressed pregnant women (PHQ-9 ≥ 10) | 850 | 704 |
+| Lund 2020 | South Africa (UMIC) | Peri-urban | Depressed pregnant women (EPDS ≥ 13) | 425 | 384 |
+
+Three studies recruited only women with clinically significant depression at baseline (Husain 2021: EPDS-selected; Vanobberghen 2020: PHQ-9 ≥ 10; Lund 2020: EPDS ≥ 13). The remaining four enrolled women regardless of depression status (universal/preventive approach). This distinction is critical for interpreting effect sizes — treatment samples have more room for improvement than prevention samples.
+
+Four studies were conducted in **upper-middle-income countries** (China, South Africa ×3) and three in **lower-middle-income countries** (Bangladesh, Pakistan, India & Pakistan). No studies from low-income countries met inclusion criteria.
+
+### Intervention Mapping
+
+| Study | Intervention Type | Deliverer | Format | Sessions | Duration | Training |
+|-------|------------------|-----------|--------|----------|----------|----------|
+| Wang 2025 | Psychosocial home visiting | Female health center staff | Individual (home + phone) | Monthly | Pregnancy–6 mo pp | 5 days |
+| Hossain 2024 | Psychoeducation + cash transfer | CHWs (ward residents) | Individual (household) | ~26 (fortnightly) | 12 months | 10 days |
+| Rotheram-Borus 2023 | Philani home visiting (PIP) | Paraprofessional home visitors | Individual | NR | Pregnancy–6 mo pp | NR |
+| Rossouw 2021 | Thula Baba Box + CHW | CHWs | Individual | NR | NR | NR |
+| Husain 2021 | Learning Through Play Plus (LTP+) | Lay health workers | NR | NR | NR | NR |
+| Vanobberghen 2020 | Thinking Healthy Programme Peer (THPP) | Peer volunteers | Individual | NR | NR | NR |
+| Lund 2020 | Structured psychological treatment | Non-specialist CHWs | Individual | 6 | During pregnancy | NR |
+
+**Intervention types are heterogeneous.** They span:
+
+- **CBT-based**: Vanobberghen 2020 (THP — WHO-endorsed, adapted CBT)
+- **Structured psychological**: Lund 2020 (6-session manualized treatment)
+- **Integrated parenting + mental health**: Husain 2021 (LTP+), Hossain 2024 (parenting + nutrition + cash)
+- **Psychosocial home visiting**: Wang 2025, Rotheram-Borus 2023 (Philani)
+- **Mixed psychosocial + incentive**: Rossouw 2021 (Thula Baba Box)
+
+All interventions used **individual delivery** format. No group-based interventions were included, limiting any planned subgroup analysis by delivery format.
+
+**Dose ranged widely:** from 6 sessions (Lund 2020) to ~26 fortnightly sessions over 12 months (Hossain 2024). Wang 2025 had monthly visits but only 65% compliance. Most abstract-only studies did not report session count, making dose comparison incomplete.
+
+### Outcome Measures
+
+| Study | Scale | Range | Type | Administration |
+|-------|-------|-------|------|----------------|
+| Wang 2025 | DASS-21 | 0–42 per subscale (doubled) | Self-report | Self-administered |
+| Hossain 2024 | SRQ-20 | 0–20 | Self-report | Interviewer-administered |
+| Rotheram-Borus 2023 | Unnamed (likely EPDS) | NR | NR | NR |
+| Rossouw 2021 | Unnamed scale | 1–8 | NR | NR |
+| Husain 2021 | EPDS | 0–30 | Self-report | NR |
+| Vanobberghen 2020 | PHQ-9 | 0–27 | Self-report | NR |
+| Lund 2020 | HDRS (primary) / EPDS (secondary) | HDRS: 0–52; EPDS: 0–30 | Clinician-rated (HDRS) | Clinician interview |
+
+**Six different scales** were used across seven studies. Only Lund 2020 used a clinician-rated instrument (HDRS); all others used self-report measures. This variety necessitates standardized mean differences (SMD) for any quantitative pooling, yet most studies do not report the group means and SDs needed for SMD computation (see [Meta-Analysis Feasibility Assessment]).
+
+---
+
+## Results by Direction of Effect
+
+### Studies Reporting Significant Benefits
+
+Three studies found statistically significant improvements in maternal mental health:
+
+1. **Husain 2021** (Pakistan, LMIC) — *Largest effect*. LTP+ delivered by lay health workers to depressed mothers reduced EPDS scores by a mean difference of −7.2 points at 3 months (95% CI: −8.2 to −6.1) and −4.6 at 6 months (95% CI: −5.9 to −3.4). This is a **very large** clinical effect (control EPDS ~13.8 vs intervention ~6.6 at 3 months — below the clinical threshold of 10). Enrolled only depressed women. *Abstract data only.*
+
+2. **Vanobberghen 2020** (India & Pakistan, LMIC) — Peer-delivered THP (CBT-based) in a pooled individual-participant-data analysis of 2 RCTs. Adjusted mean difference on PHQ-9: −0.78 (95% CI: −1.47 to −0.09); adjusted OR for remission (PHQ-9 < 5): 1.35 (95% CI: 1.02 to 1.78). A **small but statistically significant** effect. Enrolled only depressed women (PHQ-9 ≥ 10). *Abstract data only.*
+
+3. **Hossain 2024** (Bangladesh, LMIC) — Psychoeducation + cash reduced SRQ-20 scores. β = −1.53 (95% CI: −2.28 to −0.80, p < 0.001), Cohen's d = −0.20. A **small** effect. Mixed sample (54.7% depressed at baseline). Depression was a secondary outcome of a child development trial. *Full-text verified.*
+
+### Studies Reporting Null Findings
+
+Three studies found no significant intervention effect:
+
+4. **Wang 2025** (China, UMIC) — Community home visiting showed no overall effect on DASS-21 depression (β = 0.51, NS), anxiety (β = 0.40, NS), or stress (β = 0.27, NS). Exploratory moderator analyses suggested benefits among women with supportive husbands (p < 0.10). Low compliance (65%). *Full-text verified.*
+
+5. **Lund 2020** (South Africa, UMIC) — Six-session CHW psychological treatment showed no significant difference on clinician-rated HDRS response at 3 months postpartum. This study had the **lowest risk of bias** (double-blind, clinician-rated outcome, registered trial). *Abstract data only.*
+
+6. **Rotheram-Borus 2023** (South Africa, UMIC) — Philani home visiting initially reduced depression, but gains **dissipated by 5 and 8 years**. Depression prevalence fell to 5.5% in both groups by 8 years (natural remission). *Abstract data only.*
+
+### Study with Unclear Results
+
+7. **Rossouw 2021** (South Africa, UMIC) — Pilot RCT (n = 72) of Thula Baba Box + CHW found a 0.928-point reduction on an unnamed 1–8 depression scale. No CI, p-value, or significance test reported. The sample is too small for definitive conclusions, and the study carries **high risk of bias**. *Abstract data only.*
+
+---
+
+## Synthesis by Theme
+
+### LMIC vs UMIC Setting
+
+A clear pattern emerges by country-income classification:
+
+- **All three LMIC studies** (Husain 2021, Vanobberghen 2020, Hossain 2024) found **significant benefits**, though effect sizes varied from small (d = −0.20) to very large (ES = −7.2 points on EPDS).
+- **All four UMIC studies** (Wang 2025, Lund 2020, Rotheram-Borus 2023, Rossouw 2021) found **null or transient results**.
+
+This pattern could reflect (a) greater room for improvement where baseline services are limited, (b) different intervention models, (c) different depression severity at baseline, or (d) methodological differences. Two of the three LMIC studies enrolled clinically depressed women, while three of four UMIC studies enrolled mixed/universal samples. Confounding between setting and sample selection limits causal attribution.
+
+### Treatment vs Prevention Populations
+
+- **Treatment samples** (clinically depressed at enrollment): Husain 2021 (large effect), Vanobberghen 2020 (small-moderate effect), Lund 2020 (null — but only null treatment-sample study, low RoB, clinician-rated outcome).
+- **Prevention/universal samples**: Wang 2025 (null), Hossain 2024 (small effect), Rotheram-Borus 2023 (transient effect), Rossouw 2021 (unclear).
+
+Treatment approaches generally showed larger effects than prevention approaches, consistent with the broader psychotherapy literature showing greater effects in clinically elevated samples. The exception is Lund 2020, which raises questions about whether CHW-delivered psychological treatment can match the effects seen in studies using lay health workers with integrated parenting programs.
+
+### Intervention Type
+
+- **CBT-based (THP)**: Vanobberghen 2020 — significant, small effect. The only intervention based on the WHO-recommended Thinking Healthy Programme.
+- **Integrated parenting + mental health**: Husain 2021 — largest effect; Hossain 2024 — small but significant. Both addressed maternal well-being alongside child development.
+- **Psychosocial home visiting**: Wang 2025 — null; Rotheram-Borus 2023 — transient. Both were home visiting programs without a structured mental health component.
+- **Structured psychological treatment**: Lund 2020 — null. Manualized 6-session treatment by CHWs.
+
+Studies with **integrated** interventions (combining mental health with parenting/nutrition/economic components) appeared more effective than single-focus psychosocial or structured psychological interventions, but the number of studies is too small for firm conclusions.
+
+### Sustainability of Effects
+
+Only one study assessed long-term outcomes. Rotheram-Borus 2023 found that early depression benefits of Philani home visiting dissipated by 5 years, with depression prevalence dropping to 5.5% in both groups by 8 years. This suggests either (a) natural remission over time, (b) insufficient intervention dose for lasting change, or (c) the need for booster sessions. No other study provided follow-up beyond 12 months.
+
+### Risk of Bias and Results
+
+A notable pattern: the study with the **lowest risk of bias** (Lund 2020 — double-blind, clinician-rated, registered) found **null results**, while the study with the **highest risk of bias** (Rossouw 2021 — pilot, no registration, unnamed scale) reported positive results. Among the "Some concerns" studies, results were mixed. This raises the possibility that effect estimates in this literature may be inflated by methodological limitations including lack of blinding and reliance on self-report measures.
+
+---
+
+# Meta-Analysis Feasibility Assessment
+
+## Pre-specified Plan
+
+The protocol called for random-effects meta-analysis using SMD (Hedges' g) with REML estimation, subgroup and sensitivity analyses, and publication bias assessment via funnel plot (if ≥10 studies).
+
+## Assessment
+
+A formal meta-analysis is **not feasible** with the available data, for the following reasons:
+
+### 1. Insufficient Data for Effect Size Computation
+
+To compute SMD (Hedges' g) for each study, we need either (a) group means, SDs, and sample sizes per arm, or (b) the SMD/Cohen's d directly with variance.
+
+| Study | Effect Measure Available | Can Compute SMD? |
+|-------|-------------------------|------------------|
+| Wang 2025 | OLS regression β (NS) | **No** — No group means or SDs reported, even in full text |
+| Hossain 2024 | β = −1.53; Cohen's d = −0.20 (with 95% CI) | **Yes** — d provided with CI |
+| Rotheram-Borus 2023 | Bayesian posterior (no point estimate) | **No** — No quantitative estimate |
+| Rossouw 2021 | 0.928-point difference (no CI, no SD) | **No** — No variance estimate |
+| Husain 2021 | MD = −7.2 and −4.6 (with 95% CI, group means) | **Partially** — Could convert MD → SMD if pooled SD estimable from CI width^a^ |
+| Vanobberghen 2020 | AMD = −0.78 (with 95% CI); aOR = 1.35 (with 95% CI) | **Partially** — Could convert if pooled SD estimable^a^ |
+| Lund 2020 | "No significant difference" (no numeric estimate) | **No** — No effect size or CI |
+
+^a^ Approximate conversion from MD to SMD requires an estimate of the pooled standard deviation. For Husain 2021, the EPDS SD can be estimated from published norms (~5.0), but this introduces additional uncertainty. For Vanobberghen 2020, the PHQ-9 SD may be estimable from baseline data (PHQ-9 ≥ 10 sample).
+
+**At most, 3 of 7 studies** (Hossain 2024, Husain 2021, Vanobberghen 2020) could contribute to a quantitative synthesis — and even then, only with approximations for two of the three.
+
+### 2. Scale Heterogeneity
+
+Six different instruments were used across seven studies:
+
+- DASS-21 (Wang 2025) — measures depression, anxiety, and stress as separate subscales
+- SRQ-20 (Hossain 2024) — general psychiatric morbidity, not depression-specific
+- EPDS (Husain 2021) — depression-specific, perinatal-validated
+- PHQ-9 (Vanobberghen 2020) — depression severity
+- HDRS (Lund 2020) — clinician-rated depression
+- Unnamed scale (Rossouw 2021) — unvalidated
+
+While SMD was intended to standardize across scales, this extreme variety limits interpretability. The SRQ-20 and DASS-21 measure broader constructs than the EPDS, PHQ-9, and HDRS.
+
+### 3. Clinical and Methodological Heterogeneity
+
+Even if effect sizes could be computed for all studies, pooling would face:
+
+- **Population heterogeneity**: Three studies enrolled depressed women only; four enrolled universal/prevention samples
+- **Intervention heterogeneity**: CBT-based, integrated parenting, psychosocial home visiting, structured psychological treatment
+- **Comparator heterogeneity**: No intervention, standard care, enhanced usual care, active control (cash)
+- **Follow-up heterogeneity**: 3 months to 8 years
+- **Design heterogeneity**: Individual RCT, cluster-RCT (20 to 120 clusters), pooled IPD analysis, pilot RCT
+
+### 4. Too Few Studies for Planned Analyses
+
+With only 7 studies:
+
+- **Subgroup analyses** (by intervention type, timing, income) would have ≤3 studies per subgroup — underpowered and unreliable
+- **Publication bias** assessment via funnel plot requires ≥10 studies (Cochrane guidance)
+- **Sensitivity analyses** (excluding high RoB, cluster-RCTs, non-EPDS) would each leave ≤3 studies
+
+### Decision
+
+**Meta-analysis will not be performed.** The review will rely on narrative synthesis with structured tabular summaries. This decision is consistent with Cochrane Handbook guidance (Section 10.2), which states that meta-analysis should not be performed when studies are too heterogeneous or when insufficient data are available for effect size computation.
+
+If full-text retrieval yields group means and SDs for additional studies in the future, meta-analysis feasibility should be reassessed.
+
+---
+
+# GRADE Evidence Assessment
+
+## Summary of Findings
+
+**Outcome: Maternal depression/anxiety symptom reduction**
+
+The certainty of evidence was assessed using the GRADE framework across five domains:
+
+### 1. Risk of Bias: Downgrade one level (−1)
+
+- One study at low risk of bias (Lund 2020) — found null results
+- Five studies at "Some concerns" — mixed results
+- One study at high risk of bias (Rossouw 2021) — reported positive results
+- Pattern of association between higher RoB and positive findings is concerning
+- Only 2 of 7 studies verified against full text
+
+### 2. Inconsistency: Downgrade one level (−1)
+
+- Effect estimates range from null (Wang 2025, Lund 2020) to very large (Husain 2021, ES = −7.2)
+- Direction of effect is inconsistent (3 significant positive, 3 null, 1 unclear)
+- Clear pattern by income group (all LMIC positive, all UMIC null) suggests important moderators but also raises questions about generalizability
+- No quantitative I² can be computed (meta-analysis not performed)
+
+### 3. Indirectness: No downgrade (0)
+
+- Studies directly address the PICO: CHW/lay health worker interventions, perinatal women in LMICs, depression/anxiety outcomes
+- Some studies enrolled broader populations (children 0–30 months in Husain 2021) but remain relevant
+- Interventions are varied but all fall within the scope of the review question
+
+### 4. Imprecision: Downgrade one level (−1)
+
+- Wide confidence intervals in most studies
+- Small sample sizes in some studies (Rossouw 2021: n = 72)
+- Several studies cannot report numeric effect estimates from available data
+- Total N analyzed (~3,392) is moderate but fragmented across heterogeneous comparisons
+- Optimal information size not met for most subgroup comparisons
+
+### 5. Publication Bias: Not assessable
+
+- Too few studies (< 10) for funnel plot or Egger's test
+- Positive results may be over-represented; null studies (Wang 2025, Lund 2020) were found, suggesting some balance
+- Cannot formally rule out publication bias
+
+### Overall GRADE: **Very Low Certainty**
+
+| Domain | Decision | Reason |
+|--------|----------|--------|
+| Risk of bias | −1 | Mixed RoB; lowest-RoB study found null results; most studies abstract-only |
+| Inconsistency | −1 | Direction and magnitude of effects highly variable |
+| Indirectness | 0 | Studies directly relevant to PICO |
+| Imprecision | −1 | Wide CIs; insufficient numeric data from most studies |
+| Publication bias | Not assessable | < 10 studies |
+| **Starting level** | **High** | RCTs |
+| **Final certainty** | **Very Low** | High −3 = Very Low |
+
+**GRADE statement:** There is **very low certainty** evidence regarding the effectiveness of community health worker interventions for maternal mental health in LMICs. The evidence suggests that CHW-delivered interventions *may* reduce depression symptoms, particularly in lower-middle-income settings and when targeting clinically depressed women with integrated interventions, but the evidence is very uncertain due to heterogeneity in interventions, outcomes, and study quality.
+
+---
+
+# Key Findings and Implications
+
+## Principal Findings
+
+1. **CHW interventions for maternal mental health show mixed results.** Of seven included RCTs, three found significant benefits, three found null effects, and one was inconclusive.
+
+2. **Setting matters.** All three studies in lower-middle-income countries found significant benefits; all four studies in upper-middle-income countries found null or transient effects. This pattern requires cautious interpretation given confounding with baseline depression severity and intervention type.
+
+3. **Integrated interventions may be more effective.** Studies combining mental health support with parenting education, nutrition, or economic components (Husain 2021, Hossain 2024) showed significant effects. Single-focus interventions (Wang 2025, Lund 2020) did not.
+
+4. **Treatment populations showed larger effects than prevention populations.** Studies that enrolled clinically depressed women (Husain 2021, Vanobberghen 2020) generally showed larger effects, though the null finding in Lund 2020 (also depression-selected) is a notable exception.
+
+5. **Sustainability is undemonstrated.** The only long-term study (Rotheram-Borus 2023, 8 years) found that early gains dissipated, raising questions about whether CHW interventions produce lasting mental health benefits without ongoing support.
+
+6. **The highest-quality study found null results.** Lund 2020, the only double-blind trial with clinician-rated outcomes, found no effect. This challenges the positive findings from studies with higher risk of bias.
+
+## Research Gaps
+
+- No studies from **low-income countries** (all were LMIC or UMIC)
+- No **group-based** CHW interventions met inclusion criteria
+- Only one study reported outcomes beyond 12 months
+- Most studies did not report **raw group means and standard deviations**, precluding meta-analysis
+- Depression was a **secondary outcome** in several studies (Hossain 2024, Rotheram-Borus 2023), suggesting the field may lack studies designed primarily to evaluate CHW mental health interventions
+- No studies of **digital** or **technology-enhanced** CHW interventions were identified
+- **Anxiety** was rarely a primary focus; only Wang 2025 reported anxiety as a separate outcome (null finding)
+
+## Implications for Practice
+
+Given the very low certainty of evidence, recommendations should be tentative:
+
+- Integration of mental health components into existing CHW parenting/nutrition programs appears promising and may be more effective than standalone psychological interventions
+- Programs in settings with limited existing mental health services (LMICs) may benefit more from CHW interventions
+- Screening for depression and targeting interventions to symptomatic women may improve effectiveness over universal prevention approaches
+- Compliance monitoring and adequate training (at least 10 days) appear important implementation factors
+
+## Implications for Research
+
+- Future RCTs should report **group means, standard deviations, and standardized effect sizes** to enable meta-analysis
+- Use of **common outcome measures** (e.g., EPDS for perinatal populations) would facilitate cross-study comparison
+- **Blinded outcome assessment** (clinician-rated or independent) should be preferred over self-report when feasible
+- Long-term follow-up (≥12 months) is needed to assess sustainability
+- Studies in **low-income countries** are critically needed
+- Trials designed with **depression/anxiety as the primary outcome** (rather than child development) are needed
+
+---
+
+# Synthesis Audit
+
+- **Synthesis performed by:** AI assistant (systematic-reviewer agent)
+- **Synthesis date:** 2026-03-14
+- **Data sources:** Data extraction forms (2 full-text verified, 5 abstract-only); RoB 2 assessments
+- **Human review status:** APPROVED by Andre van Zyl, MPH (2026-03-14)
+
+::: {.callout-note}
+## Human Review Complete
+
+All synthesis content — including the narrative synthesis, meta-analysis infeasibility decision, GRADE assessment (Very Low certainty), key findings, and implications — has been reviewed and approved by the lead researcher.
+:::

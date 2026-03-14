@@ -37,6 +37,7 @@ No PhD required. If you do research, this tool is for you.
 | **End-to-end orchestration** | `@research-orchestrator` routes workflows across specialist agents, tracks stage progression, and provides ready-to-run handoff prompts |
 | **Troubleshooting and support** | `@troubleshooter` agent diagnoses environment and MCP issues, validates API keys, and provides practical how-to help for day-to-day RWA usage |
 | **Development and bug fixes** | `@developer` agent gathers requirements for bug fixes, feature requests, and codebase improvements, then directs to plan mode for implementation |
+| **Chat session export** | Export Copilot Chat conversations to QMD for reproducibility via `scripts/export_chat_session.py` or `chat-exporter` MCP server |
 | **ICMJE compliance** | Built into every agent: human-in-the-loop mandate, audit trail, AI disclosure generation, authorship checklist |
 
 ## Architecture
@@ -72,7 +73,7 @@ graph TB
         end
         subgraph TRACKING["Project Tracking"]
             direction LR
-            PRISMA["PRISMA Tracker<br/>flow diagrams"] ~~~ PROJ["Project Tracker<br/>tasks & milestones"]
+            PRISMA["PRISMA Tracker<br/>flow diagrams"] ~~~ PROJ["Project Tracker<br/>tasks & milestones"] ~~~ CHATEX["Chat Exporter<br/>session audit trails"]
         end
     end
 
@@ -206,7 +207,7 @@ python -m venv .venv
 # macOS / Linux:
 # source .venv/bin/activate
 
-# Install all 9 MCP servers in development mode
+# Install all 10 MCP servers in development mode
 pip install -e mcp-servers/_shared \
             -e mcp-servers/pubmed-server \
             -e mcp-servers/openalex-server \
@@ -216,7 +217,8 @@ pip install -e mcp-servers/_shared \
             -e mcp-servers/zotero-server \
             -e mcp-servers/zotero-local-server \
             -e mcp-servers/prisma-tracker \
-            -e mcp-servers/project-tracker
+            -e mcp-servers/project-tracker \
+            -e mcp-servers/chat-exporter
 
 # Install dev tools (linting, testing)
 pip install -e ".[dev]"
@@ -255,7 +257,7 @@ Need JSON for automation?
 python scripts/validate_setup.py --json
 ```
 
-Or in VS Code: **Ctrl+Shift+P** → "MCP: List Servers" — all 9 servers should appear.
+Or in VS Code: **Ctrl+Shift+P** → "MCP: List Servers" — all 10 servers should appear.
 
 ### Step 5 — Start using it
 

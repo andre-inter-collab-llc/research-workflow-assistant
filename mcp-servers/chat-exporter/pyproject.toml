@@ -1,0 +1,19 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "chat-exporter"
+version = "0.1.0"
+description = "MCP server for exporting VS Code Copilot Chat sessions to QMD"
+requires-python = ">=3.11"
+dependencies = [
+    "mcp>=1.0.0",
+    "rwa-shared>=0.2.0",
+]
+
+[project.scripts]
+chat-exporter = "chat_exporter:serve"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/chat_exporter"]

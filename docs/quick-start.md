@@ -37,10 +37,13 @@ pip install -e mcp-servers/pubmed-server \
             -e mcp-servers/zotero-server \
             -e mcp-servers/zotero-local-server \
             -e mcp-servers/prisma-tracker \
-            -e mcp-servers/project-tracker
+            -e mcp-servers/project-tracker \
+            -e mcp-servers/chat-exporter
 ```
 
 Or run VS Code task: `Install All MCP Servers`.
+
+> **Reproducibility tip:** Consider installing [SpecStory](https://specstory.com/) — a VS Code extension that automatically saves all Copilot Chat conversations to Markdown files in your repository. RWA also includes a built-in chat export script (`scripts/export_chat_session.py`) that converts sessions to QMD.
 
 ## 4. Configure environment
 
@@ -64,7 +67,7 @@ You can use `--json` with either script for machine-readable output.
 
 - Open Command Palette
 - Run `MCP: List Servers`
-- Confirm all 9 servers are available
+- Confirm all 10 servers are available
 
 ## 7. Start guided onboarding
 

@@ -1,0 +1,89 @@
+{
+  "title": "Effectiveness of CHW Interventions for Maternal Mental Health in LMICs",
+  "protocol_id": "",
+  "review_type": "systematic-review",
+  "created_at": "2026-03-14T13:27:01.238330+00:00",
+  "updated_at": "2026-03-14T14:30:39.401566+00:00",
+  "identification": {
+    "database_searches": [
+      {
+        "database": "PubMed/MEDLINE",
+        "query": "((\"Community Health Workers\"[MeSH] OR \"community health worker*\"[tiab] OR \"lay health worker*\"[tiab] OR \"lay counselor*\"[tiab] OR \"peer counselor*\"[tiab] OR \"peer support\"[tiab] OR \"task shifting\"[tiab] OR \"task sharing\"[tiab] OR \"village health worker*\"[tiab]) AND (\"Depression\"[MeSH] OR \"Depressive Disorder\"[MeSH] OR \"Anxiety\"[MeSH] OR \"depression\"[tiab] OR \"depressive\"[tiab] OR \"anxiety\"[tiab] OR \"mental health\"[tiab] OR \"psychological distress\"[tiab] OR \"perinatal depression\"[tiab] OR \"postpartum depression\"[tiab] OR \"postnatal depression\"[tiab] OR \"maternal depression\"[tiab] OR \"antenatal depression\"[tiab]) AND (\"Pregnant Women\"[MeSH] OR \"Postpartum Period\"[MeSH] OR \"Pregnancy\"[MeSH] OR \"perinatal\"[tiab] OR \"antenatal\"[tiab] OR \"prenatal\"[tiab] OR \"postnatal\"[tiab] OR \"postpartum\"[tiab] OR \"maternal\"[tiab] OR \"pregnant\"[tiab] OR \"pregnancy\"[tiab]) AND (\"Developing Countries\"[MeSH] OR \"low-income\"[tiab] OR \"middle-income\"[tiab] OR \"LMIC\"[tiab] OR \"developing countr*\"[tiab] OR \"resource-limited\"[tiab] OR \"low-resource\"[tiab])) AND (randomized controlled trial[pt] OR \"randomized\"[tiab] OR \"randomised\"[tiab] OR \"RCT\"[tiab] OR \"cluster randomized\"[tiab])",
+        "date": "2026-03-14",
+        "results_count": 59,
+        "notes": "",
+        "recorded_at": "2026-03-14T13:37:39.282209+00:00"
+      },
+      {
+        "database": "OpenAlex",
+        "query": "community health worker perinatal depression anxiety low-income middle-income countries randomized controlled trial (filter: type:article)",
+        "date": "2026-03-14",
+        "results_count": 1442,
+        "notes": "",
+        "recorded_at": "2026-03-14T13:37:44.539564+00:00"
+      },
+      {
+        "database": "Semantic Scholar (CC BY-NC data license)",
+        "query": "community health worker intervention perinatal maternal depression anxiety low-income middle-income countries randomized trial (filter: fields_of_study:Medicine)",
+        "date": "2026-03-14",
+        "results_count": 162,
+        "notes": "",
+        "recorded_at": "2026-03-14T13:37:50.078607+00:00"
+      },
+      {
+        "database": "Europe PMC",
+        "query": "community health worker perinatal depression LMIC (multiple query variants attempted)",
+        "date": "2026-03-14",
+        "results_count": 0,
+        "notes": "",
+        "recorded_at": "2026-03-14T13:37:55.069727+00:00"
+      },
+      {
+        "database": "CrossRef",
+        "query": "community health worker perinatal depression anxiety low-income countries randomized trial (filter: from-pub-date:2000, type:journal-article, has-abstract:true)",
+        "date": "2026-03-14",
+        "results_count": 263753,
+        "notes": "",
+        "recorded_at": "2026-03-14T13:38:00.555673+00:00"
+      }
+    ],
+    "other_sources": [],
+    "total_records_databases": 265416,
+    "total_records_other": 0
+  },
+  "deduplication": {
+    "before_count": 200,
+    "after_count": 185,
+    "duplicates_removed": 15,
+    "method": "Cross-database matching by DOI and PMID across PubMed, OpenAlex, Semantic Scholar, and CrossRef retrieved records",
+    "recorded_at": "2026-03-14T13:42:05.964591+00:00"
+  },
+  "screening": {
+    "title_abstract": {
+      "screened": 185,
+      "excluded": 0,
+      "excluded_reasons": {},
+      "included_to_full_text": 185,
+      "recorded_at": "2026-03-14T14:30:33.251728+00:00"
+    },
+    "full_text": {
+      "assessed": 46,
+      "excluded": 39,
+      "excluded_reasons": {
+        "Wrong design (SR/MA/scoping review)": 9,
+        "Protocol without results": 12,
+        "Wrong design (non-RCT/qualitative)": 7,
+        "Wrong population": 1,
+        "HIC setting": 3,
+        "Wrong outcome": 6,
+        "Unable to retrieve": 1
+      },
+      "included_in_review": 7,
+      "recorded_at": "2026-03-14T14:30:39.401555+00:00"
+    }
+  },
+  "included": {
+    "qualitative_synthesis": 7,
+    "quantitative_synthesis": 0
+  }
+}

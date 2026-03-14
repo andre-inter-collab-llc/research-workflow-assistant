@@ -81,9 +81,9 @@ Guide the user through creating a virtual environment and installing the MCP ser
    - macOS/Linux: `source .venv/bin/activate`
    - Confirm the prompt changes to show `(.venv)`
 
-3. **Install all 9 MCP servers**:
+3. **Install all 10 MCP servers**:
    ```
-   pip install -e mcp-servers/pubmed-server -e mcp-servers/openalex-server -e mcp-servers/semantic-scholar-server -e mcp-servers/europe-pmc-server -e mcp-servers/crossref-server -e mcp-servers/zotero-server -e mcp-servers/zotero-local-server -e mcp-servers/prisma-tracker -e mcp-servers/project-tracker
+   pip install -e mcp-servers/pubmed-server -e mcp-servers/openalex-server -e mcp-servers/semantic-scholar-server -e mcp-servers/europe-pmc-server -e mcp-servers/crossref-server -e mcp-servers/zotero-server -e mcp-servers/zotero-local-server -e mcp-servers/prisma-tracker -e mcp-servers/project-tracker -e mcp-servers/chat-exporter
    ```
    Note: `zotero-local-server` requires PyMuPDF for PDF processing. If you see build errors for this package, it is safe to skip it and install the other 8 servers first.
 
@@ -184,15 +184,15 @@ For any failures, offer to re-enter the key and re-test.
 
 ## Stage 5 — MCP Server Verification
 
-All 9 MCP servers are configured as `stdio` type in `.vscode/mcp.json`. VS Code **auto-starts** them on demand when Copilot invokes a tool — there is no manual "start all" step required. This stage verifies they are configured correctly and responsive.
+All 10 MCP servers are configured as `stdio` type in `.vscode/mcp.json`. VS Code **auto-starts** them on demand when Copilot invokes a tool — there is no manual "start all" step required. This stage verifies they are configured correctly and responsive.
 
 Guide the user through the VS Code MCP server check:
 
 1. "Open the Command Palette: press `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (macOS)"
 2. "Type `MCP: List Servers` and select it"
-3. "You should see all 9 servers listed: pubmed, openalex, semantic-scholar, europe-pmc, crossref, zotero, zotero-local, prisma-tracker, project-tracker"
+3. "You should see all 10 servers listed: pubmed, openalex, semantic-scholar, europe-pmc, crossref, zotero, zotero-local, prisma-tracker, project-tracker, chat-exporter"
 4. "All servers should start automatically when needed. If any show errors, we'll troubleshoot now."
-5. Ask: "Do all 9 servers appear? Are any showing errors?"
+5. Ask: "Do all 10 servers appear? Are any showing errors?"
 
 > **Quick health check:** You can also run `Ctrl+Shift+P` → "Tasks: Run Task" → "Validate Research Assistant Setup" to run the automated validation script.
 

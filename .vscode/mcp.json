@@ -96,6 +96,19 @@
                 "zotero_local_server"
             ],
             "cwd": "${workspaceFolder}/mcp-servers/zotero-local-server/src"
+        },
+        "chat-exporter": {
+            "type": "stdio",
+            "command": "${workspaceFolder}/.venv/Scripts/python",
+            "args": [
+                "-m",
+                "chat_exporter"
+            ],
+            "cwd": "${workspaceFolder}/mcp-servers/chat-exporter/src",
+            "env": {
+                "PROJECT_DIR": "${workspaceFolder}",
+                "PROJECTS_ROOT": "${env:PROJECTS_ROOT}"
+            }
         }
     }
 }

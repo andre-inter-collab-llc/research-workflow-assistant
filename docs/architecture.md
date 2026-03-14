@@ -63,7 +63,7 @@ Each agent encodes a specialized research workflow:
 
 | Agent | Purpose | MCP Tools Used |
 |-------|---------|---------------|
-| `setup` | Guided first-time setup and environment validation | All 9 servers (for API key validation) |
+| `setup` | Guided first-time setup and environment validation | All 10 servers (for API key validation) |
 | `systematic-reviewer` | Full systematic review lifecycle | pubmed, openalex, semantic-scholar, europe-pmc, crossref, zotero, prisma-tracker |
 | `data-analyst` | Statistical analysis (R and Python) | None (uses language runtimes) |
 | `academic-writer` | Manuscript drafting with ICMJE compliance | zotero, crossref |
