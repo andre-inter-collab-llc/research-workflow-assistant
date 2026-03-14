@@ -1,0 +1,441 @@
+---
+title: "Citing Python and Python Packages"
+date: today
+format:
+  html:
+    toc: true
+    self-contained: true
+---
+
+<!--
+  Template: cite-python-packages.qmd
+  Purpose:  Generate BibTeX entries and in-text citations for Python and
+            the Python packages used in your analysis.
+
+  Usage:
+    1. Copy this file into your project directory.
+    2. Edit the `packages` list below to match the packages you actually used.
+    3. Render with:  quarto render cite-python-packages.qmd
+    4. Merge the generated packages.bib entries into your project's
+       references.bib (or use packages.bib directly).
+-->
+
+# Why Cite Python Packages?
+
+The [FORCE11 Software Citation Principles](https://doi.org/10.7717/peerj-cs.86)
+recommend citing all software important to the research outcome. Citing
+Python packages:
+
+1. **Credits developers** who build and maintain open-source tools.
+2. **Improves reproducibility** by recording exact versions used.
+3. **Helps readers** understand your methods and replicate your work.
+
+Unlike R, Python does not have a single built-in `citation()` function.
+This template provides a reusable helper that reads installed package
+metadata and generates BibTeX entries automatically.
+
+# Setup
+
+List the packages you used in your analysis. Edit this list to match
+your actual workflow.
+
+```{python}
+#| label: setup
+
+# ── Packages you want to cite ──────────────────────────────────────────
+# Edit this list to match your project. Include every package that was
+# material to your results (statistical methods, ML frameworks,
+# domain-specific tools, data retrieval, visualization).
+packages = [
+    "numpy",
+    "scipy",
+    "pandas",
+    "matplotlib",
+    "scikit-learn",
+    "statsmodels",
+]
+
+# Output file for generated BibTeX entries
+bib_file = "packages.bib"
+```
+
+# Citation Helper Function
+
+The function below uses `importlib.metadata` (standard library, Python 3.8+)
+to extract package metadata and format it as BibTeX. For major scientific
+packages that have published journal articles, it uses the preferred
+citation with DOI instead of a generic `@Manual{}` entry.
+
+```{python}
+#| label: citation-helper
+
+import importlib.metadata
+import re
+import textwrap
+from datetime import date
+
+# ── Preferred citations for major scientific Python packages ────────────
+# These packages have published papers that the authors prefer you cite.
+# Format: package_name -> dict with BibTeX fields.
+PREFERRED_CITATIONS: dict[str, dict[str, str]] = {
+    "numpy": {
+        "type": "Article",
+        "key": "numpy",
+        "author": "Harris, Charles R. and Millman, K. Jarrod and van der Walt, St{\\'e}fan J. and Gommers, Ralf and Virtanen, Pauli and Cournapeau, David and Wieser, Eric and Taylor, Julian and Berg, Sebastian and Smith, Nathaniel J. and Kern, Robert and Picus, Matti and Hoyer, Stephan and van Krevelen, Marten H. and Brett, Matthew and Haldane, Allan and del R{\\'\\i}o, Jaime Fern{\\'a}ndez and Wiebe, Mark and Peterson, Pearu and G{\\'e}rard-Marchant, Pierre and Sheppard, Kevin and Reddy, Tyler and Weckesser, Warren and Abbasi, Hameer and Gohlke, Christoph and Oliphant, Travis E.",
+        "title": "Array programming with {NumPy}",
+        "journal": "Nature",
+        "volume": "585",
+        "number": "7825",
+        "pages": "357--362",
+        "year": "2020",
+        "doi": "10.1038/s41586-020-2649-2",
+    },
+    "scipy": {
+        "type": "Article",
+        "key": "scipy",
+        "author": "Virtanen, Pauli and Gommers, Ralf and Oliphant, Travis E. and Haberland, Matt and Reddy, Tyler and Cournapeau, David and Burovski, Evgeni and Peterson, Pearu and Weckesser, Warren and Bright, Jonathan and van der Walt, St{\\'e}fan J. and Brett, Matthew and Wilson, Joshua and Millman, K. Jarrod and Mayorov, Nikolay and Nelson, Andrew R. J. and Jones, Eric and Kern, Robert and Larson, Eric and Carey, C J and Polat, {\\.I}lhan and Feng, Yu and Moore, Eric W. and VanderPlas, Jake and Laxalde, Denis and Perktold, Josef and Cimrman, Robert and Henriksen, Ian and Quintero, E. A. and Harris, Charles R. and Archibald, Anne M. and Ribeiro, Ant{\\^o}nio H. and Pedregosa, Fabian and van Mulbregt, Paul and {SciPy 1.0 Contributors}",
+        "title": "{SciPy} 1.0: fundamental algorithms for scientific computing in {Python}",
+        "journal": "Nature Methods",
+        "volume": "17",
+        "pages": "261--272",
+        "year": "2020",
+        "doi": "10.1038/s41592-019-0686-2",
+    },
+    "pandas": {
+        "type": "InProceedings",
+        "key": "pandas",
+        "author": "McKinney, Wes",
+        "title": "Data Structures for Statistical Computing in {Python}",
+        "booktitle": "Proceedings of the 9th Python in Science Conference",
+        "pages": "56--61",
+        "year": "2010",
+        "doi": "10.25080/Majora-92bf1922-00a",
+    },
+    "scikit-learn": {
+        "type": "Article",
+        "key": "sklearn",
+        "author": "Pedregosa, Fabian and Varoquaux, Ga{\\\"e}l and Gramfort, Alexandre and Michel, Vincent and Thirion, Bertrand and Grisel, Olivier and Blondel, Mathieu and Prettenhofer, Peter and Weiss, Ron and Dubourg, Vincent and Vanderplas, Jake and Passos, Alexandre and Cournapeau, David and Brucher, Matthieu and Perrot, Matthieu and Duchesnay, {\\'E}douard",
+        "title": "Scikit-learn: Machine Learning in {Python}",
+        "journal": "Journal of Machine Learning Research",
+        "volume": "12",
+        "pages": "2825--2830",
+        "year": "2011",
+    },
+    "matplotlib": {
+        "type": "Article",
+        "key": "matplotlib",
+        "author": "Hunter, John D.",
+        "title": "Matplotlib: A 2D Graphics Environment",
+        "journal": "Computing in Science \\& Engineering",
+        "volume": "9",
+        "number": "3",
+        "pages": "90--95",
+        "year": "2007",
+        "doi": "10.1109/MCSE.2007.55",
+    },
+    "statsmodels": {
+        "type": "InProceedings",
+        "key": "statsmodels",
+        "author": "Seabold, Skipper and Perktold, Josef",
+        "title": "statsmodels: Econometric and Statistical Modeling with {Python}",
+        "booktitle": "Proceedings of the 9th Python in Science Conference",
+        "pages": "92--96",
+        "year": "2010",
+        "doi": "10.25080/Majora-92bf1922-011",
+    },
+    "seaborn": {
+        "type": "Article",
+        "key": "seaborn",
+        "author": "Waskom, Michael L.",
+        "title": "seaborn: statistical data visualization",
+        "journal": "Journal of Open Source Software",
+        "volume": "6",
+        "number": "60",
+        "pages": "3021",
+        "year": "2021",
+        "doi": "10.21105/joss.03021",
+    },
+    "lifelines": {
+        "type": "Article",
+        "key": "lifelines",
+        "author": "Davidson-Pilon, Cameron",
+        "title": "lifelines: survival analysis in {Python}",
+        "journal": "Journal of Open Source Software",
+        "volume": "4",
+        "number": "40",
+        "pages": "1317",
+        "year": "2019",
+        "doi": "10.21105/joss.01317",
+    },
+    "plotnine": {
+        "type": "Misc",
+        "key": "plotnine",
+        "author": "Kibirige, Hassan",
+        "title": "plotnine: A Grammar of Graphics for {Python}",
+        "year": "2024",
+        "url": "https://plotnine.org",
+    },
+    "pingouin": {
+        "type": "Article",
+        "key": "pingouin",
+        "author": "Vallat, Raphael",
+        "title": "Pingouin: statistics in {Python}",
+        "journal": "Journal of Open Source Software",
+        "volume": "3",
+        "number": "31",
+        "pages": "1026",
+        "year": "2018",
+        "doi": "10.21105/joss.01026",
+    },
+}
+
+
+def _sanitize_key(name: str) -> str:
+    """Create a valid BibTeX key from a package name."""
+    return re.sub(r"[^a-zA-Z0-9]", "", name)
+
+
+def get_package_citation(name: str) -> str:
+    """Return a BibTeX entry for a Python package.
+
+    If a preferred citation exists (published paper), use that.
+    Otherwise, build a @Manual{} entry from installed metadata.
+    """
+    # Check for known preferred citation first
+    if name.lower() in PREFERRED_CITATIONS:
+        fields = PREFERRED_CITATIONS[name.lower()]
+        entry_type = fields["type"]
+        key = fields.get("key", _sanitize_key(name))
+
+        # Try to append the installed version
+        try:
+            meta = importlib.metadata.metadata(name)
+            version = meta["Version"]
+            note = f"Python package version {version}"
+        except importlib.metadata.PackageNotFoundError:
+            version = None
+            note = None
+
+        lines = [f"@{entry_type}{{{key},"]
+        for field, value in fields.items():
+            if field in ("type", "key"):
+                continue
+            lines.append(f"  {field} = {{{value}}},")
+        if note:
+            lines.append(f"  note = {{{note}}},")
+        lines.append("}")
+        return "\n".join(lines)
+
+    # Fallback: build from installed metadata
+    try:
+        meta = importlib.metadata.metadata(name)
+    except importlib.metadata.PackageNotFoundError:
+        return f"% Package '{name}' is not installed — cannot generate citation."
+
+    key = _sanitize_key(name)
+    author = meta.get("Author") or meta.get("Author-email", "Unknown")
+    # Clean email from author-email field
+    author = re.sub(r"\s*<[^>]+>", "", author)
+    title = meta.get("Summary") or name
+    version = meta.get("Version", "")
+    url = meta.get("Home-page") or meta.get("Project-URL", "")
+    # Project-URL may be multiline; take the first URL
+    if url and "," in url:
+        url = url.split(",")[-1].strip()
+    year = str(date.today().year)
+
+    lines = [
+        f"@Manual{{{key},",
+        f"  title = {{{{{name}}}: {title}}},",
+        f"  author = {{{author}}},",
+        f"  year = {{{year}}},",
+        f"  note = {{Python package version {version}}},",
+    ]
+    if url:
+        lines.append(f"  url = {{{url}}},")
+    lines.append("}")
+    return "\n".join(lines)
+
+
+def get_python_citation() -> str:
+    """Return a BibTeX entry for the Python language itself."""
+    import sys
+
+    version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
+    year = str(date.today().year)
+    return textwrap.dedent(f"""\
+        @Manual{{python,
+          title = {{Python: A Dynamic, Interpreted, High-Level Programming Language}},
+          author = {{Python Software Foundation}},
+          year = {{{year}}},
+          note = {{Python version {version}}},
+          url = {{https://www.python.org/}},
+        }}""")
+```
+
+# Generate BibTeX Entries
+
+```{python}
+#| label: generate-bib
+
+entries = [get_python_citation()]
+
+for pkg in packages:
+    entries.append(get_package_citation(pkg))
+
+bib_content = "\n\n".join(entries)
+
+with open(bib_file, "w", encoding="utf-8") as f:
+    f.write(bib_content)
+
+print(f"Wrote {len(entries)} entries ({len(packages)} packages + Python) to {bib_file}")
+```
+
+# View Generated Entries
+
+```{python}
+#| label: show-bib
+
+print(bib_content)
+```
+
+# Example Methods Paragraph
+
+Adapt the following for your manuscript's Statistical Analysis or Software
+subsection:
+
+```{python}
+#| label: methods-paragraph
+#| echo: false
+
+import sys
+
+lines = []
+py_ver = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
+lines.append(
+    f"All analyses were performed using Python (v{py_ver}; "
+    f"Python Software Foundation, {date.today().year})."
+)
+
+pkg_parts = []
+for pkg in packages:
+    try:
+        meta = importlib.metadata.metadata(pkg)
+        ver = meta["Version"]
+        pkg_parts.append(f"{pkg} (v{ver})")
+    except importlib.metadata.PackageNotFoundError:
+        pkg_parts.append(f"{pkg}")
+
+if pkg_parts:
+    lines.append("Packages used: " + ", ".join(pkg_parts) + ".")
+
+paragraph = " ".join(lines)
+print("Example paragraph for your Methods section:\n")
+print(paragraph)
+```
+
+# Merging into Your Project Bibliography
+
+If your project already has a `references.bib`, you can append the
+generated package entries:
+
+```{python}
+#| label: merge-bib
+#| eval: false
+
+import os
+
+pkg_bib = open("packages.bib", encoding="utf-8").read()
+
+with open("references.bib", "a", encoding="utf-8") as f:
+    f.write("\n\n" + pkg_bib)
+
+print("Package citations appended to references.bib")
+```
+
+**Important:** After merging, open `references.bib` and check for duplicate
+entries. If you regenerate `packages.bib` later (e.g., after adding a new
+package), merge only the new entries.
+
+# Full Environment Capture
+
+For a complete record of every installed package and its version (the Python
+equivalent of R's `sessionInfo()`):
+
+```{python}
+#| label: environment-info
+
+import sys
+import platform
+
+print(f"Python:   {sys.version}")
+print(f"Platform: {platform.platform()}")
+print()
+
+# Versions of cited packages
+for pkg in packages:
+    try:
+        meta = importlib.metadata.metadata(pkg)
+        print(f"  {pkg}: {meta['Version']}")
+    except importlib.metadata.PackageNotFoundError:
+        print(f"  {pkg}: NOT INSTALLED")
+```
+
+For a complete `pip freeze`-style listing, run in a terminal:
+
+```bash
+pip list --format=columns
+```
+
+Or capture it programmatically:
+
+```{python}
+#| label: pip-freeze
+#| eval: false
+
+import subprocess
+result = subprocess.run(
+    [sys.executable, "-m", "pip", "list", "--format=columns"],
+    capture_output=True, text=True
+)
+print(result.stdout)
+```
+
+# Which Packages Should I Cite?
+
+| Always cite | Consider citing | Usually not necessary |
+|-------------|-----------------|----------------------|
+| Statistical packages (`scipy`, `statsmodels`, `pingouin`) | Data wrangling (`pandas`, `polars`) | Low-level utilities (`setuptools`, `pip`) |
+| ML frameworks (`scikit-learn`, `torch`, `tensorflow`) | Visualization (`matplotlib`, `seaborn`, `plotnine`) | Development tools (`pytest`, `black`) |
+| Domain-specific tools (`lifelines`, `networkx`, `geopandas`) | NLP (`spacy`, `nltk`, `transformers`) | Standard library modules |
+
+When in doubt, cite it. Package authors appreciate the recognition, and it
+improves reproducibility.
+
+# Adding Custom Preferred Citations
+
+If you use a package that has a published paper but is not in the
+`PREFERRED_CITATIONS` dictionary above, you can add it. For example:
+
+```python
+PREFERRED_CITATIONS["networkx"] = {
+    "type": "InProceedings",
+    "key": "networkx",
+    "author": "Hagberg, Aric A. and Schult, Daniel A. and Swart, Pieter J.",
+    "title": "Exploring Network Structure, Dynamics, and Function using {NetworkX}",
+    "booktitle": "Proceedings of the 7th Python in Science Conference",
+    "pages": "11--15",
+    "year": "2008",
+}
+```
+
+Check the package documentation for the preferred citation, or look for a
+`CITATION.cff` file in the package's repository.
+
+# Further Reading
+
+- Smith, A. M., Katz, D. S., & Niemeyer, K. E. (2016).
+  [Software Citation Principles](https://doi.org/10.7717/peerj-cs.86).
+  PeerJ Computer Science, 2, e86.
+- [FORCE11 Software Citation Implementation Working Group](https://www.force11.org/group/software-citation-implementation-working-group)
+- [Citation File Format (CFF)](https://citation-file-format.github.io/) — a standard for software citation metadata.

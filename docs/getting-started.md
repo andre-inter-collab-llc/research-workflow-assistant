@@ -394,6 +394,61 @@ The database contains two tables and one view:
 
 See `compliance/ai-disclosure-template.md` for ready-to-use disclosure language.
 
+## Citing R and Python Packages
+
+Citing the software packages you use in your analysis is important for **developer credit**, **reproducibility**, and **transparency**. The [FORCE11 Software Citation Principles](https://doi.org/10.7717/peerj-cs.86) recommend citing all software important to the research outcome.
+
+RWA includes ready-to-use Quarto templates that generate BibTeX entries for your packages:
+
+### R
+
+Copy `analysis-templates/R/cite-r-packages.qmd` into your project, edit the package list, and render it. The template demonstrates three approaches:
+
+1. **`knitr::write_bib()`** — built-in, zero extra dependencies. Writes BibTeX entries for any list of packages.
+2. **`grateful::cite_packages()`** — auto-scans loaded packages and generates a formatted citation paragraph plus `.bib` file.
+3. **`sessionInfo()`** — captures the full environment (all package versions) for reproducibility.
+
+Quick example (run in R):
+
+```r
+# Generate BibTeX entries for your key packages
+knitr::write_bib(c("base", "metafor", "ggplot2", "dplyr"), file = "packages.bib")
+```
+
+Then reference `packages.bib` in your Quarto document:
+
+```yaml
+bibliography:
+  - references.bib
+  - packages.bib
+```
+
+See the [rOpenSci guide: How to Cite R and R Packages](https://ropensci.org/blog/2021/11/16/how-to-cite-r-and-r-packages/) for background and best practices.
+
+### Python
+
+Copy `analysis-templates/python/cite-python-packages.qmd` into your project, edit the package list, and render it. The template:
+
+- Uses `importlib.metadata` (standard library) to extract package metadata.
+- Includes preferred citations (published papers with DOIs) for major scientific packages: numpy, scipy, pandas, scikit-learn, matplotlib, statsmodels, seaborn, lifelines, and pingouin.
+- Falls back to `@Manual{}` BibTeX entries for other packages.
+
+Quick example (run in Python):
+
+```python
+import importlib.metadata
+meta = importlib.metadata.metadata("pandas")
+print(f"{meta['Name']} v{meta['Version']} by {meta.get('Author', 'Unknown')}")
+```
+
+### In your manuscript
+
+Include a sentence like this in your Methods section:
+
+> All analyses were performed using R Statistical Software (v4.4.1; R Core Team, 2025). Meta-analysis was conducted with metafor (v4.6-0; Viechtbauer, 2010). Data visualization used ggplot2 (v3.5.1; Wickham, 2016).
+
+The `@data-analyst` agent will include a software citations section when generating analysis code. The `@academic-writer` agent can help draft the software paragraph for your Methods section.
+
 ## Next Steps
 
 - Run `@setup` for a guided interactive setup

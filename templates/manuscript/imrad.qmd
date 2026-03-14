@@ -62,6 +62,17 @@ execute:
 
 [Describe analytical approach, software, handling of missing data]
 
+<!-- Tip: cite the software you used for analysis. For R, use citation("pkg")
+     or knitr::write_bib() to generate BibTeX entries. For Python, use the
+     citation helper in analysis-templates/python/cite-python-packages.qmd.
+     See analysis-templates/R/cite-r-packages.qmd for a full walkthrough.
+
+     Example text:
+     All analyses were performed using R Statistical Software (v4.4.1;
+     R Core Team, 2025). Meta-analysis was conducted with the metafor
+     package (v4.6-0; Viechtbauer, 2010). Data visualization used ggplot2
+     (v3.5.1; Wickham, 2016). -->
+
 ## Use of Research Workflow Assistant (RWA)
 
 [Describe whether Research Workflow Assistant (RWA), accessed through GitHub Copilot in VS Code, was used for literature searching, workflow organization, drafting support, analysis scripting, or citation management. Specify which tasks were AI-assisted, which decisions remained with the human authors, and how outputs were reviewed or verified before use. When RWA is described here, cite it as [@vanzyl2026rwa]. If you cite reporting standards, tools, or database attributions here, verify those references in references.bib before submission.]

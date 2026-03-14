@@ -1,0 +1,206 @@
+---
+title: "Citing R and R Packages"
+date: today
+format:
+  html:
+    toc: true
+    self-contained: true
+---
+
+<!--
+  Template: cite-r-packages.qmd
+  Purpose:  Generate BibTeX entries and in-text citations for R and the
+            R packages used in your analysis. Three approaches are shown,
+            from simplest (built-in) to most automated (grateful).
+
+  Usage:
+    1. Copy this file into your project directory.
+    2. Edit the `pkgs` vector below to list the packages you actually used.
+    3. Render with:  quarto render cite-r-packages.qmd
+    4. Merge the generated packages.bib entries into your project's
+       references.bib (or use packages.bib directly).
+-->
+
+# Why Cite R Packages?
+
+Software citation is important for three reasons (LaZerte 2021):
+\
+
+1. **Developer credit** — many package authors are scientists who need citations
+   for career recognition.
+2. **Reproducibility** — recording package names and versions lets others
+   replicate your analysis environment.
+3. **Gratitude** — citing open-source tools acknowledges unpaid community work.
+
+The [FORCE11 Software Citation Principles](https://doi.org/10.7717/peerj-cs.86)
+recommend citing all software important to the research outcome.
+
+# Setup
+
+List the packages you used in your analysis. Edit this vector to match
+your actual workflow.
+
+```{r}
+#| label: setup
+#| message: false
+
+# ── Packages you want to cite ──────────────────────────────────────────
+# Edit this list to match your project. Include every package that was
+# material to your results (statistical methods, domain-specific tools,
+# data retrieval, visualization). General-purpose packages (e.g., dplyr,
+# ggplot2) are worth citing too — see guidance below.
+pkgs <- c(
+  "tidyverse",
+  "metafor",
+  "ggplot2",
+  "dplyr"
+)
+
+# Output file for generated BibTeX entries
+bib_file <- "packages.bib"
+```
+
+# Approach 1: Built-in `knitr::write_bib()` (recommended)
+\
+This approach requires **no additional packages** beyond `knitr`, which is
+already installed if you use Quarto or R Markdown.
+
+```{r}
+#| label: knitr-write-bib
+
+# Generate BibTeX entries for R itself plus your packages
+knitr::write_bib(c("base", pkgs), file = bib_file)
+cat("Wrote", length(c("base", pkgs)), "entries to", bib_file, "\n")
+```
+
+The generated `packages.bib` now contains `@Manual{}` or `@Article{}` entries
+for each package plus R itself. You can merge these into your project's
+`references.bib` or point your Quarto YAML at both files:
+\
+```yaml
+bibliography:
+  - references.bib
+  - packages.bib
+```
+
+## Individual citations
+
+You can also inspect the citation for a single package interactively:
+
+```{r}
+#| label: single-citation
+
+# View the citation object for one package
+citation("metafor")
+```
+
+## BibTeX for a single package
+
+```{r}
+#| label: single-bibtex
+
+# Print the BibTeX entry for one package
+toBibtex(citation("metafor"))
+```
+
+# Approach 2: `grateful` Package (most automated)
+\
+The [`grateful`](https://github.com/Pakillo/grateful) package scans the
+packages loaded in your session and generates a formatted citation paragraph
+plus a `.bib` file automatically. Install it once:
+
+```r
+install.packages("grateful")
+```
+
+```{r}
+#| label: grateful-cite
+#| eval: false
+
+# Load all the packages you used in your analysis first, then:
+library(grateful)
+
+cite_packages(
+  output    = "paragraph",
+  out.dir   = ".",
+  bib.file  = "grateful-refs",
+  include.RStudio = FALSE
+)
+# Creates grateful-refs.bib and prints a formatted paragraph you can
+# paste into your Methods section.
+```
+
+The paragraph output reads something like:
+
+> "All analyses were performed using R Statistical Software (v4.4.1;
+>  R Core Team, 2025). Packages used: dplyr (v1.1.4; Wickham et al., 2023),
+>  ggplot2 (v3.5.1; Wickham, 2016), metafor (v4.6-0; Viechtbauer, 2010),
+>  tidyverse (v2.0.0; Wickham et al., 2019)."
+
+# Approach 3: Session Information (environment capture)
+\
+For a complete record of every loaded package and its version, append
+`sessionInfo()` or `devtools::session_info()` at the end of your analysis
+script. This is essential for reproducibility even if you also cite
+individual packages.
+
+```{r}
+#| label: session-info
+
+sessionInfo()
+```
+
+# Example Methods Paragraph
+
+Adapt the following for your manuscript's Statistical Analysis or Software
+subsection:
+
+> All analyses were performed using R Statistical Software
+> (v`r paste0(R.version$major, ".", R.version$minor)`;
+> R Core Team, `r R.version$year`). Meta-analysis was conducted with the
+> metafor package (v`r packageVersion("metafor")`; Viechtbauer, 2010).
+> Data manipulation used dplyr (v`r packageVersion("dplyr")`; Wickham
+> et al., 2023) and visualization used ggplot2
+> (v`r packageVersion("ggplot2")`; Wickham, 2016).
+
+# Merging into Your Project Bibliography
+
+If your project already has a `references.bib`, you can append the
+generated package entries:
+
+```{r}
+#| label: merge-bib
+#| eval: false
+
+# Read the generated package bibliography
+pkg_bib <- readLines("packages.bib")
+
+# Append to project references.bib (creates if missing)
+cat(pkg_bib, file = "references.bib", sep = "\n", append = TRUE)
+cat("Package citations appended to references.bib\n")
+```
+
+**Important:** After merging, open `references.bib` and check for duplicate
+entries. If you regenerate `packages.bib` later (e.g., after adding a new
+package), merge only the new entries.
+
+# Which Packages Should I Cite?
+
+Per the [FORCE11 guidelines](https://doi.org/10.7717/peerj-cs.86) and
+[rOpenSci advice](https://ropensci.org/blog/2021/11/16/how-to-cite-r-and-r-packages/):
+
+| Always cite | Consider citing | Usually not necessary |
+|-------------|-----------------|----------------------|
+| Statistical method packages (`metafor`, `lme4`, `survival`) | Data-wrangling packages (`dplyr`, `tidyr`, `data.table`) | Low-level infrastructure (`rlang`, `cli`, `glue`) |
+| Domain-specific packages (`tidyhydat`, `weathercan`) | Visualization packages (`ggplot2`, `plotly`) | Development tools (`devtools`, `testthat`) |
+| Data-retrieval packages (`httr2`, `DBI`, `RSQLite`) | Reporting packages (`knitr`, `rmarkdown`, `gt`) | |
+
+When in doubt, cite it. Package authors appreciate the recognition, and it
+improves reproducibility.
+
+# Further Reading
+
+- LaZerte, S. (2021). [How to Cite R and R Packages](https://ropensci.org/blog/2021/11/16/how-to-cite-r-and-r-packages/). rOpenSci Blog.
+- Smith, A. M., Katz, D. S., & Niemeyer, K. E. (2016). [Software Citation Principles](https://doi.org/10.7717/peerj-cs.86). PeerJ Computer Science, 2, e86.
+- [grateful package](https://github.com/Pakillo/grateful) — Automated citation paragraph generation.
+- [cffr package](https://docs.ropensci.org/cffr) — Create Citation File Format (CFF) files for R packages.

@@ -88,6 +88,15 @@ Using the Zotero MCP server:
 - When suggesting a citation, always provide the DOI or PMID so the user can verify.
 - Use MCP tools to confirm reference existence before including it.
 
+**Software & package citations:**
+When drafting a Methods section that describes statistical or computational analysis:
+- Ask the user which R or Python packages were used for the analysis.
+- Help draft a "Software" sentence or paragraph for the Methods section, e.g.: *"All analyses were performed using R Statistical Software (v4.4.1; R Core Team, 2025). Meta-analysis was conducted with metafor (v4.6-0; Viechtbauer, 2010)."*
+- If the user has generated a `packages.bib` file (from the analysis templates), offer to merge those entries into the manuscript's `references.bib`.
+- For R: The `citation("pkg")` function and `knitr::write_bib()` produce standard BibTeX entries. The `grateful` package can generate a formatted citation paragraph automatically. See `analysis-templates/R/cite-r-packages.qmd`.
+- For Python: Major scientific packages (numpy, scipy, pandas, scikit-learn, matplotlib, statsmodels) have published papers with DOIs. A citation helper is available at `analysis-templates/python/cite-python-packages.qmd`.
+- Per [FORCE11 Software Citation Principles](https://doi.org/10.7717/peerj-cs.86), statistical and domain-specific packages should always be cited. Include version numbers in the text.
+
 ### Writing Assistance
 
 When the user asks you to draft text:

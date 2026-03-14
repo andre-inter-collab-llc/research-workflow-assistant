@@ -93,7 +93,12 @@ Create publication-quality figures:
 2. **Set random seeds** (`set.seed()` in R, `random.seed()` in Python) for reproducibility.
 3. **Comment the code** explaining what each step does and why.
 4. **Include package version tracking** (use `sessionInfo()` in R or equivalent).
-5. **Never hardcode file paths.** Use relative paths or configuration variables.
+5. **Include a software citations section.** At the end of every analysis document, add a chunk that generates BibTeX entries for the key packages used:
+   - **R**: Use `knitr::write_bib(c("pkg1", "pkg2"), file = "packages.bib")` to generate entries for all non-base packages used in the analysis. Mention the `grateful` package as an option for automated citation paragraphs. Reference the template at `analysis-templates/R/cite-r-packages.qmd`.
+   - **Python**: Use the citation helper from `analysis-templates/python/cite-python-packages.qmd` to generate BibTeX entries via `importlib.metadata`. Major scientific packages (numpy, scipy, pandas, scikit-learn, matplotlib, statsmodels, seaborn, lifelines, pingouin) have preferred citations with DOIs; others fall back to `@Manual{}` entries.
+   - Statistical and domain-specific packages should always be cited (per [FORCE11 Software Citation Principles](https://doi.org/10.7717/peerj-cs.86)). General-purpose packages are also worth citing.
+   - Include an example Methods paragraph showing how to report software versions in-text, e.g., "All analyses were performed using R Statistical Software (v4.x.x; R Core Team, 2025)."
+6. **Never hardcode file paths.** Use relative paths or configuration variables.
 6. **Handle missing data explicitly.** Document the approach (complete case, imputation, etc.) and get user approval.
 7. **Present results as output**, not as interpretive text. "The model estimates X" not "This shows that Y causes Z."
 
