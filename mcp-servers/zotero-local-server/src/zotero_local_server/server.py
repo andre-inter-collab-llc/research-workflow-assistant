@@ -59,7 +59,11 @@ def _resolve_pdf_path(data_dir: Path, item_key: str) -> str | None:
     """
     # First check if the key is directly an attachment
     attachments = zotero_db.get_attachments(data_dir, item_key)
-    pdfs = [a for a in attachments if a.get("content_type") == "application/pdf" and a.get("exists")]
+    pdfs = [
+        a for a in attachments
+        if a.get("content_type") == "application/pdf"
+        and a.get("exists")
+    ]
     if pdfs:
         return pdfs[0]["path"]
 
@@ -520,7 +524,10 @@ async def bbt_get_citekey(item_key: str) -> dict[str, Any]:
         Dictionary with the BBT citation key.
     """
     if not await _bbt_available():
-        return {"error": "Better BibTeX is not available. Ensure Zotero is running with BBT installed."}
+        return {
+            "error": "Better BibTeX is not available."
+            " Ensure Zotero is running with BBT installed.",
+        }
 
     try:
         # Use BBT's JSON-RPC to export a single item and extract the citekey
@@ -544,7 +551,10 @@ async def bbt_search_by_citekey(citekey: str) -> dict[str, Any]:
         Dictionary with the Zotero item key and metadata.
     """
     if not await _bbt_available():
-        return {"error": "Better BibTeX is not available. Ensure Zotero is running with BBT installed."}
+        return {
+            "error": "Better BibTeX is not available."
+            " Ensure Zotero is running with BBT installed.",
+        }
 
     try:
         result = await _bbt_call(
@@ -574,11 +584,19 @@ async def bbt_export(
         Dictionary with the exported bibliography text.
     """
     if not await _bbt_available():
-        return {"error": "Better BibTeX is not available. Ensure Zotero is running with BBT installed."}
+        return {
+            "error": "Better BibTeX is not available."
+            " Ensure Zotero is running with BBT installed.",
+        }
 
     valid_formats = {"betterbibtex", "betterbiblatex", "bettercsljson"}
     if format not in valid_formats:
-        return {"error": f"Invalid format '{format}'. Must be one of: {', '.join(sorted(valid_formats))}"}
+        return {
+            "error": (
+                f"Invalid format '{format}'."
+                f" Must be one of: {', '.join(sorted(valid_formats))}"
+            ),
+        }
 
     try:
         translator_map = {
@@ -586,8 +604,15 @@ async def bbt_export(
             "betterbiblatex": "Better BibLaTeX",
             "bettercsljson": "Better CSL JSON",
         }
-        params: list[Any] = [collection_key, {"translator": translator_map[format]}]
-        result = await _bbt_call("collection.export" if collection_key else "library.export", params)
+        params: list[Any] = [
+            collection_key,
+            {"translator": translator_map[format]},
+        ]
+        result = await _bbt_call(
+            "collection.export" if collection_key
+            else "library.export",
+            params,
+        )
         return {"format": format, "content": result}
     except Exception as exc:
         return {"format": format, "error": str(exc)}
@@ -604,7 +629,10 @@ async def bbt_cayw() -> dict[str, Any]:
         Dictionary with the selected citation(s) in pandoc format.
     """
     if not await _bbt_available():
-        return {"error": "Better BibTeX is not available. Ensure Zotero is running with BBT installed."}
+        return {
+            "error": "Better BibTeX is not available."
+            " Ensure Zotero is running with BBT installed.",
+        }
 
     try:
         result = await _bbt_call("item.picker", [{"format": "pandoc"}])

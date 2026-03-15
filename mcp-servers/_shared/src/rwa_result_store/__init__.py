@@ -13,7 +13,7 @@ import re
 import sqlite3
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -160,7 +160,7 @@ def store_results(
     """
     conn = init_db(project_path)
     try:
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
 
         cursor = conn.execute(
             "INSERT INTO searches (source, query, timestamp, total_count, parameters_json) "
@@ -485,7 +485,7 @@ def generate_and_run_script(
         return None
 
     # Write script
-    ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    ts = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
     scripts_dir = Path(project_path) / "scripts"
     scripts_dir.mkdir(parents=True, exist_ok=True)
     script_path = scripts_dir / f"search_{source}_{ts}.py"
@@ -741,7 +741,10 @@ def export_results_csljson(
         if r.get("journal"):
             item["container-title"] = r["journal"]
         if year:
-            item["issued"] = {"date-parts": [[int(year[:4])]]} if year[:4].isdigit() else {"literal": year}
+            if year[:4].isdigit():
+                item["issued"] = {"date-parts": [[int(year[:4])]]}
+            else:
+                item["issued"] = {"literal": year}
         if r.get("volume"):
             item["volume"] = r["volume"]
         if r.get("issue"):

@@ -10,8 +10,8 @@ Use --json to print the full machine-readable report.
 
 from __future__ import annotations
 
-import importlib
 import argparse
+import importlib
 import json
 import os
 import shutil
@@ -119,7 +119,7 @@ def _check_env_keys(workspace_root: Path) -> dict:
 def _check_projects_dir(workspace_root: Path) -> dict:
     """Check if the projects directory exists and list projects."""
     # Determine projects root from .env or default
-    env_keys = _check_env_keys(workspace_root)
+    _check_env_keys(workspace_root)
     projects_root_str = os.environ.get("PROJECTS_ROOT", "")
 
     if not projects_root_str:
@@ -223,7 +223,13 @@ def _check_zotero_local() -> dict:
 
     data_dir = zotero_db.detect_zotero_data_dir()
     if data_dir is None:
-        return {"status": "not-found", "message": "Zotero data directory not detected. Set ZOTERO_DATA_DIR."}
+        return {
+            "status": "not-found",
+            "message": (
+                "Zotero data directory not detected."
+                " Set ZOTERO_DATA_DIR."
+            ),
+        }
 
     version = zotero_db.get_zotero_version(data_dir)
     storage = data_dir / "storage"
@@ -332,11 +338,19 @@ def _print_human_report(report: dict[str, object]) -> None:
 
     servers = report["servers"]  # type: ignore[index]
     server_ok = sum(1 for s in servers.values() if s.get("status") == "ok")
-    print(f"[{'OK' if server_ok == len(servers) else 'WARN'}] MCP packages importable: {server_ok}/{len(servers)}")
+    pkg_icon = 'OK' if server_ok == len(servers) else 'WARN'
+    print(
+        f"[{pkg_icon}] MCP packages importable:"
+        f" {server_ok}/{len(servers)}"
+    )
 
     server_health = report["server_health"]  # type: ignore[index]
     healthy = sum(1 for s in server_health.values() if s.get("status") == "ok")
-    print(f"[{'OK' if healthy == len(server_health) else 'WARN'}] MCP startup checks passed: {healthy}/{len(server_health)}")
+    health_icon = 'OK' if healthy == len(server_health) else 'WARN'
+    print(
+        f"[{health_icon}] MCP startup checks passed:"
+        f" {healthy}/{len(server_health)}"
+    )
 
     env_file = report.get("env_file", "missing")
     print(f"[{'OK' if env_file == 'exists' else 'FAIL'}] .env file: {env_file}")
@@ -352,7 +366,11 @@ def _print_human_report(report: dict[str, object]) -> None:
         )
 
     env_keys = report["env_keys"]  # type: ignore[index]
-    required = ["NCBI_API_KEY", "OPENALEX_API_KEY", "ZOTERO_API_KEY", "ZOTERO_USER_ID", "PROJECTS_ROOT"]
+    required = [
+        "NCBI_API_KEY", "OPENALEX_API_KEY",
+        "ZOTERO_API_KEY", "ZOTERO_USER_ID",
+        "PROJECTS_ROOT",
+    ]
     missing_required = [k for k in required if env_keys.get(k) in {"missing", "empty"}]
     if missing_required:
         print(f"[WARN] Required/recommended keys needing attention: {', '.join(missing_required)}")
@@ -363,17 +381,27 @@ def _print_human_report(report: dict[str, object]) -> None:
     projects_status = projects.get("status")
     projects_icon = "OK" if projects_status == "ok" else "WARN"
     project_count = len(projects.get("projects", []))
-    print(f"[{projects_icon}] Projects root: {projects.get('path', 'unknown')} (projects found: {project_count})")
+    print(
+        f"[{projects_icon}] Projects root:"
+        f" {projects.get('path', 'unknown')}"
+        f" (projects found: {project_count})"
+    )
 
     zotero_local = report["zotero_local"]  # type: ignore[index]
     zl_status = zotero_local.get("status")
     if zl_status == "ok":
+        zl_dir = zotero_local.get('data_dir')
+        zl_pdfs = zotero_local.get('pdf_count', 0)
+        zl_bbt = zotero_local.get('better_bibtex', 'unknown')
         print(
-            f"[OK] Zotero local detected at {zotero_local.get('data_dir')} "
-            f"(PDFs: {zotero_local.get('pdf_count', 0)}, BBT: {zotero_local.get('better_bibtex', 'unknown')})"
+            f"[OK] Zotero local detected at {zl_dir} "
+            f"(PDFs: {zl_pdfs}, BBT: {zl_bbt})"
         )
     else:
-        print(f"[WARN] Zotero local: {zotero_local.get('message', zotero_local.get('reason', 'not configured'))}")
+        print(
+            f"[WARN] Zotero local:"
+            f" {zotero_local.get('message', zotero_local.get('reason', 'not configured'))}"
+        )
 
     overall = report.get("overall", "unknown")
     print("-" * 72)
@@ -436,7 +464,7 @@ def main() -> int:
     else:
         _print_human_report(report)
 
-    return 0 if report["overall"] == "ready" else 1
+    return 0 if report["overall"] != "needs-setup" else 1
 
 
 if __name__ == "__main__":

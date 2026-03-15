@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import json
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -106,7 +106,19 @@ def _save_flow(data: dict[str, Any], base_dir: Path | None = None) -> None:
 
 def _now() -> str:
     """Return current UTC timestamp as ISO string."""
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
+
+
+def _ci(
+    section: str, item: int, description: str, status: str = "manual",
+) -> dict[str, Any]:
+    """Build a single checklist item dict."""
+    return {
+        "section": section,
+        "item": item,
+        "description": description,
+        "status": status,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -152,7 +164,10 @@ async def list_reviews() -> dict[str, Any]:
         return {
             "projects_root": str(root),
             "reviews": [],
-            "note": "PROJECTS_ROOT does not exist yet. Create it or set PROJECTS_ROOT to a valid path in .env.",
+            "note": (
+                "PROJECTS_ROOT does not exist yet. "
+                "Create it or set PROJECTS_ROOT to a valid path in .env."
+            ),
         }
 
     for child in sorted(root.iterdir()):
@@ -247,7 +262,12 @@ async def init_review(
     }
     _save_flow(flow, base_dir)
 
-    return {"status": "initialized", "title": title, "review_type": review_type, "path": str(base_dir)}
+    return {
+        "status": "initialized",
+        "title": title,
+        "review_type": review_type,
+        "path": str(base_dir),
+    }
 
 
 @mcp.tool()
@@ -547,89 +567,125 @@ async def export_prisma_checklist(
         return {"error": "No review initialized. Call init_review first."}
 
     has_searches = len(flow["identification"]["database_searches"]) > 0
-    has_dedup = flow["deduplication"]["recorded_at"] is not None
     has_ta_screening = flow["screening"]["title_abstract"]["recorded_at"] is not None
     has_ft_screening = flow["screening"]["full_text"]["recorded_at"] is not None
 
+    has_proto = bool(flow.get("protocol_id"))
+
     if standard == "prisma-2020":
         checklist = [
-            {"section": "Title", "item": 1, "description": "Identify the report as a systematic review", "status": "manual"},
-            {"section": "Abstract", "item": 2, "description": "Structured summary", "status": "manual"},
-            {"section": "Introduction", "item": 3, "description": "Rationale", "status": "manual"},
-            {"section": "Introduction", "item": 4, "description": "Objectives with PICO", "status": "manual"},
-            {"section": "Methods", "item": 5, "description": "Protocol and registration", "status": "complete" if flow.get("protocol_id") else "incomplete"},
-            {"section": "Methods", "item": 6, "description": "Eligibility criteria", "status": "manual"},
-            {"section": "Methods", "item": 7, "description": "Information sources", "status": "complete" if has_searches else "incomplete"},
-            {"section": "Methods", "item": 8, "description": "Search strategy", "status": "complete" if has_searches else "incomplete"},
-            {"section": "Methods", "item": 9, "description": "Selection process", "status": "complete" if has_ta_screening else "incomplete"},
-            {"section": "Methods", "item": 10, "description": "Data collection process", "status": "manual"},
-            {"section": "Methods", "item": 11, "description": "Data items", "status": "manual"},
-            {"section": "Methods", "item": 12, "description": "Study risk of bias assessment", "status": "manual"},
-            {"section": "Methods", "item": 13, "description": "Effect measures", "status": "manual"},
-            {"section": "Methods", "item": 14, "description": "Synthesis methods", "status": "manual"},
-            {"section": "Methods", "item": 15, "description": "Reporting bias assessment", "status": "manual"},
-            {"section": "Methods", "item": 16, "description": "Certainty assessment", "status": "manual"},
-            {"section": "Results", "item": 17, "description": "Study selection (PRISMA flow)", "status": "complete" if has_ft_screening else "incomplete"},
-            {"section": "Results", "item": 18, "description": "Study characteristics", "status": "manual"},
-            {"section": "Results", "item": 19, "description": "Risk of bias in studies", "status": "manual"},
-            {"section": "Results", "item": 20, "description": "Results of individual studies", "status": "manual"},
-            {"section": "Results", "item": 21, "description": "Results of syntheses", "status": "manual"},
-            {"section": "Results", "item": 22, "description": "Reporting biases", "status": "manual"},
-            {"section": "Results", "item": 23, "description": "Certainty of evidence", "status": "manual"},
-            {"section": "Discussion", "item": 24, "description": "Discussion", "status": "manual"},
-            {"section": "Other", "item": 25, "description": "Registration and protocol", "status": "complete" if flow.get("protocol_id") else "incomplete"},
-            {"section": "Other", "item": 26, "description": "Support/funding", "status": "manual"},
-            {"section": "Other", "item": 27, "description": "Competing interests", "status": "manual"},
+            _ci("Title", 1, "Identify the report as a systematic review"),
+            _ci("Abstract", 2, "Structured summary"),
+            _ci("Introduction", 3, "Rationale"),
+            _ci("Introduction", 4, "Objectives with PICO"),
+            _ci("Methods", 5, "Protocol and registration",
+                "complete" if has_proto else "incomplete"),
+            _ci("Methods", 6, "Eligibility criteria"),
+            _ci("Methods", 7, "Information sources",
+                "complete" if has_searches else "incomplete"),
+            _ci("Methods", 8, "Search strategy",
+                "complete" if has_searches else "incomplete"),
+            _ci("Methods", 9, "Selection process",
+                "complete" if has_ta_screening else "incomplete"),
+            _ci("Methods", 10, "Data collection process"),
+            _ci("Methods", 11, "Data items"),
+            _ci("Methods", 12, "Study risk of bias assessment"),
+            _ci("Methods", 13, "Effect measures"),
+            _ci("Methods", 14, "Synthesis methods"),
+            _ci("Methods", 15, "Reporting bias assessment"),
+            _ci("Methods", 16, "Certainty assessment"),
+            _ci("Results", 17, "Study selection (PRISMA flow)",
+                "complete" if has_ft_screening else "incomplete"),
+            _ci("Results", 18, "Study characteristics"),
+            _ci("Results", 19, "Risk of bias in studies"),
+            _ci("Results", 20, "Results of individual studies"),
+            _ci("Results", 21, "Results of syntheses"),
+            _ci("Results", 22, "Reporting biases"),
+            _ci("Results", 23, "Certainty of evidence"),
+            _ci("Discussion", 24, "Discussion"),
+            _ci("Other", 25, "Registration and protocol",
+                "complete" if has_proto else "incomplete"),
+            _ci("Other", 26, "Support/funding"),
+            _ci("Other", 27, "Competing interests"),
         ]
     elif standard == "prisma-scr":
         checklist = [
-            {"section": "Title", "item": 1, "description": "Identify as scoping review", "status": "manual"},
-            {"section": "Abstract", "item": 2, "description": "Structured summary", "status": "manual"},
-            {"section": "Introduction", "item": 3, "description": "Rationale", "status": "manual"},
-            {"section": "Introduction", "item": 4, "description": "Objectives", "status": "manual"},
-            {"section": "Methods", "item": 5, "description": "Protocol and registration", "status": "complete" if flow.get("protocol_id") else "incomplete"},
-            {"section": "Methods", "item": 6, "description": "Eligibility criteria (PCC)", "status": "manual"},
-            {"section": "Methods", "item": 7, "description": "Information sources", "status": "complete" if has_searches else "incomplete"},
-            {"section": "Methods", "item": 8, "description": "Search", "status": "complete" if has_searches else "incomplete"},
-            {"section": "Methods", "item": 9, "description": "Selection of sources", "status": "complete" if has_ta_screening else "incomplete"},
-            {"section": "Methods", "item": 10, "description": "Data charting process", "status": "manual"},
-            {"section": "Methods", "item": 11, "description": "Data items", "status": "manual"},
-            {"section": "Methods", "item": 12, "description": "Critical appraisal", "status": "manual"},
-            {"section": "Methods", "item": 13, "description": "Synthesis of results", "status": "manual"},
-            {"section": "Results", "item": 14, "description": "Selection of sources", "status": "complete" if has_ft_screening else "incomplete"},
-            {"section": "Results", "item": 15, "description": "Characteristics of sources", "status": "manual"},
-            {"section": "Results", "item": 16, "description": "Critical appraisal", "status": "manual"},
-            {"section": "Results", "item": 17, "description": "Results of individual sources", "status": "manual"},
-            {"section": "Results", "item": 18, "description": "Synthesis of results", "status": "manual"},
-            {"section": "Discussion", "item": 19, "description": "Summary of evidence", "status": "manual"},
-            {"section": "Discussion", "item": 20, "description": "Limitations", "status": "manual"},
-            {"section": "Discussion", "item": 21, "description": "Conclusions", "status": "manual"},
-            {"section": "Other", "item": 22, "description": "Funding", "status": "manual"},
+            _ci("Title", 1, "Identify as scoping review"),
+            _ci("Abstract", 2, "Structured summary"),
+            _ci("Introduction", 3, "Rationale"),
+            _ci("Introduction", 4, "Objectives"),
+            _ci("Methods", 5, "Protocol and registration",
+                "complete" if has_proto else "incomplete"),
+            _ci("Methods", 6, "Eligibility criteria (PCC)"),
+            _ci("Methods", 7, "Information sources",
+                "complete" if has_searches else "incomplete"),
+            _ci("Methods", 8, "Search",
+                "complete" if has_searches else "incomplete"),
+            _ci("Methods", 9, "Selection of sources",
+                "complete" if has_ta_screening else "incomplete"),
+            _ci("Methods", 10, "Data charting process"),
+            _ci("Methods", 11, "Data items"),
+            _ci("Methods", 12, "Critical appraisal"),
+            _ci("Methods", 13, "Synthesis of results"),
+            _ci("Results", 14, "Selection of sources",
+                "complete" if has_ft_screening else "incomplete"),
+            _ci("Results", 15, "Characteristics of sources"),
+            _ci("Results", 16, "Critical appraisal"),
+            _ci("Results", 17, "Results of individual sources"),
+            _ci("Results", 18, "Synthesis of results"),
+            _ci("Discussion", 19, "Summary of evidence"),
+            _ci("Discussion", 20, "Limitations"),
+            _ci("Discussion", 21, "Conclusions"),
+            _ci("Other", 22, "Funding"),
         ]
     elif standard == "moose":
         checklist = [
-            {"section": "Reporting of background", "item": 1, "description": "Problem definition", "status": "manual"},
-            {"section": "Reporting of background", "item": 2, "description": "Hypothesis statement", "status": "manual"},
-            {"section": "Reporting of background", "item": 3, "description": "Objective description", "status": "manual"},
-            {"section": "Reporting of background", "item": 4, "description": "Type of study designs used", "status": "manual"},
-            {"section": "Reporting of search strategy", "item": 5, "description": "Qualifications of searchers", "status": "manual"},
-            {"section": "Reporting of search strategy", "item": 6, "description": "Search strategy including databases", "status": "complete" if has_searches else "incomplete"},
-            {"section": "Reporting of search strategy", "item": 7, "description": "Effort to include all available studies", "status": "manual"},
-            {"section": "Reporting of search strategy", "item": 8, "description": "Use of hand searching", "status": "manual"},
-            {"section": "Reporting of search strategy", "item": 9, "description": "List of citations located and those excluded with reasons", "status": "complete" if has_ft_screening else "incomplete"},
-            {"section": "Reporting of methods", "item": 10, "description": "Description of relevance assessment", "status": "manual"},
-            {"section": "Reporting of methods", "item": 11, "description": "Assessment of study quality", "status": "manual"},
-            {"section": "Reporting of methods", "item": 12, "description": "Method of data extraction", "status": "manual"},
-            {"section": "Reporting of methods", "item": 13, "description": "Statistical methods", "status": "manual"},
-            {"section": "Reporting of results", "item": 14, "description": "Flow of studies (PRISMA diagram)", "status": "complete" if has_ft_screening else "incomplete"},
-            {"section": "Reporting of results", "item": 15, "description": "Study characteristics", "status": "manual"},
-            {"section": "Reporting of results", "item": 16, "description": "Quantitative data synthesis", "status": "manual"},
-            {"section": "Reporting of discussion", "item": 17, "description": "Quantitative assessment of bias", "status": "manual"},
-            {"section": "Reporting of discussion", "item": 18, "description": "Justification for exclusions", "status": "manual"},
-            {"section": "Reporting of discussion", "item": 19, "description": "Assessment of quality of included studies", "status": "manual"},
+            _ci("Reporting of background", 1, "Problem definition"),
+            _ci("Reporting of background", 2, "Hypothesis statement"),
+            _ci("Reporting of background", 3,
+                "Objective description"),
+            _ci("Reporting of background", 4,
+                "Type of study designs used"),
+            _ci("Reporting of search strategy", 5,
+                "Qualifications of searchers"),
+            _ci("Reporting of search strategy", 6,
+                "Search strategy including databases",
+                "complete" if has_searches else "incomplete"),
+            _ci("Reporting of search strategy", 7,
+                "Effort to include all available studies"),
+            _ci("Reporting of search strategy", 8,
+                "Use of hand searching"),
+            _ci("Reporting of search strategy", 9,
+                "List of citations located and excluded",
+                "complete" if has_ft_screening else "incomplete"),
+            _ci("Reporting of methods", 10,
+                "Description of relevance assessment"),
+            _ci("Reporting of methods", 11,
+                "Assessment of study quality"),
+            _ci("Reporting of methods", 12,
+                "Method of data extraction"),
+            _ci("Reporting of methods", 13, "Statistical methods"),
+            _ci("Reporting of results", 14,
+                "Flow of studies (PRISMA diagram)",
+                "complete" if has_ft_screening else "incomplete"),
+            _ci("Reporting of results", 15,
+                "Study characteristics"),
+            _ci("Reporting of results", 16,
+                "Quantitative data synthesis"),
+            _ci("Reporting of discussion", 17,
+                "Quantitative assessment of bias"),
+            _ci("Reporting of discussion", 18,
+                "Justification for exclusions"),
+            _ci("Reporting of discussion", 19,
+                "Assessment of quality of included studies"),
         ]
     else:
-        return {"error": f"Unknown standard: {standard}. Use 'prisma-2020', 'prisma-scr', or 'moose'."}
+        return {
+            "error": (
+                f"Unknown standard: {standard}. "
+                "Use 'prisma-2020', 'prisma-scr', or 'moose'."
+            ),
+        }
 
     completed = sum(1 for c in checklist if c["status"] == "complete")
     total = len(checklist)

@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-import html
 import re
-from datetime import datetime
 from textwrap import dedent
 
 from .models import ChatMessage, ChatSession, ThinkingBlock, ToolCall
@@ -54,7 +52,10 @@ def render_qmd(
     for i, msg in enumerate(session.messages, start=1):
         parts.append(f"## Turn {i}")
         parts.append("")
-        parts.append(_render_message(msg, include_thinking=include_thinking, detail_level=detail_level))
+        parts.append(_render_message(
+            msg, include_thinking=include_thinking,
+            detail_level=detail_level,
+        ))
         parts.append("")
 
     return "\n".join(parts)

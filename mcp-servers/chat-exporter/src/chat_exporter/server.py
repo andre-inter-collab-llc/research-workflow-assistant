@@ -15,13 +15,12 @@ import json
 import os
 import platform
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 from urllib.parse import unquote
 
 from mcp.server.fastmcp import FastMCP
-
 from rwa_chat_parser import parse_session, render_qmd
 
 # ---------------------------------------------------------------------------
@@ -127,7 +126,7 @@ def _discover_sessions(workspace_path: Path) -> list[dict[str, Any]]:
                         info["model_id"] = v.get("modelId", "")
                         ts = v.get("creationDate")
                         if ts and isinstance(ts, (int, float)):
-                            dt = datetime.fromtimestamp(ts / 1000, tz=timezone.utc)
+                            dt = datetime.fromtimestamp(ts / 1000, tz=UTC)
                             info["creation_date"] = dt.strftime("%Y-%m-%d %H:%M UTC")
                     elif kind == 1 and keys == ["customTitle"]:
                         if isinstance(value, str):

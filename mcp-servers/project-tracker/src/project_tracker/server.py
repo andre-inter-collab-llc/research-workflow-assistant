@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import json
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -35,7 +35,10 @@ _active_project: str | None = None
 
 mcp = FastMCP(
     "project-tracker",
-    instructions="Track research project phases, milestones, tasks, decisions, and generate progress briefs",
+    instructions=(
+        "Track research project phases, milestones, tasks,"
+        " decisions, and generate progress briefs"
+    ),
 )
 
 
@@ -98,7 +101,11 @@ def _load_yaml(filename: str, base_dir: Path | None = None) -> dict[str, Any]:
     return {}
 
 
-def _save_yaml(filename: str, data: dict[str, Any] | list[Any], base_dir: Path | None = None) -> None:
+def _save_yaml(
+    filename: str,
+    data: dict[str, Any] | list[Any],
+    base_dir: Path | None = None,
+) -> None:
     path = _tracking_path(base_dir) / filename
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(yaml.dump(data, default_flow_style=False, sort_keys=False), encoding="utf-8")
@@ -189,11 +196,11 @@ def _normalize_authors(
 
 
 def _now() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def _today() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    return datetime.now(UTC).strftime("%Y-%m-%d")
 
 
 def _next_id(items: list[dict[str, Any]], prefix: str) -> str:
@@ -498,8 +505,14 @@ async def init_project(
     base.mkdir(parents=True, exist_ok=True)
 
     project_authors = _normalize_authors(authors, pi, team)
-    project_lead = pi or (project_authors[0].get("name", "") if project_authors else "")
-    project_team = team or [author.get("name", "") for author in project_authors[1:] if author.get("name")]
+    project_lead = pi or (
+        project_authors[0].get("name", "") if project_authors else ""
+    )
+    project_team = team or [
+        author.get("name", "")
+        for author in project_authors[1:]
+        if author.get("name")
+    ]
 
     project = {
         "title": title,
@@ -857,7 +870,11 @@ async def log_meeting(
             tasks.append(task)
         _save_yaml("tasks.yaml", {"tasks": tasks}, base)
 
-    return {"status": "recorded", "file": filename, "action_items_count": len(meeting["action_items"])}
+    return {
+        "status": "recorded",
+        "file": filename,
+        "action_items_count": len(meeting["action_items"]),
+    }
 
 
 @mcp.tool()
@@ -951,7 +968,10 @@ async def get_overdue_items(
                     "phase": p["name"],
                     "target_date": m["target_date"],
                     "status": m["status"],
-                    "days_overdue": (datetime.strptime(today, "%Y-%m-%d") - datetime.strptime(m["target_date"], "%Y-%m-%d")).days,
+                    "days_overdue": (
+                        datetime.strptime(today, "%Y-%m-%d")
+                        - datetime.strptime(m["target_date"], "%Y-%m-%d")
+                    ).days,
                 })
 
     overdue_tasks = []
@@ -963,7 +983,10 @@ async def get_overdue_items(
                 "assignee": t["assignee"],
                 "due_date": t["due_date"],
                 "status": t["status"],
-                "days_overdue": (datetime.strptime(today, "%Y-%m-%d") - datetime.strptime(t["due_date"], "%Y-%m-%d")).days,
+                "days_overdue": (
+                    datetime.strptime(today, "%Y-%m-%d")
+                    - datetime.strptime(t["due_date"], "%Y-%m-%d")
+                ).days,
             })
 
     return {
@@ -1014,7 +1037,10 @@ async def generate_brief(
             if m["status"] == "completed":
                 completed_milestones.append(f"- {m['name']} ({p['name']})")
             elif m["status"] in ("not-started", "in-progress"):
-                upcoming_milestones.append(f"- {m['name']} ({p['name']}) - target: {m.get('target_date', 'TBD')}")
+                upcoming_milestones.append(
+                    f"- {m['name']} ({p['name']})"
+                    f" - target: {m.get('target_date', 'TBD')}"
+                )
 
     open_tasks = [t for t in tasks if t["status"] in ("not-started", "in-progress")]
     blocked_tasks = [t for t in tasks if t["status"] == "blocked"]
@@ -1074,7 +1100,11 @@ async def generate_brief(
         lines.append(f"Focus: {upcoming_milestones[0].strip('- ')}")
     lines.append("")
     lines.append("---")
-    lines.append("*This brief was generated with AI assistance. All project data was entered and verified by the research team.*")
+    lines.append(
+        "*This brief was generated with AI assistance."
+        " All project data was entered and verified"
+        " by the research team.*"
+    )
 
     brief_content = "\n".join(lines)
 

@@ -10,8 +10,8 @@ from pathlib import Path
 from typing import Any
 
 import httpx
-from mcp.server.fastmcp import FastMCP
 from dotenv import load_dotenv
+from mcp.server.fastmcp import FastMCP
 
 
 def _load_dotenv_from_workspace() -> None:
@@ -130,7 +130,11 @@ async def _post(client: httpx.AsyncClient, url: str, json_data: Any) -> Any:
     """Make a POST request to Zotero API."""
     user_id = await _ensure_user_id(client)
     url = _canonicalize_user_url(url, user_id)
-    resp = await client.post(url, headers={**_headers(), "Content-Type": "application/json"}, json=json_data)
+    resp = await client.post(
+        url,
+        headers={**_headers(), "Content-Type": "application/json"},
+        json=json_data,
+    )
     resp.raise_for_status()
     return resp.json()
 
@@ -139,7 +143,11 @@ async def _patch(client: httpx.AsyncClient, url: str, json_data: Any, version: i
     """Make a PATCH request to Zotero API."""
     user_id = await _ensure_user_id(client)
     url = _canonicalize_user_url(url, user_id)
-    headers = {**_headers(), "Content-Type": "application/json", "If-Unmodified-Since-Version": str(version)}
+    headers = {
+        **_headers(),
+        "Content-Type": "application/json",
+        "If-Unmodified-Since-Version": str(version),
+    }
     resp = await client.patch(url, headers=headers, json=json_data)
     resp.raise_for_status()
     return resp.json()
@@ -175,7 +183,9 @@ def _format_item(item: dict[str, Any]) -> dict[str, Any]:
 
 
 @mcp.tool()
-async def search_library(query: str, collection: str | None = None, limit: int = 25) -> dict[str, Any]:
+async def search_library(
+    query: str, collection: str | None = None, limit: int = 25,
+) -> dict[str, Any]:
     """Search the user's Zotero library.
 
     Args:
@@ -547,7 +557,12 @@ async def add_note(item_key: str, note_text: str) -> dict[str, Any]:
     if success:
         first_key = list(success.keys())[0]
         note = success[first_key]
-        return {"status": "created", "note_key": note.get("key", note.get("data", {}).get("key", ""))}
+        return {
+            "status": "created",
+            "note_key": note.get(
+                "key", note.get("data", {}).get("key", "")
+            ),
+        }
 
     return {"status": "failed", "errors": result.get("failed", {})}
 
@@ -947,11 +962,20 @@ async def import_from_result_store(
 
     results = get_results(project_path, source=source, deduplicated=deduplicated)
     if not results:
-        return {"status": "no_results", "message": "No search results found in the project database."}
+        return {
+            "status": "no_results",
+            "message": "No search results found in the project database.",
+        }
 
     dois = [r["doi"] for r in results if r.get("doi")]
     if not dois:
-        return {"status": "no_dois", "message": "No DOIs found in search results. Cannot batch-import without DOIs."}
+        return {
+            "status": "no_dois",
+            "message": (
+                "No DOIs found in search results."
+                " Cannot batch-import without DOIs."
+            ),
+        }
 
     return await batch_add_by_doi(dois=dois, collection_key=collection_key, confirm=confirm)
 

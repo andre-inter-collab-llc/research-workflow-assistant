@@ -1,10 +1,17 @@
-"""Test script for the new features: script-first search, BibTeX/RIS/CSL-JSON export, batch Zotero import."""
+"""Test script for new features.
 
-import sqlite3
+Covers script-first search, BibTeX/RIS/CSL-JSON export,
+and batch Zotero import.
+"""
+
 import os
+import sqlite3
 import sys
 
-PROJECT = r"C:\Users\andre\Documents\research-workflow-assistant\sample_projects\chw-maternal-mental-health"
+PROJECT = (
+    r"C:\Users\andre\Documents\research-workflow-assistant"
+    r"\sample_projects\chw-maternal-mental-health"
+)
 DB_PATH = os.path.join(PROJECT, "data", "search_results.db")
 
 
@@ -24,7 +31,10 @@ def check_database():
     tables = [r[0] for r in cur.fetchall()]
     print(f"Tables: {tables}")
 
-    cur.execute("SELECT search_id, source, query, total_count, timestamp FROM searches ORDER BY timestamp DESC")
+    cur.execute(
+        "SELECT search_id, source, query, total_count, timestamp"
+        " FROM searches ORDER BY timestamp DESC"
+    )
     searches = cur.fetchall()
     for row in searches:
         print(f"  Search #{row[0]}: source={row[1]}, total={row[3]}, date={row[4]}")
@@ -156,13 +166,13 @@ def test_bibtex_export():
     result = export_results_bibtex(PROJECT, output_path=output, deduplicated=True)
     print(f"  Result: {result}")
     if os.path.exists(output):
-        with open(output, "r", encoding="utf-8") as f:
+        with open(output, encoding="utf-8") as f:
             content = f.read()
         entries = content.count("@article{")
         print(f"  BibTeX entries: {entries}")
         # Show first entry
         lines = content.split("\n")
-        print(f"  First 10 lines:")
+        print("  First 10 lines:")
         for line in lines[:10]:
             print(f"    {line}")
         print(f"  File size: {len(content)} chars")
@@ -182,12 +192,12 @@ def test_ris_export():
     result = export_results_ris(PROJECT, output_path=output, deduplicated=True)
     print(f"  Result: {result}")
     if os.path.exists(output):
-        with open(output, "r", encoding="utf-8") as f:
+        with open(output, encoding="utf-8") as f:
             content = f.read()
         entries = content.count("TY  - ")
         print(f"  RIS entries: {entries}")
         lines = content.split("\n")
-        print(f"  First 15 lines:")
+        print("  First 15 lines:")
         for line in lines[:15]:
             print(f"    {line}")
         print(f"  File size: {len(content)} chars")
@@ -208,7 +218,7 @@ def test_csljson_export():
     print(f"  Result: {result}")
     if os.path.exists(output):
         import json
-        with open(output, "r", encoding="utf-8") as f:
+        with open(output, encoding="utf-8") as f:
             data = json.load(f)
         print(f"  CSL-JSON entries: {len(data)}")
         if data:

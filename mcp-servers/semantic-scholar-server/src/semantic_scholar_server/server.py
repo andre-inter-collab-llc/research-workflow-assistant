@@ -16,6 +16,8 @@ from mcp.server.fastmcp import FastMCP
 from rwa_result_store import (
     generate_and_run_script,
     register_result_store_tools,
+)
+from rwa_result_store import (
     store_results as _store_results,
 )
 
@@ -69,12 +71,19 @@ async def _request_with_backoff(
             resp.raise_for_status()
             return resp
         wait = BASE_BACKOFF * (2 ** attempt)
-        logger.warning("S2 rate limited (429). Retrying in %.1fs (attempt %d/%d)", wait, attempt + 1, MAX_RETRIES)
+        logger.warning(
+            "S2 rate limited (429). Retrying in %.1fs (attempt %d/%d)",
+            wait, attempt + 1, MAX_RETRIES,
+        )
         await asyncio.sleep(wait)
     return resp  # unreachable, but satisfies type checker
 
 
-async def _get(client: httpx.AsyncClient, url: str, params: dict[str, str] | None = None) -> dict[str, Any]:
+async def _get(
+    client: httpx.AsyncClient,
+    url: str,
+    params: dict[str, str] | None = None,
+) -> dict[str, Any]:
     """Make a GET request with retry and return parsed JSON."""
     resp = await _request_with_backoff(client, "GET", url, params=params)
     return resp.json()
@@ -240,7 +249,8 @@ async def get_citations(paper_id: str, limit: int = 50) -> dict[str, Any]:
     """Get papers that cite a given paper (forward citations).
 
     Args:
-        paper_id: Semantic Scholar paper ID, DOI (with 'DOI:' prefix), or PMID (with 'PMID:' prefix).
+        paper_id: Semantic Scholar paper ID, DOI (with 'DOI:' prefix),
+            or PMID (with 'PMID:' prefix).
         limit: Maximum number of citations to return (default 50, max 1000).
 
     Returns:
@@ -274,7 +284,8 @@ async def get_references(paper_id: str, limit: int = 50) -> dict[str, Any]:
     """Get papers referenced by a given paper (backward references).
 
     Args:
-        paper_id: Semantic Scholar paper ID, DOI (with 'DOI:' prefix), or PMID (with 'PMID:' prefix).
+        paper_id: Semantic Scholar paper ID, DOI (with 'DOI:' prefix),
+            or PMID (with 'PMID:' prefix).
         limit: Maximum number of references to return (default 50, max 1000).
 
     Returns:

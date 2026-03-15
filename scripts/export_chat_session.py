@@ -30,7 +30,7 @@ import os
 import platform
 import re
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from urllib.parse import unquote
 
@@ -42,7 +42,7 @@ _shared_src = _WORKSPACE_ROOT / "mcp-servers" / "_shared" / "src"
 if _shared_src.is_dir() and str(_shared_src) not in sys.path:
     sys.path.insert(0, str(_shared_src))
 
-from rwa_chat_parser import parse_session, render_qmd
+from rwa_chat_parser import parse_session, render_qmd  # noqa: E402
 
 
 def _vscode_storage_root() -> Path:
@@ -53,7 +53,10 @@ def _vscode_storage_root() -> Path:
         if appdata:
             return Path(appdata) / "Code" / "User" / "workspaceStorage"
     elif system == "Darwin":
-        return Path.home() / "Library" / "Application Support" / "Code" / "User" / "workspaceStorage"
+        return (
+            Path.home() / "Library" / "Application Support"
+            / "Code" / "User" / "workspaceStorage"
+        )
     else:  # Linux
         config = os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))
         return Path(config) / "Code" / "User" / "workspaceStorage"
@@ -146,7 +149,7 @@ def _discover_sessions(
                         info["model_id"] = v.get("modelId", "")
                         ts = v.get("creationDate")
                         if ts and isinstance(ts, (int, float)):
-                            dt = datetime.fromtimestamp(ts / 1000, tz=timezone.utc)
+                            dt = datetime.fromtimestamp(ts / 1000, tz=UTC)
                             info["creation_date"] = dt.strftime("%Y-%m-%d %H:%M UTC")
                     elif kind == 1 and keys == ["customTitle"]:
                         if isinstance(value, str):

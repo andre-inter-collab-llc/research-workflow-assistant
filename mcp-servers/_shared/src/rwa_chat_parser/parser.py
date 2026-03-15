@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -83,7 +83,7 @@ def _parse_session_metadata(entry: dict[str, Any], session: ChatSession) -> None
     creation_ts = v.get("creationDate")
     if creation_ts and isinstance(creation_ts, (int, float)):
         session.creation_date = datetime.fromtimestamp(
-            creation_ts / 1000, tz=timezone.utc
+            creation_ts / 1000, tz=UTC
         )
 
 
@@ -157,7 +157,7 @@ def _build_messages(
 def _parse_request(raw: dict[str, Any]) -> ChatMessage:
     """Extract user request metadata into a ChatMessage."""
     timestamp_ms = raw.get("timestamp", 0)
-    ts = datetime.fromtimestamp(timestamp_ms / 1000, tz=timezone.utc) if timestamp_ms else datetime.now(timezone.utc)
+    ts = datetime.fromtimestamp(timestamp_ms / 1000, tz=UTC) if timestamp_ms else datetime.now(UTC)
 
     agent = raw.get("agent", {})
     message = raw.get("message", {})

@@ -12,7 +12,7 @@ Requires ``rwa-shared`` to be installed (``pip install -e mcp-servers/_shared``)
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 
 def _format_kwargs(kwargs: dict) -> str:
@@ -31,7 +31,7 @@ def _render_stub(
     call_kwargs: str,
 ) -> str:
     """Build a complete thin stub script string."""
-    ts = datetime.now(timezone.utc).isoformat()
+    ts = datetime.now(UTC).isoformat()
     param_summary = json.dumps(parameters, default=str)
     safe_query = query.replace('"""', "'''")
     return (

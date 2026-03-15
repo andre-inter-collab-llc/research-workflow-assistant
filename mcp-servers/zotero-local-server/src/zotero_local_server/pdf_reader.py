@@ -88,7 +88,8 @@ _ANNOT_TYPE_NAMES = {
 }
 
 # Annotation types that carry user-created content
-_CONTENT_ANNOT_TYPES = {0, 2, 8, 9, 10, 11}  # text, free_text, highlight, underline, squiggly, strikeout
+# text, free_text, highlight, underline, squiggly, strikeout
+_CONTENT_ANNOT_TYPES = {0, 2, 8, 9, 10, 11}
 
 # Maximum file size to process (default 50 MB)
 MAX_PDF_SIZE_BYTES = 50 * 1024 * 1024

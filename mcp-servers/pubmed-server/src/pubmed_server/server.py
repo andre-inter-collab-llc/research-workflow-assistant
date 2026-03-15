@@ -14,6 +14,8 @@ from mcp.server.fastmcp import FastMCP
 from rwa_result_store import (
     generate_and_run_script,
     register_result_store_tools,
+)
+from rwa_result_store import (
     store_results as _store_results,
 )
 
@@ -66,7 +68,11 @@ def _parse_esummary(xml_text: str) -> list[dict[str, Any]]:
             article["pmid"] = id_el.text
         for item in doc.findall("Item"):
             name = item.get("Name", "")
-            if name in ("Title", "Source", "PubDate", "FullJournalName", "DOI", "Volume", "Issue", "Pages"):
+            if name in (
+                "Title", "Source", "PubDate",
+                "FullJournalName", "DOI", "Volume",
+                "Issue", "Pages",
+            ):
                 article[name.lower()] = item.text or ""
             elif name == "AuthorList":
                 authors = [a.text for a in item.findall("Item") if a.text]
@@ -178,7 +184,12 @@ async def search_pubmed(
 
     async with httpx.AsyncClient(timeout=30.0) as client:
         # Step 1: ESearch to get PMIDs
-        search_params = {**_base_params(), "db": "pubmed", "term": full_query, "retmax": str(max_results)}
+        search_params = {
+            **_base_params(),
+            "db": "pubmed",
+            "term": full_query,
+            "retmax": str(max_results),
+        }
         if date_range and ":" in date_range:
             parts = date_range.split(":")
             search_params["mindate"] = parts[0]
@@ -339,7 +350,12 @@ async def suggest_mesh_terms(keyword: str) -> dict[str, Any]:
                                 mesh_terms.append(sub.text)
 
         # Step 3: Also get MeSH terms from top PubMed results for this keyword
-        pubmed_params = {**_base_params(), "db": "pubmed", "term": f"{keyword}[MeSH Terms]", "retmax": "5"}
+        pubmed_params = {
+            **_base_params(),
+            "db": "pubmed",
+            "term": f"{keyword}[MeSH Terms]",
+            "retmax": "5",
+        }
         pubmed_xml = await _get(client, "esearch.fcgi", pubmed_params)
         pubmed_ids, _ = _parse_esearch_ids(pubmed_xml)
 
@@ -481,7 +497,11 @@ async def build_search_query(
         "framework": framework,
         "components": components,
         "combined_query": combined_query,
-        "note": "This is a starting point. Review MeSH terms, add synonyms, and test the query before using it for a systematic review.",
+        "note": (
+            "This is a starting point. Review MeSH terms,"
+            " add synonyms, and test the query before using"
+            " it for a systematic review."
+        ),
     }
 
 

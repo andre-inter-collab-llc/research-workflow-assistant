@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [master, main]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   validate:
     strategy:
@@ -29,7 +32,8 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           source .venv/bin/activate
-          pip install -e mcp-servers/pubmed-server \
+          pip install -e mcp-servers/_shared \
+                      -e mcp-servers/pubmed-server \
                       -e mcp-servers/openalex-server \
                       -e mcp-servers/semantic-scholar-server \
                       -e mcp-servers/europe-pmc-server \
@@ -37,13 +41,15 @@ jobs:
                       -e mcp-servers/zotero-server \
                       -e mcp-servers/zotero-local-server \
                       -e mcp-servers/prisma-tracker \
-                      -e mcp-servers/project-tracker
+                      -e mcp-servers/project-tracker \
+                      -e mcp-servers/chat-exporter
 
       - name: Install MCP servers (Windows)
         if: runner.os == 'Windows'
         run: |
           .venv\Scripts\activate
-          pip install -e mcp-servers/pubmed-server `
+          pip install -e mcp-servers/_shared `
+                      -e mcp-servers/pubmed-server `
                       -e mcp-servers/openalex-server `
                       -e mcp-servers/semantic-scholar-server `
                       -e mcp-servers/europe-pmc-server `
@@ -51,7 +57,8 @@ jobs:
                       -e mcp-servers/zotero-server `
                       -e mcp-servers/zotero-local-server `
                       -e mcp-servers/prisma-tracker `
-                      -e mcp-servers/project-tracker
+                      -e mcp-servers/project-tracker `
+                      -e mcp-servers/chat-exporter
 
       - name: Run validation script (Unix)
         if: runner.os != 'Windows'

@@ -14,6 +14,8 @@ from mcp.server.fastmcp import FastMCP
 from rwa_result_store import (
     generate_and_run_script,
     register_result_store_tools,
+)
+from rwa_result_store import (
     store_results as _store_results,
 )
 
@@ -236,7 +238,11 @@ async def get_cited_by(work_id: str, per_page: int = 25) -> dict[str, Any]:
         data = await _get(client, "works", params)
 
     works = [_format_work(w) for w in data.get("results", [])]
-    return {"source_work": work_id, "total_count": data.get("meta", {}).get("count", 0), "citing_works": works}
+    return {
+        "source_work": work_id,
+        "total_count": data.get("meta", {}).get("count", 0),
+        "citing_works": works,
+    }
 
 
 @mcp.tool()
@@ -261,7 +267,11 @@ async def get_references(work_id: str, per_page: int = 25) -> dict[str, Any]:
         data = await _get(client, "works", params)
 
     works = [_format_work(w) for w in data.get("results", [])]
-    return {"source_work": work_id, "total_count": data.get("meta", {}).get("count", 0), "referenced_works": works}
+    return {
+        "source_work": work_id,
+        "total_count": data.get("meta", {}).get("count", 0),
+        "referenced_works": works,
+    }
 
 
 @mcp.tool()
@@ -277,7 +287,8 @@ async def get_concepts(query: str, per_page: int = 20) -> dict[str, Any]:
         per_page: Number of results (default 20, max 100).
 
     Returns:
-        Dictionary with matching concepts including hierarchy level, work count, and related concepts.
+        Dictionary with matching concepts including hierarchy level,
+        work count, and related concepts.
     """
     per_page = min(per_page, 100)
     params = {**_base_params(), "search": query, "per_page": str(per_page)}
@@ -294,7 +305,11 @@ async def get_concepts(query: str, per_page: int = 20) -> dict[str, Any]:
             "description": c.get("description", ""),
             "works_count": c.get("works_count", 0),
             "related_concepts": [
-                {"name": rc.get("display_name", ""), "level": rc.get("level"), "score": rc.get("score", 0)}
+                {
+                    "name": rc.get("display_name", ""),
+                    "level": rc.get("level"),
+                    "score": rc.get("score", 0),
+                }
                 for rc in (c.get("related_concepts") or [])[:5]
             ],
         })

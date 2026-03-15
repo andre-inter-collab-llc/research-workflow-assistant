@@ -165,7 +165,11 @@ def get_item_by_key(data_dir: Path, item_key: str) -> dict[str, Any] | None:
         ).fetchall()
 
         result["creators"] = [
-            {"firstName": c["firstName"] or "", "lastName": c["lastName"] or "", "type": c["creatorType"]}
+            {
+                "firstName": c["firstName"] or "",
+                "lastName": c["lastName"] or "",
+                "type": c["creatorType"],
+            }
             for c in creators
         ]
 
