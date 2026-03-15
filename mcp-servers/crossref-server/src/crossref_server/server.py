@@ -10,7 +10,11 @@ from typing import Any
 
 import httpx
 from mcp.server.fastmcp import FastMCP
-from rwa_result_store import register_result_store_tools, store_results as _store_results
+from rwa_result_store import (
+    generate_and_run_script,
+    register_result_store_tools,
+    store_results as _store_results,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -134,6 +138,52 @@ async def search_works(
         "total_count": total_count,
         "works": works,
     }
+
+
+@mcp.tool()
+async def search_works_scripted(
+    query: str,
+    filters: str | None = None,
+    rows: int = 20,
+    sort: str = "relevance",
+    project_path: str = ".",
+) -> dict[str, Any]:
+    """Search CrossRef and save a reproducible script to the project.
+
+    Like search_works, but generates a standalone Python script in
+    {project_path}/scripts/ that can be re-run independently.
+
+    Falls back to the standard search if the script fails.
+
+    Args:
+        query: Free-text bibliographic search query.
+        filters: CrossRef filter string.
+        rows: Number of results (default 20, max 1000).
+        sort: Sort field.
+        project_path: Project directory path for script and result storage.
+
+    Returns:
+        Dictionary with total_count, works list, and script_path.
+    """
+    rows = min(rows, 1000)
+    params = {"filters": filters, "rows": rows, "sort": sort}
+
+    script_result = generate_and_run_script(project_path, "crossref", query, params)
+
+    if script_result is not None:
+        results, total_count, search_id, script_path = script_result
+        return {
+            "total_count": total_count,
+            "works": results,
+            "script_path": script_path,
+            "search_id": search_id,
+        }
+
+    logger.warning("Script execution failed for CrossRef, falling back to direct API call")
+    return await search_works(
+        query=query, filters=filters, rows=rows,
+        sort=sort, project_path=project_path,
+    )
 
 
 @mcp.tool()

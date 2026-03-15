@@ -202,8 +202,86 @@ This document describes the academic databases available through the research-wo
 ### Tips
 
 - Use `add_item_by_doi` for efficient reference import
+- Use `batch_add_by_doi` to import up to 200 DOIs at once with preview/confirm
+- Use `import_from_result_store` to import search results directly from the project database into Zotero
 - Create collections that mirror your review workflow (e.g., "Included", "Excluded", "Full-text screening")
 - Export to BibTeX for use in Quarto manuscripts
+
+---
+
+## Bibliographic Export Formats
+
+All search servers expose an `export_stored_bibliography` tool for exporting stored search results to reference manager formats. This works across all five databases (PubMed, OpenAlex, Semantic Scholar, Europe PMC, CrossRef).
+
+### Supported formats
+
+| Format | Extension | Use case |
+|--------|-----------|----------|
+| BibTeX | `.bib` | LaTeX, Quarto, Zotero |
+| RIS | `.ris` | Zotero, EndNote, Mendeley |
+| CSL-JSON | `.json` | Pandoc/Citeproc, programmatic processing |
+
+### Example: BibTeX export
+
+```
+Export stored results as BibTeX to my_projects/my-review/exports/results.bib
+```
+
+The exported `.bib` file uses `AuthorYear` cite keys (e.g., `Patel2018`, `Rahman2023`) with automatic deduplication of entries that appear in multiple databases.
+
+### Example: RIS export for Zotero import
+
+```
+Export stored results as RIS to my_projects/my-review/exports/results.ris
+```
+
+Import the `.ris` file into Zotero via File → Import to add all results with full metadata.
+
+### Example: CSL-JSON for programmatic use
+
+```python
+import json
+with open("my_projects/my-review/exports/results.json") as f:
+    records = json.load(f)
+print(f"{len(records)} references with fields: {list(records[0].keys())}")
+```
+
+---
+
+## Reproducible Search Scripts
+
+Each database server offers a `_scripted` variant tool that generates a standalone Python script when executing a search:
+
+| Database | Standard tool | Scripted variant |
+|----------|--------------|------------------|
+| PubMed | `search_pubmed` | `search_pubmed_scripted` |
+| OpenAlex | `search_works` | `search_works_scripted` |
+| Semantic Scholar | `search_papers` | `search_papers_scripted` |
+| Europe PMC | `search_europepmc` | `search_europepmc_scripted` |
+| CrossRef | `search_works` | `search_works_scripted` |
+
+### How it works
+
+1. The MCP server generates a complete, self-contained Python script
+2. The script is saved to `{project}/scripts/search_{source}_{timestamp}.py`
+3. The server executes the script via subprocess
+4. Results are stored in the project's SQLite database
+5. The server reads back and returns the results
+
+### Why use scripted searches?
+
+- **Reproducibility**: The script records exactly which API was called, with which parameters
+- **Audit trail**: Each search produces a timestamped script that can be reviewed and re-run
+- **Independence**: Scripts require only `httpx` and the standard library — no MCP infrastructure needed to re-execute
+- **Transparency**: Reviewers and collaborators can inspect the exact search methodology
+
+### Re-running a search
+
+```bash
+python my_projects/my-review/scripts/search_pubmed_20260315_021043.py
+```
+
+The script reads API keys from environment variables and writes results to the same SQLite database.
 
 ---
 
@@ -216,7 +294,9 @@ This document describes the academic databases available through the research-wo
 3. **Add Europe PMC**: For preprints, patents, and full-text searching
 4. **Use Semantic Scholar**: For AI recommendations to find missed studies
 5. **Verify with CrossRef**: Validate all DOIs before final inclusion
-6. **Organize with Zotero**: Import all results, deduplicate, manage screening
+6. **Export bibliography**: Use `export_stored_bibliography` to get BibTeX/RIS/CSL-JSON
+7. **Import to Zotero**: Use `import_from_result_store` for batch DOI import, or import the RIS file
+8. **Organize with Zotero**: Deduplicate, create screening collections, manage references
 
 ### For rapid literature reviews
 

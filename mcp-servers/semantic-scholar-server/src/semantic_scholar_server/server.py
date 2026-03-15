@@ -13,7 +13,11 @@ from typing import Any
 
 import httpx
 from mcp.server.fastmcp import FastMCP
-from rwa_result_store import register_result_store_tools, store_results as _store_results
+from rwa_result_store import (
+    generate_and_run_script,
+    register_result_store_tools,
+    store_results as _store_results,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -162,6 +166,55 @@ async def search_papers(
             logger.warning("Failed to store Semantic Scholar search results", exc_info=True)
 
     return {"total": total, "papers": papers}
+
+
+@mcp.tool()
+async def search_papers_scripted(
+    query: str,
+    year_range: str | None = None,
+    fields_of_study: str | None = None,
+    open_access_only: bool = False,
+    limit: int = 20,
+    project_path: str = ".",
+) -> dict[str, Any]:
+    """Search Semantic Scholar and save a reproducible script to the project.
+
+    Like search_papers, but generates a standalone Python script in
+    {project_path}/scripts/ that can be re-run independently.
+
+    Falls back to the standard search if the script fails.
+
+    Args:
+        query: Search query string.
+        year_range: Optional year filter as 'YYYY-YYYY'.
+        fields_of_study: Comma-separated fields.
+        open_access_only: If True, only open access papers.
+        limit: Maximum results (default 20, max 100).
+        project_path: Project directory path for script and result storage.
+
+    Returns:
+        Dictionary with total, papers list, and script_path.
+    """
+    limit = min(limit, 100)
+    params = {"year_range": year_range, "fields_of_study": fields_of_study,
+              "open_access_only": open_access_only, "limit": limit}
+
+    script_result = generate_and_run_script(project_path, "semantic_scholar", query, params)
+
+    if script_result is not None:
+        results, total_count, search_id, script_path = script_result
+        return {
+            "total": total_count,
+            "papers": results,
+            "script_path": script_path,
+            "search_id": search_id,
+        }
+
+    logger.warning("Script execution failed for Semantic Scholar, falling back to direct API call")
+    return await search_papers(
+        query=query, year_range=year_range, fields_of_study=fields_of_study,
+        open_access_only=open_access_only, limit=limit, project_path=project_path,
+    )
 
 
 @mcp.tool()

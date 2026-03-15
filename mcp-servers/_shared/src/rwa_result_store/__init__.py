@@ -9,7 +9,10 @@ Database location: {project_path}/data/search_results.db
 import csv
 import json
 import logging
+import re
 import sqlite3
+import subprocess
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -297,6 +300,499 @@ def export_results_csv(
     return output_path
 
 
+def export_results_excel(
+    project_path: str,
+    output_path: str | None = None,
+    deduplicated: bool = False,
+) -> str:
+    """Export stored results to an Excel (.xlsx) workbook.
+
+    Creates two sheets:
+    - **All Results** with every result row
+    - **Searches** with summary metadata for each search
+
+    Returns the output file path, or empty string if no results.
+    """
+    from openpyxl import Workbook
+    from openpyxl.styles import Font
+    from openpyxl.utils import get_column_letter
+    from openpyxl.worksheet.table import Table, TableStyleInfo
+
+    results = get_results(project_path, deduplicated=deduplicated)
+    if not results:
+        return ""
+
+    if output_path is None:
+        suffix = "_deduplicated" if deduplicated else ""
+        output_path = str(Path(project_path) / "data" / f"search_results{suffix}.xlsx")
+
+    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+
+    link_font = Font(color="0563C1", underline="single")
+
+    def _doi_url(doi: str) -> str:
+        doi = doi.strip()
+        if doi.startswith("http"):
+            return doi
+        return f"https://doi.org/{doi}"
+
+    def _pmid_url(pmid: str) -> str:
+        pmid = pmid.strip()
+        if pmid.startswith("http"):
+            return pmid
+        return f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/"
+
+    wb = Workbook()
+
+    # --- Results sheet ---
+    ws = wb.active
+    ws.title = "All Results"
+    headers = list(results[0].keys())
+    ws.append(headers)
+
+    doi_col = headers.index("doi") + 1 if "doi" in headers else None
+    pmid_col = headers.index("pmid") + 1 if "pmid" in headers else None
+
+    for row in results:
+        ws.append([row.get(h, "") for h in headers])
+
+    # Add hyperlinks for DOI and PMID columns
+    for row_cells in ws.iter_rows(min_row=2, max_row=ws.max_row):
+        if doi_col:
+            cell = row_cells[doi_col - 1]
+            val = str(cell.value or "").strip()
+            if val:
+                cell.hyperlink = _doi_url(val)
+                cell.font = link_font
+        if pmid_col:
+            cell = row_cells[pmid_col - 1]
+            val = str(cell.value or "").strip()
+            if val:
+                cell.hyperlink = _pmid_url(val)
+                cell.font = link_font
+
+    # Auto-width (capped at 60)
+    for col_idx, h in enumerate(headers, 1):
+        max_len = len(str(h))
+        for row in ws.iter_rows(min_row=2, min_col=col_idx, max_col=col_idx):
+            for cell in row:
+                val_len = len(str(cell.value or ""))
+                if val_len > max_len:
+                    max_len = val_len
+        ws.column_dimensions[get_column_letter(col_idx)].width = min(max_len + 2, 60)
+
+    # Format as Excel Table with auto-filter
+    end_col = get_column_letter(len(headers))
+    results_table = Table(
+        displayName="Results",
+        ref=f"A1:{end_col}{ws.max_row}",
+    )
+    results_table.tableStyleInfo = TableStyleInfo(
+        name="TableStyleMedium9",
+        showFirstColumn=False,
+        showLastColumn=False,
+        showRowStripes=True,
+        showColumnStripes=False,
+    )
+    ws.add_table(results_table)
+
+    # --- Searches sheet ---
+    searches = get_searches(project_path)
+    if searches:
+        ws2 = wb.create_sheet("Searches")
+        s_headers = list(searches[0].keys())
+        ws2.append(s_headers)
+        for s in searches:
+            ws2.append([s.get(h, "") for h in s_headers])
+        for col_idx, h in enumerate(s_headers, 1):
+            ws2.column_dimensions[get_column_letter(col_idx)].width = min(
+                max(len(str(h)), 12) + 2, 40
+            )
+        s_end_col = get_column_letter(len(s_headers))
+        searches_table = Table(
+            displayName="Searches",
+            ref=f"A1:{s_end_col}{ws2.max_row}",
+        )
+        searches_table.tableStyleInfo = TableStyleInfo(
+            name="TableStyleMedium9",
+            showFirstColumn=False,
+            showLastColumn=False,
+            showRowStripes=True,
+            showColumnStripes=False,
+        )
+        ws2.add_table(searches_table)
+
+    wb.save(output_path)
+    return output_path
+
+
+# ---------------------------------------------------------------------------
+# Script-first search execution
+# ---------------------------------------------------------------------------
+
+_TEMPLATE_FUNCS: dict[str, str] = {
+    "pubmed": "pubmed_script",
+    "openalex": "openalex_script",
+    "semantic_scholar": "semantic_scholar_script",
+    "europe_pmc": "europe_pmc_script",
+    "crossref": "crossref_script",
+}
+
+
+def generate_and_run_script(
+    project_path: str,
+    source: str,
+    query: str,
+    parameters: dict[str, Any],
+) -> tuple[list[dict[str, Any]], int, int, str] | None:
+    """Generate a standalone search script, execute it, and read results.
+
+    Args:
+        project_path: Absolute path to the project directory.
+        source: Search source identifier (e.g., ``"pubmed"``).
+        query: The search query string.
+        parameters: Dict of search parameters (passed to the template function).
+
+    Returns:
+        ``(results_list, total_count, search_id, script_path)`` on success,
+        or ``None`` if script generation/execution fails.
+    """
+    from rwa_result_store.script_templates import (  # lazy import
+        crossref_script,
+        europe_pmc_script,
+        openalex_script,
+        pubmed_script,
+        semantic_scholar_script,
+    )
+
+    template_map = {
+        "pubmed": pubmed_script,
+        "openalex": openalex_script,
+        "semantic_scholar": semantic_scholar_script,
+        "europe_pmc": europe_pmc_script,
+        "crossref": crossref_script,
+    }
+
+    func = template_map.get(source)
+    if func is None:
+        logger.warning("No script template for source: %s", source)
+        return None
+
+    try:
+        script_content = func(query=query, project_path=project_path, **parameters)
+    except Exception:
+        logger.warning("Failed to generate script for %s", source, exc_info=True)
+        return None
+
+    # Write script
+    ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    scripts_dir = Path(project_path) / "scripts"
+    scripts_dir.mkdir(parents=True, exist_ok=True)
+    script_path = scripts_dir / f"search_{source}_{ts}.py"
+    script_path.write_text(script_content, encoding="utf-8")
+
+    # Execute
+    try:
+        result = subprocess.run(
+            [sys.executable, str(script_path)],
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+    except (subprocess.TimeoutExpired, OSError) as exc:
+        logger.warning("Script execution failed for %s: %s", source, exc)
+        return None
+
+    if result.returncode != 0:
+        logger.warning(
+            "Script %s exited with code %d. stderr: %s",
+            script_path.name, result.returncode, result.stderr[:500],
+        )
+        return None
+
+    stdout = result.stdout.strip()
+    if not stdout or stdout == "NO_RESULTS":
+        return ([], 0, 0, str(script_path))
+
+    try:
+        search_id = int(stdout)
+    except ValueError:
+        logger.warning("Could not parse search_id from script output: %r", stdout)
+        return None
+
+    # Read back results
+    db = _db_path(project_path)
+    if not db.exists():
+        return None
+
+    conn = init_db(project_path)
+    conn.row_factory = sqlite3.Row
+    try:
+        rows = conn.execute(
+            "SELECT * FROM results WHERE search_id = ?", (search_id,)
+        ).fetchall()
+        results = [dict(row) for row in rows]
+
+        row = conn.execute(
+            "SELECT total_count FROM searches WHERE search_id = ?", (search_id,)
+        ).fetchone()
+        total_count = row["total_count"] if row else 0
+    finally:
+        conn.close()
+
+    return (results, total_count, search_id, str(script_path))
+
+
+# ---------------------------------------------------------------------------
+# Bibliographic format exports (BibTeX, RIS, CSL-JSON)
+# ---------------------------------------------------------------------------
+
+def _parse_authors(authors_json: str | None) -> list[str]:
+    """Parse authors_json column into a list of name strings."""
+    if not authors_json:
+        return []
+    try:
+        parsed = json.loads(authors_json)
+        if isinstance(parsed, list):
+            return [str(a) for a in parsed]
+    except (json.JSONDecodeError, TypeError):
+        pass
+    return []
+
+
+def _make_citekey(authors: list[str], year: str, doi: str, result_id: int) -> str:
+    """Generate a BibTeX-safe cite key like ``AuthorYYYY``."""
+    if authors:
+        first = authors[0]
+        # Take the last name (before any comma, or full name if no comma)
+        last = first.split(",")[0].strip() if "," in first else first.split()[-1] if first else ""
+        # Remove non-alphanumeric
+        last = re.sub(r"[^A-Za-z]", "", last)
+    else:
+        last = "Unknown"
+    yr = str(year)[:4] if year else "nd"
+    base = f"{last}{yr}"
+    if not base[0].isalpha():
+        base = "R" + base
+    return base
+
+
+def _escape_bibtex(text: str) -> str:
+    """Escape special BibTeX characters."""
+    if not text:
+        return ""
+    return text.replace("{", "\\{").replace("}", "\\}").replace("&", "\\&")
+
+
+def export_results_bibtex(
+    project_path: str,
+    output_path: str | None = None,
+    deduplicated: bool = True,
+) -> str:
+    """Export stored results to a BibTeX file. Returns the output path."""
+    results = get_results(project_path, deduplicated=deduplicated)
+    if not results:
+        return ""
+
+    if output_path is None:
+        suffix = "_deduplicated" if deduplicated else ""
+        output_path = str(Path(project_path) / "data" / f"search_results{suffix}.bib")
+
+    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+
+    seen_keys: dict[str, int] = {}
+    entries: list[str] = []
+
+    for r in results:
+        authors = _parse_authors(r.get("authors_json"))
+        year = r.get("year", "")
+        doi = r.get("doi", "")
+        result_id = r.get("result_id", 0)
+
+        key = _make_citekey(authors, year, doi, result_id)
+        count = seen_keys.get(key, 0)
+        seen_keys[key] = count + 1
+        if count > 0:
+            key = f"{key}{chr(ord('a') + count)}"
+
+        author_str = _escape_bibtex(" and ".join(authors))
+        title = _escape_bibtex(r.get("title", ""))
+        journal = _escape_bibtex(r.get("journal", ""))
+        abstract_text = _escape_bibtex(r.get("abstract", ""))
+
+        entry_lines = [f"@article{{{key},"]
+        if author_str:
+            entry_lines.append(f"  author = {{{author_str}}},")
+        if title:
+            entry_lines.append(f"  title = {{{{{title}}}}},")
+        if journal:
+            entry_lines.append(f"  journal = {{{journal}}},")
+        if year:
+            entry_lines.append(f"  year = {{{year}}},")
+        if r.get("volume"):
+            entry_lines.append(f"  volume = {{{r['volume']}}},")
+        if r.get("issue"):
+            entry_lines.append(f"  number = {{{r['issue']}}},")
+        if r.get("pages"):
+            entry_lines.append(f"  pages = {{{r['pages']}}},")
+        if doi:
+            entry_lines.append(f"  doi = {{{doi}}},")
+        if r.get("pmid"):
+            entry_lines.append(f"  pmid = {{{r['pmid']}}},")
+        if abstract_text:
+            entry_lines.append(f"  abstract = {{{abstract_text}}},")
+        entry_lines.append("}")
+        entries.append("\n".join(entry_lines))
+
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write("\n\n".join(entries) + "\n")
+
+    return output_path
+
+
+def export_results_ris(
+    project_path: str,
+    output_path: str | None = None,
+    deduplicated: bool = True,
+) -> str:
+    """Export stored results to an RIS file. Returns the output path."""
+    results = get_results(project_path, deduplicated=deduplicated)
+    if not results:
+        return ""
+
+    if output_path is None:
+        suffix = "_deduplicated" if deduplicated else ""
+        output_path = str(Path(project_path) / "data" / f"search_results{suffix}.ris")
+
+    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+
+    entries: list[str] = []
+    for r in results:
+        authors = _parse_authors(r.get("authors_json"))
+        lines = ["TY  - JOUR"]
+        if r.get("title"):
+            lines.append(f"TI  - {r['title']}")
+        for a in authors:
+            lines.append(f"AU  - {a}")
+        if r.get("journal"):
+            lines.append(f"JO  - {r['journal']}")
+        if r.get("year"):
+            lines.append(f"PY  - {r['year']}")
+        if r.get("volume"):
+            lines.append(f"VL  - {r['volume']}")
+        if r.get("issue"):
+            lines.append(f"IS  - {r['issue']}")
+        if r.get("pages"):
+            lines.append(f"SP  - {r['pages']}")
+        if r.get("doi"):
+            lines.append(f"DO  - {r['doi']}")
+        if r.get("pmid"):
+            lines.append(f"AN  - {r['pmid']}")
+        if r.get("abstract"):
+            lines.append(f"AB  - {r['abstract']}")
+        lines.append("ER  - ")
+        entries.append("\n".join(lines))
+
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(entries) + "\n")
+
+    return output_path
+
+
+def export_results_csljson(
+    project_path: str,
+    output_path: str | None = None,
+    deduplicated: bool = True,
+) -> str:
+    """Export stored results to a CSL-JSON file. Returns the output path."""
+    results = get_results(project_path, deduplicated=deduplicated)
+    if not results:
+        return ""
+
+    if output_path is None:
+        suffix = "_deduplicated" if deduplicated else ""
+        output_path = str(Path(project_path) / "data" / f"search_results{suffix}.json")
+
+    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+
+    items: list[dict[str, Any]] = []
+    for r in results:
+        authors = _parse_authors(r.get("authors_json"))
+        year = r.get("year", "")
+
+        csl_authors = []
+        for a in authors:
+            if "," in a:
+                parts = a.split(",", 1)
+                csl_authors.append({"family": parts[0].strip(), "given": parts[1].strip()})
+            else:
+                words = a.strip().split()
+                if len(words) >= 2:
+                    csl_authors.append({"family": words[-1], "given": " ".join(words[:-1])})
+                elif words:
+                    csl_authors.append({"family": words[0]})
+
+        item: dict[str, Any] = {
+            "type": "article-journal",
+            "title": r.get("title", ""),
+        }
+        if csl_authors:
+            item["author"] = csl_authors
+        if r.get("journal"):
+            item["container-title"] = r["journal"]
+        if year:
+            item["issued"] = {"date-parts": [[int(year[:4])]]} if year[:4].isdigit() else {"literal": year}
+        if r.get("volume"):
+            item["volume"] = r["volume"]
+        if r.get("issue"):
+            item["issue"] = r["issue"]
+        if r.get("pages"):
+            item["page"] = r["pages"]
+        if r.get("doi"):
+            item["DOI"] = r["doi"]
+        if r.get("pmid"):
+            item["PMID"] = r["pmid"]
+        if r.get("abstract"):
+            item["abstract"] = r["abstract"]
+
+        # Use DOI or PMID as id
+        item["id"] = r.get("doi") or r.get("pmid") or f"result-{r.get('result_id', '')}"
+        items.append(item)
+
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(items, f, indent=2, ensure_ascii=False)
+
+    return output_path
+
+
+def export_results_bibliography(
+    project_path: str,
+    fmt: str = "bibtex",
+    output_path: str | None = None,
+    deduplicated: bool = True,
+) -> str:
+    """Export stored results in the specified bibliographic format.
+
+    Args:
+        project_path: Absolute path to the project directory.
+        fmt: One of ``"bibtex"``, ``"ris"``, ``"csljson"``.
+        output_path: Optional custom output file path.
+        deduplicated: Whether to use deduplicated results.
+
+    Returns:
+        The output file path, or ``""`` if no results.
+    """
+    exporters = {
+        "bibtex": export_results_bibtex,
+        "ris": export_results_ris,
+        "csljson": export_results_csljson,
+    }
+    func = exporters.get(fmt)
+    if func is None:
+        raise ValueError(f"Unsupported format: {fmt!r}. Use one of: {list(exporters)}")
+    return func(project_path, output_path=output_path, deduplicated=deduplicated)
+
+
 def register_result_store_tools(mcp_instance: Any) -> None:
     """Register search result query/export tools on an MCP server instance.
 
@@ -347,6 +843,35 @@ def register_result_store_tools(mcp_instance: Any) -> None:
             Dictionary with export status and file path.
         """
         path = export_results_csv(project_path, output_path, deduplicated)
+        if path:
+            return {"status": "exported", "file": path}
+        return {"status": "no_results", "file": ""}
+
+    @mcp_instance.tool()
+    async def export_stored_bibliography(
+        project_path: str,
+        format: str = "bibtex",
+        output_path: str | None = None,
+        deduplicated: bool = True,
+    ) -> dict[str, str]:
+        """Export stored search results to a bibliographic format (BibTeX, RIS, or CSL-JSON).
+
+        Args:
+            project_path: Absolute path to the project directory.
+            format: Export format — 'bibtex' (default), 'ris', or 'csljson'.
+            output_path: Optional custom output file path.
+            deduplicated: If True (default), export deduplicated results.
+
+        Returns:
+            Dictionary with export status and file path.
+        """
+        try:
+            path = export_results_bibliography(
+                project_path, fmt=format,
+                output_path=output_path, deduplicated=deduplicated,
+            )
+        except ValueError as exc:
+            return {"status": "error", "file": "", "message": str(exc)}
         if path:
             return {"status": "exported", "file": path}
         return {"status": "no_results", "file": ""}

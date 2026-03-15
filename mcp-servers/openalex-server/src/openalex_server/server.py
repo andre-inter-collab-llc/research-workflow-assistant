@@ -11,7 +11,11 @@ from typing import Any
 
 import httpx
 from mcp.server.fastmcp import FastMCP
-from rwa_result_store import register_result_store_tools, store_results as _store_results
+from rwa_result_store import (
+    generate_and_run_script,
+    register_result_store_tools,
+    store_results as _store_results,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -138,6 +142,52 @@ async def search_works(
         "total_count": total_count,
         "works": works,
     }
+
+
+@mcp.tool()
+async def search_works_scripted(
+    query: str,
+    filters: str | None = None,
+    sort: str = "relevance_score:desc",
+    per_page: int = 20,
+    project_path: str = ".",
+) -> dict[str, Any]:
+    """Search OpenAlex and save a reproducible script to the project.
+
+    Like search_works, but generates a standalone Python script in
+    {project_path}/scripts/ that can be re-run independently.
+
+    Falls back to the standard search if the script fails.
+
+    Args:
+        query: Full-text search query.
+        filters: OpenAlex filter string.
+        sort: Sort order.
+        per_page: Results per page (default 20, max 200).
+        project_path: Project directory path for script and result storage.
+
+    Returns:
+        Dictionary with total_count, works list, and script_path.
+    """
+    per_page = min(per_page, 200)
+    params = {"filters": filters, "sort": sort, "per_page": per_page}
+
+    script_result = generate_and_run_script(project_path, "openalex", query, params)
+
+    if script_result is not None:
+        results, total_count, search_id, script_path = script_result
+        return {
+            "total_count": total_count,
+            "works": results,
+            "script_path": script_path,
+            "search_id": search_id,
+        }
+
+    logger.warning("Script execution failed for OpenAlex, falling back to direct API call")
+    return await search_works(
+        query=query, filters=filters, sort=sort,
+        per_page=per_page, project_path=project_path,
+    )
 
 
 @mcp.tool()

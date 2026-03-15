@@ -9,7 +9,11 @@ from typing import Any
 
 import httpx
 from mcp.server.fastmcp import FastMCP
-from rwa_result_store import register_result_store_tools, store_results as _store_results
+from rwa_result_store import (
+    generate_and_run_script,
+    register_result_store_tools,
+    store_results as _store_results,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -113,6 +117,55 @@ async def search_europepmc(
         "total_count": total_count,
         "results": results,
     }
+
+
+@mcp.tool()
+async def search_europepmc_scripted(
+    query: str,
+    result_type: str = "core",
+    page_size: int = 25,
+    sort: str = "relevance",
+    open_access_only: bool = False,
+    project_path: str = ".",
+) -> dict[str, Any]:
+    """Search Europe PMC and save a reproducible script to the project.
+
+    Like search_europepmc, but generates a standalone Python script in
+    {project_path}/scripts/ that can be re-run independently.
+
+    Falls back to the standard search if the script fails.
+
+    Args:
+        query: Search query (supports Europe PMC syntax).
+        result_type: 'core' or 'lite'.
+        page_size: Results per page (default 25, max 1000).
+        sort: Sort order: 'relevance', 'date', or 'cited'.
+        open_access_only: If True, only open access articles.
+        project_path: Project directory path for script and result storage.
+
+    Returns:
+        Dictionary with total_count, results list, and script_path.
+    """
+    page_size = min(page_size, 1000)
+    params = {"result_type": result_type, "page_size": page_size,
+              "sort": sort, "open_access_only": open_access_only}
+
+    script_result = generate_and_run_script(project_path, "europe_pmc", query, params)
+
+    if script_result is not None:
+        results_list, total_count, search_id, script_path = script_result
+        return {
+            "total_count": total_count,
+            "results": results_list,
+            "script_path": script_path,
+            "search_id": search_id,
+        }
+
+    logger.warning("Script execution failed for Europe PMC, falling back to direct API call")
+    return await search_europepmc(
+        query=query, result_type=result_type, page_size=page_size,
+        sort=sort, open_access_only=open_access_only, project_path=project_path,
+    )
 
 
 @mcp.tool()

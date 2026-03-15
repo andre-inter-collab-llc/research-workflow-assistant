@@ -432,6 +432,73 @@ The database contains two tables and one view:
 - **`results`**: Individual records with normalized fields (doi, pmid, title, authors_json, journal, year, volume, issue, pages, abstract) plus an `extra_json` column for source-specific metadata.
 - **`deduplicated_results`** (view): Groups results by DOI or PMID to identify cross-database duplicates.
 
+### Script-First Search (Reproducible Scripts)
+
+Each search server also offers a `_scripted` variant tool (e.g., `search_pubmed_scripted`, `search_works_scripted`). When you use the scripted variant, or when the standard tool is called with a `project_path`, the server:
+
+1. **Generates a standalone Python script** in `{project}/scripts/search_{source}_{timestamp}.py`
+2. **Executes the script** via subprocess
+3. **Reads back results** from the SQLite database
+
+The generated script is fully self-contained — it only requires `httpx` and the Python standard library. You can re-run it independently to reproduce the exact same search:
+
+```bash
+# Re-run a search script directly
+python my_projects/my-review/scripts/search_pubmed_20260315_021043.py
+```
+
+This produces a complete audit trail: the script records exactly which API was called, with which parameters, and stores the results in the same SQLite database. If script execution fails (e.g., network issues), the server automatically falls back to the standard direct API call.
+
+### Bibliographic Export
+
+All search servers expose an `export_stored_bibliography` tool that exports stored results to standard reference formats:
+
+- **BibTeX** (`.bib`) — for use with LaTeX, Quarto, and Zotero
+- **RIS** (`.ris`) — for import into Zotero, EndNote, Mendeley
+- **CSL-JSON** (`.json`) — for programmatic use and Pandoc/Citeproc
+
+Example via Copilot Chat:
+
+```
+Export my stored results as BibTeX to my_projects/my-review/exports/results.bib
+```
+
+Or from Python:
+
+```python
+from rwa_result_store import export_results_bibtex, export_results_ris, export_results_csljson
+
+# Export deduplicated results as BibTeX
+export_results_bibtex("my_projects/my-review", output_path="exports/results.bib", deduplicated=True)
+
+# Export as RIS
+export_results_ris("my_projects/my-review", output_path="exports/results.ris")
+
+# Export as CSL-JSON
+export_results_csljson("my_projects/my-review", output_path="exports/results.json")
+```
+
+The `deduplicated` parameter (default `True`) uses the DOI/PMID deduplication view to avoid duplicate entries across databases.
+
+### Batch Zotero Import
+
+Two tools on the Zotero server streamline importing search results into your Zotero library:
+
+- **`batch_add_by_doi`**: Import multiple DOIs at once (up to 200). Supports a preview/confirm workflow.
+- **`import_from_result_store`**: Read DOIs directly from the project's SQLite database and import them into Zotero.
+
+Typical workflow:
+
+1. Run searches across databases with `project_path` to populate the SQLite store
+2. Preview the import: the tool shows how many DOIs will be added and lists the first few
+3. Confirm to execute: items are added to Zotero with full metadata from CrossRef
+
+```
+Import results from my project database into Zotero (preview first)
+```
+
+You can filter by source (e.g., only PubMed results) and optionally specify a Zotero collection.
+
 See `compliance/ai-disclosure-template.md` for ready-to-use disclosure language.
 
 ## Citing R and Python Packages

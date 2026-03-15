@@ -7,7 +7,7 @@ name = "rwa-shared"
 version = "0.2.0"
 description = "Shared libraries for RWA MCP servers"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = ["httpx", "openpyxl"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/rwa_result_store", "src/rwa_chat_parser"]

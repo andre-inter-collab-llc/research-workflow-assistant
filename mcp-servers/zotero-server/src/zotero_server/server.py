@@ -840,6 +840,122 @@ async def search_notes(
     return {"query": query, "results": notes}
 
 
+# ---------------------------------------------------------------------------
+# Batch import tools
+# ---------------------------------------------------------------------------
+
+MAX_BATCH_ITEMS = 200
+
+
+@mcp.tool()
+async def batch_add_by_doi(
+    dois: list[str],
+    collection_key: str | None = None,
+    confirm: bool = False,
+) -> dict[str, Any]:
+    """Add multiple references to Zotero by DOI (batch operation).
+
+    First call with confirm=False to preview what will be imported.
+    Then re-call with confirm=True to execute the import.
+
+    Args:
+        dois: List of DOIs to add.
+        collection_key: Optional collection key to add items to.
+        confirm: If False (default), return a preview. If True, execute the import.
+
+    Returns:
+        Preview (confirm=False) or import summary (confirm=True).
+    """
+    if not dois:
+        return {"status": "error", "message": "No DOIs provided"}
+
+    if len(dois) > MAX_BATCH_ITEMS:
+        return {
+            "status": "error",
+            "message": f"Too many DOIs ({len(dois)}). Maximum is {MAX_BATCH_ITEMS}.",
+        }
+
+    # Deduplicate while preserving order
+    seen: set[str] = set()
+    unique_dois: list[str] = []
+    for d in dois:
+        d_lower = d.strip().lower()
+        if d_lower and d_lower not in seen:
+            seen.add(d_lower)
+            unique_dois.append(d.strip())
+
+    if not confirm:
+        return {
+            "status": "preview",
+            "total_dois": len(unique_dois),
+            "sample": unique_dois[:5],
+            "message": (
+                f"Ready to import {len(unique_dois)} DOI(s) into Zotero"
+                + (f" (collection: {collection_key})" if collection_key else "")
+                + ". Re-call with confirm=True to proceed."
+            ),
+        }
+
+    added: list[str] = []
+    skipped: list[str] = []
+    errors: list[dict[str, str]] = []
+
+    for doi in unique_dois:
+        try:
+            result = await add_item_by_doi(doi=doi, collection_key=collection_key)
+            if result.get("status") == "failed":
+                errors.append({"doi": doi, "error": str(result.get("errors", ""))})
+            else:
+                added.append(doi)
+        except Exception as exc:
+            errors.append({"doi": doi, "error": str(exc)})
+
+    return {
+        "status": "completed",
+        "added": len(added),
+        "skipped": len(skipped),
+        "errors_count": len(errors),
+        "added_dois": added,
+        "errors": errors[:10],
+    }
+
+
+@mcp.tool()
+async def import_from_result_store(
+    project_path: str,
+    collection_key: str | None = None,
+    source: str | None = None,
+    deduplicated: bool = True,
+    confirm: bool = False,
+) -> dict[str, Any]:
+    """Import references from the project's search result database into Zotero.
+
+    Reads DOIs from {project_path}/data/search_results.db and batch-adds
+    them to the user's Zotero library.
+
+    Args:
+        project_path: Absolute path to the project directory.
+        collection_key: Optional Zotero collection key.
+        source: Optional filter by database source (e.g., 'pubmed', 'openalex').
+        deduplicated: If True (default), use deduplicated results.
+        confirm: If False (default), return a preview. If True, execute.
+
+    Returns:
+        Preview or import summary.
+    """
+    from rwa_result_store import get_results
+
+    results = get_results(project_path, source=source, deduplicated=deduplicated)
+    if not results:
+        return {"status": "no_results", "message": "No search results found in the project database."}
+
+    dois = [r["doi"] for r in results if r.get("doi")]
+    if not dois:
+        return {"status": "no_dois", "message": "No DOIs found in search results. Cannot batch-import without DOIs."}
+
+    return await batch_add_by_doi(dois=dois, collection_key=collection_key, confirm=confirm)
+
+
 def serve() -> None:
     """Run the Zotero MCP server."""
     mcp.run(transport="stdio")

@@ -295,6 +295,30 @@ completion is September 2026.
 random-effects meta-analysis using the metafor package in R.
 ```
 
+### Sample project
+
+The repository includes a fully worked sample project at [`sample_projects/chw-maternal-mental-health/`](sample_projects/chw-maternal-mental-health/) — a systematic review of community health worker interventions for maternal mental health in low- and middle-income countries. It demonstrates the end-to-end outputs that RWA generates:
+
+| Output | Path | What it shows |
+|---|---|---|
+| Review protocol | [`protocol.qmd`](sample_projects/chw-maternal-mental-health/protocol.qmd) | PRISMA-compliant protocol with PICO framework |
+| Manuscript (source) | [`manuscript.qmd`](sample_projects/chw-maternal-mental-health/manuscript.qmd) | IMRaD manuscript with citations and AI disclosure |
+| Manuscript (HTML) | [`manuscript.html`](sample_projects/chw-maternal-mental-health/manuscript.html) | Rendered HTML version for browser viewing |
+| Manuscript (PDF) | [`manuscript.pdf`](sample_projects/chw-maternal-mental-health/manuscript.pdf) | Rendered PDF for print/submission |
+| Manuscript (Word) | [`manuscript.docx`](sample_projects/chw-maternal-mental-health/manuscript.docx) | Rendered DOCX for journal submission or collaboration |
+| Search results (SQLite) | [`data/search_results.db`](sample_projects/chw-maternal-mental-health/data/) | Structured database of results from PubMed, OpenAlex, CrossRef, Semantic Scholar |
+| Search results (Excel) | [`data/search_results.xlsx`](sample_projects/chw-maternal-mental-health/data/) | Filterable Excel workbook with clickable DOI/PMID hyperlinks |
+| Reproducible search scripts | [`scripts/`](sample_projects/chw-maternal-mental-health/scripts/) | Thin stub scripts that reproduce each database search |
+| Data extraction | [`data-extraction.qmd`](sample_projects/chw-maternal-mental-health/data-extraction.qmd) | Structured data extraction template |
+| Risk of bias | [`rob2-assessments.qmd`](sample_projects/chw-maternal-mental-health/rob2-assessments.qmd) | Cochrane RoB 2 assessments |
+| Evidence synthesis | [`synthesis.qmd`](sample_projects/chw-maternal-mental-health/synthesis.qmd) | Narrative and quantitative synthesis |
+| PRISMA flow | [`review-tracking/`](sample_projects/chw-maternal-mental-health/review-tracking/) | PRISMA flow diagram tracking data |
+| Project tracking | [`project-tracking/`](sample_projects/chw-maternal-mental-health/project-tracking/) | Milestones, tasks, and decision log |
+| AI contributions log | [`ai-contributions-log.md`](sample_projects/chw-maternal-mental-health/ai-contributions-log.md) | Full audit trail of AI-assisted work |
+| References | [`references.bib`](sample_projects/chw-maternal-mental-health/references.bib) | BibTeX bibliography managed via Zotero |
+
+Browse the sample project to see what a completed RWA-assisted review looks like before starting your own.
+
 ## Project Structure
 
 ```

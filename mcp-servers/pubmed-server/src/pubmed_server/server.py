@@ -11,7 +11,11 @@ from typing import Any
 
 import httpx
 from mcp.server.fastmcp import FastMCP
-from rwa_result_store import register_result_store_tools, store_results as _store_results
+from rwa_result_store import (
+    generate_and_run_script,
+    register_result_store_tools,
+    store_results as _store_results,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -206,6 +210,55 @@ async def search_pubmed(
             logger.warning("Failed to store PubMed search results", exc_info=True)
 
     return result
+
+
+@mcp.tool()
+async def search_pubmed_scripted(
+    query: str,
+    max_results: int = 20,
+    date_range: str | None = None,
+    article_types: str | None = None,
+    project_path: str = ".",
+) -> dict[str, Any]:
+    """Search PubMed and save a reproducible script to the project.
+
+    Like search_pubmed, but generates a standalone Python script in
+    {project_path}/scripts/ that can be re-run independently for
+    reproducibility. Results are stored in the project database.
+
+    Falls back to the standard search if the script fails.
+
+    Args:
+        query: PubMed search query (supports Boolean operators and field tags).
+        max_results: Maximum number of results to return (default 20, max 200).
+        date_range: Optional date filter as 'YYYY/MM/DD:YYYY/MM/DD'.
+        article_types: Optional publication type filter (e.g., 'Review').
+        project_path: Project directory path for script and result storage.
+
+    Returns:
+        Dictionary with total_count, articles list, and script_path.
+    """
+    max_results = min(max_results, 200)
+    params = {"max_results": max_results, "date_range": date_range,
+              "article_types": article_types}
+
+    script_result = generate_and_run_script(project_path, "pubmed", query, params)
+
+    if script_result is not None:
+        results, total_count, search_id, script_path = script_result
+        return {
+            "total_count": total_count,
+            "articles": results,
+            "script_path": script_path,
+            "search_id": search_id,
+        }
+
+    # Fallback to direct API call
+    logger.warning("Script execution failed for PubMed, falling back to direct API call")
+    return await search_pubmed(
+        query=query, max_results=max_results, date_range=date_range,
+        article_types=article_types, project_path=project_path,
+    )
 
 
 @mcp.tool()
