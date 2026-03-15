@@ -54,8 +54,7 @@ def _vscode_storage_root() -> Path:
             return Path(appdata) / "Code" / "User" / "workspaceStorage"
     elif system == "Darwin":
         return (
-            Path.home() / "Library" / "Application Support"
-            / "Code" / "User" / "workspaceStorage"
+            Path.home() / "Library" / "Application Support" / "Code" / "User" / "workspaceStorage"
         )
     else:  # Linux
         config = os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))
@@ -100,9 +99,7 @@ def _find_workspace_hash(storage_root: Path, workspace_path: Path) -> str | None
     return None
 
 
-def _discover_sessions(
-    storage_root: Path, workspace_path: Path
-) -> list[dict]:
+def _discover_sessions(storage_root: Path, workspace_path: Path) -> list[dict]:
     """Discover all chat sessions for a workspace.
 
     Returns a list of dicts with keys: session_id, path, title, creation_date, model_id.

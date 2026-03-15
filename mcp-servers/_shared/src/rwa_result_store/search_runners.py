@@ -55,8 +55,14 @@ def _parse_esummary(xml_text: str) -> list[dict[str, Any]]:
         for item in doc.findall("Item"):
             name = item.get("Name", "")
             if name in (
-                "Title", "Source", "PubDate", "FullJournalName",
-                "DOI", "Volume", "Issue", "Pages",
+                "Title",
+                "Source",
+                "PubDate",
+                "FullJournalName",
+                "DOI",
+                "Volume",
+                "Issue",
+                "Pages",
             ):
                 article[name.lower()] = item.text or ""
             elif name == "AuthorList":
@@ -108,7 +114,10 @@ def run_pubmed(
         articles = _parse_esummary(resp.text)
 
     search_id = store_results(
-        project_path, "pubmed", query, articles,
+        project_path,
+        "pubmed",
+        query,
+        articles,
         total_count=total_count,
         parameters={
             "max_results": max_results,
@@ -189,7 +198,10 @@ def run_openalex(
         return 0
 
     search_id = store_results(
-        project_path, "openalex", query, works,
+        project_path,
+        "openalex",
+        query,
+        works,
         total_count=total_count,
         parameters={"filters": filters, "sort": sort, "per_page": per_page},
     )
@@ -203,11 +215,24 @@ def run_openalex(
 
 _S2_BASE = "https://api.semanticscholar.org/graph/v1"
 
-_S2_PAPER_FIELDS = ",".join([
-    "paperId", "externalIds", "title", "abstract", "year", "venue",
-    "publicationVenue", "authors", "citationCount", "referenceCount",
-    "isOpenAccess", "openAccessPdf", "fieldsOfStudy", "tldr",
-])
+_S2_PAPER_FIELDS = ",".join(
+    [
+        "paperId",
+        "externalIds",
+        "title",
+        "abstract",
+        "year",
+        "venue",
+        "publicationVenue",
+        "authors",
+        "citationCount",
+        "referenceCount",
+        "isOpenAccess",
+        "openAccessPdf",
+        "fieldsOfStudy",
+        "tldr",
+    ]
+)
 
 _S2_MAX_RETRIES = 3
 _S2_BASE_BACKOFF = 1.0
@@ -233,7 +258,7 @@ def _request_with_backoff(
         if resp.status_code != 429 or attempt == _S2_MAX_RETRIES:
             resp.raise_for_status()
             return resp
-        wait = _S2_BASE_BACKOFF * (2 ** attempt)
+        wait = _S2_BASE_BACKOFF * (2**attempt)
         time.sleep(wait)
     return resp  # unreachable; satisfies type checker
 
@@ -288,7 +313,10 @@ def run_semantic_scholar(
 
     with httpx.Client(timeout=30.0) as client:
         resp = _request_with_backoff(
-            client, "GET", f"{_S2_BASE}/paper/search", params=params,
+            client,
+            "GET",
+            f"{_S2_BASE}/paper/search",
+            params=params,
         )
         data = resp.json()
 
@@ -299,7 +327,10 @@ def run_semantic_scholar(
         return 0
 
     search_id = store_results(
-        project_path, "semantic_scholar", query, papers,
+        project_path,
+        "semantic_scholar",
+        query,
+        papers,
         total_count=total,
         parameters={
             "year_range": year_range,
@@ -377,7 +408,10 @@ def run_europe_pmc(
         return 0
 
     search_id = store_results(
-        project_path, "europe_pmc", query, results,
+        project_path,
+        "europe_pmc",
+        query,
+        results,
         total_count=total_count,
         parameters={
             "result_type": result_type,
@@ -469,7 +503,10 @@ def run_crossref(
         return 0
 
     search_id = store_results(
-        project_path, "crossref", query, works,
+        project_path,
+        "crossref",
+        query,
+        works,
         total_count=total_count,
         parameters={"filters": filters, "rows": rows, "sort": sort},
     )

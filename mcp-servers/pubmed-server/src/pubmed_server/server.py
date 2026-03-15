@@ -69,9 +69,14 @@ def _parse_esummary(xml_text: str) -> list[dict[str, Any]]:
         for item in doc.findall("Item"):
             name = item.get("Name", "")
             if name in (
-                "Title", "Source", "PubDate",
-                "FullJournalName", "DOI", "Volume",
-                "Issue", "Pages",
+                "Title",
+                "Source",
+                "PubDate",
+                "FullJournalName",
+                "DOI",
+                "Volume",
+                "Issue",
+                "Pages",
             ):
                 article[name.lower()] = item.text or ""
             elif name == "AuthorList":
@@ -212,10 +217,16 @@ async def search_pubmed(
     if project_path:
         try:
             _store_results(
-                project_path, "pubmed", query, articles,
+                project_path,
+                "pubmed",
+                query,
+                articles,
                 total_count=total_count,
-                parameters={"max_results": max_results, "date_range": date_range,
-                            "article_types": article_types},
+                parameters={
+                    "max_results": max_results,
+                    "date_range": date_range,
+                    "article_types": article_types,
+                },
             )
         except Exception:
             logger.warning("Failed to store PubMed search results", exc_info=True)
@@ -250,8 +261,7 @@ async def search_pubmed_scripted(
         Dictionary with total_count, articles list, and script_path.
     """
     max_results = min(max_results, 200)
-    params = {"max_results": max_results, "date_range": date_range,
-              "article_types": article_types}
+    params = {"max_results": max_results, "date_range": date_range, "article_types": article_types}
 
     script_result = generate_and_run_script(project_path, "pubmed", query, params)
 
@@ -267,8 +277,11 @@ async def search_pubmed_scripted(
     # Fallback to direct API call
     logger.warning("Script execution failed for PubMed, falling back to direct API call")
     return await search_pubmed(
-        query=query, max_results=max_results, date_range=date_range,
-        article_types=article_types, project_path=project_path,
+        query=query,
+        max_results=max_results,
+        date_range=date_range,
+        article_types=article_types,
+        project_path=project_path,
     )
 
 

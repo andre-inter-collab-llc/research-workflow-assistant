@@ -129,7 +129,10 @@ async def search_works(
     if project_path:
         try:
             _store_results(
-                project_path, "crossref", query, works,
+                project_path,
+                "crossref",
+                query,
+                works,
                 total_count=total_count,
                 parameters={"filters": filters, "rows": rows, "sort": sort},
             )
@@ -183,8 +186,11 @@ async def search_works_scripted(
 
     logger.warning("Script execution failed for CrossRef, falling back to direct API call")
     return await search_works(
-        query=query, filters=filters, rows=rows,
-        sort=sort, project_path=project_path,
+        query=query,
+        filters=filters,
+        rows=rows,
+        sort=sort,
+        project_path=project_path,
     )
 
 
@@ -223,17 +229,19 @@ async def get_references_by_doi(doi: str) -> dict[str, Any]:
 
     references = []
     for ref in raw_refs:
-        references.append({
-            "doi": ref.get("DOI", ""),
-            "key": ref.get("key", ""),
-            "unstructured": ref.get("unstructured", ""),
-            "article_title": ref.get("article-title", ""),
-            "author": ref.get("author", ""),
-            "year": ref.get("year", ""),
-            "journal_title": ref.get("journal-title", ""),
-            "volume": ref.get("volume", ""),
-            "first_page": ref.get("first-page", ""),
-        })
+        references.append(
+            {
+                "doi": ref.get("DOI", ""),
+                "key": ref.get("key", ""),
+                "unstructured": ref.get("unstructured", ""),
+                "article_title": ref.get("article-title", ""),
+                "author": ref.get("author", ""),
+                "year": ref.get("year", ""),
+                "journal_title": ref.get("journal-title", ""),
+                "volume": ref.get("volume", ""),
+                "first_page": ref.get("first-page", ""),
+            }
+        )
 
     return {
         "source_doi": doi,

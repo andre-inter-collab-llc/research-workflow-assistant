@@ -184,7 +184,9 @@ def _format_item(item: dict[str, Any]) -> dict[str, Any]:
 
 @mcp.tool()
 async def search_library(
-    query: str, collection: str | None = None, limit: int = 25,
+    query: str,
+    collection: str | None = None,
+    limit: int = 25,
 ) -> dict[str, Any]:
     """Search the user's Zotero library.
 
@@ -306,10 +308,12 @@ async def add_item_by_doi(doi: str, collection_key: str | None = None) -> dict[s
 
     creators = []
     for a in cr_data.get("author", []):
-        creators.append({
-            "firstName": a.get("given", ""),
-            "lastName": a.get("family", ""),
-        })
+        creators.append(
+            {
+                "firstName": a.get("given", ""),
+                "lastName": a.get("family", ""),
+            }
+        )
 
     containers = cr_data.get("container-title", [])
     journal = containers[0] if containers else ""
@@ -508,9 +512,7 @@ async def export_to_file(
     """
     import pathlib
 
-    result = await export_bibliography(
-        collection_key=collection_key, format=format, limit=limit
-    )
+    result = await export_bibliography(collection_key=collection_key, format=format, limit=limit)
     content = result.get("content", "")
 
     out_path = pathlib.Path(file_path)
@@ -559,9 +561,7 @@ async def add_note(item_key: str, note_text: str) -> dict[str, Any]:
         note = success[first_key]
         return {
             "status": "created",
-            "note_key": note.get(
-                "key", note.get("data", {}).get("key", "")
-            ),
+            "note_key": note.get("key", note.get("data", {}).get("key", "")),
         }
 
     return {"status": "failed", "errors": result.get("failed", {})}
@@ -602,6 +602,7 @@ async def tag_item(item_key: str, tags: list[str]) -> dict[str, Any]:
 # Phase 1 additions: child items, notes, annotations, attachments
 # ---------------------------------------------------------------------------
 
+
 def _format_annotation(item: dict[str, Any]) -> dict[str, Any]:
     """Extract key fields from a Zotero annotation item."""
     data = item.get("data", {})
@@ -621,9 +622,7 @@ def _format_annotation(item: dict[str, Any]) -> dict[str, Any]:
 
 
 @mcp.tool()
-async def get_item_children(
-    item_key: str, include_trashed: bool = False
-) -> dict[str, Any]:
+async def get_item_children(item_key: str, include_trashed: bool = False) -> dict[str, Any]:
     """Get all child items (notes, attachments, annotations) for a Zotero item.
 
     Args:
@@ -647,24 +646,28 @@ async def get_item_children(
     for child in children:
         item_type = child.get("data", {}).get("itemType", "")
         if item_type == "note":
-            notes.append({
-                "key": child.get("data", {}).get("key", child.get("key", "")),
-                "note": child.get("data", {}).get("note", ""),
-                "tags": [t.get("tag", "") for t in child.get("data", {}).get("tags", [])],
-                "date_added": child.get("data", {}).get("dateAdded", ""),
-                "date_modified": child.get("data", {}).get("dateModified", ""),
-            })
+            notes.append(
+                {
+                    "key": child.get("data", {}).get("key", child.get("key", "")),
+                    "note": child.get("data", {}).get("note", ""),
+                    "tags": [t.get("tag", "") for t in child.get("data", {}).get("tags", [])],
+                    "date_added": child.get("data", {}).get("dateAdded", ""),
+                    "date_modified": child.get("data", {}).get("dateModified", ""),
+                }
+            )
         elif item_type == "attachment":
             data = child.get("data", {})
-            attachments.append({
-                "key": data.get("key", child.get("key", "")),
-                "title": data.get("title", ""),
-                "filename": data.get("filename", ""),
-                "content_type": data.get("contentType", ""),
-                "link_mode": data.get("linkMode", ""),
-                "url": data.get("url", ""),
-                "tags": [t.get("tag", "") for t in data.get("tags", [])],
-            })
+            attachments.append(
+                {
+                    "key": data.get("key", child.get("key", "")),
+                    "title": data.get("title", ""),
+                    "filename": data.get("filename", ""),
+                    "content_type": data.get("contentType", ""),
+                    "link_mode": data.get("linkMode", ""),
+                    "url": data.get("url", ""),
+                    "tags": [t.get("tag", "") for t in data.get("tags", [])],
+                }
+            )
         elif item_type == "annotation":
             annotations.append(_format_annotation(child))
 
@@ -695,13 +698,15 @@ async def get_notes(item_key: str) -> dict[str, Any]:
     notes = []
     for child in children:
         data = child.get("data", {})
-        notes.append({
-            "key": data.get("key", child.get("key", "")),
-            "note": data.get("note", ""),
-            "tags": [t.get("tag", "") for t in data.get("tags", [])],
-            "date_added": data.get("dateAdded", ""),
-            "date_modified": data.get("dateModified", ""),
-        })
+        notes.append(
+            {
+                "key": data.get("key", child.get("key", "")),
+                "note": data.get("note", ""),
+                "tags": [t.get("tag", "") for t in data.get("tags", [])],
+                "date_added": data.get("dateAdded", ""),
+                "date_modified": data.get("dateModified", ""),
+            }
+        )
 
     return {"item_key": item_key, "notes": notes}
 
@@ -750,16 +755,18 @@ async def get_attachment_metadata(item_key: str) -> dict[str, Any]:
     attachments = []
     for child in children:
         data = child.get("data", {})
-        attachments.append({
-            "key": data.get("key", child.get("key", "")),
-            "title": data.get("title", ""),
-            "filename": data.get("filename", ""),
-            "content_type": data.get("contentType", ""),
-            "link_mode": data.get("linkMode", ""),
-            "url": data.get("url", ""),
-            "md5": data.get("md5", ""),
-            "mtime": data.get("mtime", 0),
-        })
+        attachments.append(
+            {
+                "key": data.get("key", child.get("key", "")),
+                "title": data.get("title", ""),
+                "filename": data.get("filename", ""),
+                "content_type": data.get("contentType", ""),
+                "link_mode": data.get("linkMode", ""),
+                "url": data.get("url", ""),
+                "md5": data.get("md5", ""),
+                "mtime": data.get("mtime", 0),
+            }
+        )
 
     return {"item_key": item_key, "attachments": attachments}
 
@@ -844,13 +851,15 @@ async def search_notes(
     notes = []
     for item in items:
         data = item.get("data", {})
-        notes.append({
-            "key": data.get("key", item.get("key", "")),
-            "parent_item": data.get("parentItem", ""),
-            "note": data.get("note", ""),
-            "tags": [t.get("tag", "") for t in data.get("tags", [])],
-            "date_modified": data.get("dateModified", ""),
-        })
+        notes.append(
+            {
+                "key": data.get("key", item.get("key", "")),
+                "parent_item": data.get("parentItem", ""),
+                "note": data.get("note", ""),
+                "tags": [t.get("tag", "") for t in data.get("tags", [])],
+                "date_modified": data.get("dateModified", ""),
+            }
+        )
 
     return {"query": query, "results": notes}
 
@@ -971,10 +980,7 @@ async def import_from_result_store(
     if not dois:
         return {
             "status": "no_dois",
-            "message": (
-                "No DOIs found in search results."
-                " Cannot batch-import without DOIs."
-            ),
+            "message": ("No DOIs found in search results. Cannot batch-import without DOIs."),
         }
 
     return await batch_add_by_doi(dois=dois, collection_key=collection_key, confirm=confirm)

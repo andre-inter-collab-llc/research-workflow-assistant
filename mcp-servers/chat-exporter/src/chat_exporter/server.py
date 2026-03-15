@@ -43,6 +43,7 @@ mcp = FastMCP(
 # Path helpers
 # ---------------------------------------------------------------------------
 
+
 def _vscode_storage_root() -> Path:
     """Return the VS Code workspaceStorage root for the current OS."""
     system = platform.system()
@@ -168,6 +169,7 @@ def _slugify(text: str, max_len: int = 50) -> str:
 # MCP Tools
 # ---------------------------------------------------------------------------
 
+
 @mcp.tool()
 def list_sessions() -> str:
     """List available VS Code Copilot Chat sessions for this workspace.
@@ -234,13 +236,15 @@ def export_session(
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(qmd, encoding="utf-8")
 
-    return json.dumps({
-        "exported": str(out),
-        "session_id": session_id,
-        "title": target["title"],
-        "turns": len(session.messages),
-        "size_bytes": out.stat().st_size,
-    })
+    return json.dumps(
+        {
+            "exported": str(out),
+            "session_id": session_id,
+            "title": target["title"],
+            "turns": len(session.messages),
+            "size_bytes": out.stat().st_size,
+        }
+    )
 
 
 @mcp.tool()
@@ -277,6 +281,7 @@ def export_latest(
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
+
 
 def serve() -> None:
     """Run the Chat Exporter MCP server."""

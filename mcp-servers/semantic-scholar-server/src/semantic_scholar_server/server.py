@@ -30,11 +30,24 @@ API_KEY = os.environ.get("S2_API_KEY", "")
 MAX_RETRIES = 3
 BASE_BACKOFF = 1.0  # seconds
 
-PAPER_FIELDS = ",".join([
-    "paperId", "externalIds", "title", "abstract", "year", "venue",
-    "publicationVenue", "authors", "citationCount", "referenceCount",
-    "isOpenAccess", "openAccessPdf", "fieldsOfStudy", "tldr",
-])
+PAPER_FIELDS = ",".join(
+    [
+        "paperId",
+        "externalIds",
+        "title",
+        "abstract",
+        "year",
+        "venue",
+        "publicationVenue",
+        "authors",
+        "citationCount",
+        "referenceCount",
+        "isOpenAccess",
+        "openAccessPdf",
+        "fieldsOfStudy",
+        "tldr",
+    ]
+)
 
 AUTHOR_FIELDS = "authorId,externalIds,name,affiliations,paperCount,citationCount,hIndex"
 
@@ -70,10 +83,12 @@ async def _request_with_backoff(
         if resp.status_code != 429 or attempt == MAX_RETRIES:
             resp.raise_for_status()
             return resp
-        wait = BASE_BACKOFF * (2 ** attempt)
+        wait = BASE_BACKOFF * (2**attempt)
         logger.warning(
             "S2 rate limited (429). Retrying in %.1fs (attempt %d/%d)",
-            wait, attempt + 1, MAX_RETRIES,
+            wait,
+            attempt + 1,
+            MAX_RETRIES,
         )
         await asyncio.sleep(wait)
     return resp  # unreachable, but satisfies type checker
@@ -166,10 +181,17 @@ async def search_papers(
     if project_path:
         try:
             _store_results(
-                project_path, "semantic_scholar", query, papers,
+                project_path,
+                "semantic_scholar",
+                query,
+                papers,
                 total_count=total,
-                parameters={"year_range": year_range, "fields_of_study": fields_of_study,
-                            "open_access_only": open_access_only, "limit": limit},
+                parameters={
+                    "year_range": year_range,
+                    "fields_of_study": fields_of_study,
+                    "open_access_only": open_access_only,
+                    "limit": limit,
+                },
             )
         except Exception:
             logger.warning("Failed to store Semantic Scholar search results", exc_info=True)
@@ -205,8 +227,12 @@ async def search_papers_scripted(
         Dictionary with total, papers list, and script_path.
     """
     limit = min(limit, 100)
-    params = {"year_range": year_range, "fields_of_study": fields_of_study,
-              "open_access_only": open_access_only, "limit": limit}
+    params = {
+        "year_range": year_range,
+        "fields_of_study": fields_of_study,
+        "open_access_only": open_access_only,
+        "limit": limit,
+    }
 
     script_result = generate_and_run_script(project_path, "semantic_scholar", query, params)
 
@@ -221,8 +247,12 @@ async def search_papers_scripted(
 
     logger.warning("Script execution failed for Semantic Scholar, falling back to direct API call")
     return await search_papers(
-        query=query, year_range=year_range, fields_of_study=fields_of_study,
-        open_access_only=open_access_only, limit=limit, project_path=project_path,
+        query=query,
+        year_range=year_range,
+        fields_of_study=fields_of_study,
+        open_access_only=open_access_only,
+        limit=limit,
+        project_path=project_path,
     )
 
 
@@ -267,14 +297,16 @@ async def get_citations(paper_id: str, limit: int = 50) -> dict[str, Any]:
     for item in data.get("data", []):
         citing = item.get("citingPaper", {})
         if citing.get("paperId"):
-            citations.append({
-                "paper_id": citing.get("paperId", ""),
-                "doi": (citing.get("externalIds") or {}).get("DOI", ""),
-                "title": citing.get("title", ""),
-                "year": citing.get("year"),
-                "authors": [a.get("name", "") for a in (citing.get("authors") or [])],
-                "citation_count": citing.get("citationCount", 0),
-            })
+            citations.append(
+                {
+                    "paper_id": citing.get("paperId", ""),
+                    "doi": (citing.get("externalIds") or {}).get("DOI", ""),
+                    "title": citing.get("title", ""),
+                    "year": citing.get("year"),
+                    "authors": [a.get("name", "") for a in (citing.get("authors") or [])],
+                    "citation_count": citing.get("citationCount", 0),
+                }
+            )
 
     return {"source_paper": paper_id, "total": len(citations), "citations": citations}
 
@@ -302,14 +334,16 @@ async def get_references(paper_id: str, limit: int = 50) -> dict[str, Any]:
     for item in data.get("data", []):
         cited = item.get("citedPaper", {})
         if cited.get("paperId"):
-            refs.append({
-                "paper_id": cited.get("paperId", ""),
-                "doi": (cited.get("externalIds") or {}).get("DOI", ""),
-                "title": cited.get("title", ""),
-                "year": cited.get("year"),
-                "authors": [a.get("name", "") for a in (cited.get("authors") or [])],
-                "citation_count": cited.get("citationCount", 0),
-            })
+            refs.append(
+                {
+                    "paper_id": cited.get("paperId", ""),
+                    "doi": (cited.get("externalIds") or {}).get("DOI", ""),
+                    "title": cited.get("title", ""),
+                    "year": cited.get("year"),
+                    "authors": [a.get("name", "") for a in (cited.get("authors") or [])],
+                    "citation_count": cited.get("citationCount", 0),
+                }
+            )
 
     return {"source_paper": paper_id, "total": len(refs), "references": refs}
 

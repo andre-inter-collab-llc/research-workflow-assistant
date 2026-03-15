@@ -43,6 +43,7 @@ mcp = FastMCP(
 # Path resolution helpers
 # ---------------------------------------------------------------------------
 
+
 def _resolve_project_dir(project_path: str | None = None, *, must_exist: bool = True) -> Path:
     """Resolve a project directory from the various possible sources.
 
@@ -110,7 +111,10 @@ def _now() -> str:
 
 
 def _ci(
-    section: str, item: int, description: str, status: str = "manual",
+    section: str,
+    item: int,
+    description: str,
+    status: str = "manual",
 ) -> dict[str, Any]:
     """Build a single checklist item dict."""
     return {
@@ -124,6 +128,7 @@ def _ci(
 # ---------------------------------------------------------------------------
 # Project management tools
 # ---------------------------------------------------------------------------
+
 
 @mcp.tool()
 async def set_active_review(project_path: str) -> dict[str, Any]:
@@ -197,6 +202,7 @@ async def list_reviews() -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 # Review tracking tools
 # ---------------------------------------------------------------------------
+
 
 @mcp.tool()
 async def init_review(
@@ -511,7 +517,7 @@ flowchart TD
     A["Records identified through<br/>database searching<br/>(n={db_total})"]
     B["Additional records from<br/>other sources<br/>(n={other_total})"]
     C["Records after duplicates removed<br/>(n={after_dedup})"]
-    D["Records screened<br/>(n={screen_ta['screened']})"]
+    D["Records screened<br/>(n={screen_ta["screened"]})"]
     E["Records excluded<br/>(n={ta_excluded})"]
     F["Full-text articles assessed<br/>for eligibility<br/>(n={ft_assessed})"]
     G["Full-text articles excluded<br/>(n={ft_excluded})<br/>{ft_reasons}"]
@@ -578,15 +584,15 @@ async def export_prisma_checklist(
             _ci("Abstract", 2, "Structured summary"),
             _ci("Introduction", 3, "Rationale"),
             _ci("Introduction", 4, "Objectives with PICO"),
-            _ci("Methods", 5, "Protocol and registration",
-                "complete" if has_proto else "incomplete"),
+            _ci(
+                "Methods", 5, "Protocol and registration", "complete" if has_proto else "incomplete"
+            ),
             _ci("Methods", 6, "Eligibility criteria"),
-            _ci("Methods", 7, "Information sources",
-                "complete" if has_searches else "incomplete"),
-            _ci("Methods", 8, "Search strategy",
-                "complete" if has_searches else "incomplete"),
-            _ci("Methods", 9, "Selection process",
-                "complete" if has_ta_screening else "incomplete"),
+            _ci("Methods", 7, "Information sources", "complete" if has_searches else "incomplete"),
+            _ci("Methods", 8, "Search strategy", "complete" if has_searches else "incomplete"),
+            _ci(
+                "Methods", 9, "Selection process", "complete" if has_ta_screening else "incomplete"
+            ),
             _ci("Methods", 10, "Data collection process"),
             _ci("Methods", 11, "Data items"),
             _ci("Methods", 12, "Study risk of bias assessment"),
@@ -594,8 +600,12 @@ async def export_prisma_checklist(
             _ci("Methods", 14, "Synthesis methods"),
             _ci("Methods", 15, "Reporting bias assessment"),
             _ci("Methods", 16, "Certainty assessment"),
-            _ci("Results", 17, "Study selection (PRISMA flow)",
-                "complete" if has_ft_screening else "incomplete"),
+            _ci(
+                "Results",
+                17,
+                "Study selection (PRISMA flow)",
+                "complete" if has_ft_screening else "incomplete",
+            ),
             _ci("Results", 18, "Study characteristics"),
             _ci("Results", 19, "Risk of bias in studies"),
             _ci("Results", 20, "Results of individual studies"),
@@ -603,8 +613,9 @@ async def export_prisma_checklist(
             _ci("Results", 22, "Reporting biases"),
             _ci("Results", 23, "Certainty of evidence"),
             _ci("Discussion", 24, "Discussion"),
-            _ci("Other", 25, "Registration and protocol",
-                "complete" if has_proto else "incomplete"),
+            _ci(
+                "Other", 25, "Registration and protocol", "complete" if has_proto else "incomplete"
+            ),
             _ci("Other", 26, "Support/funding"),
             _ci("Other", 27, "Competing interests"),
         ]
@@ -614,21 +625,28 @@ async def export_prisma_checklist(
             _ci("Abstract", 2, "Structured summary"),
             _ci("Introduction", 3, "Rationale"),
             _ci("Introduction", 4, "Objectives"),
-            _ci("Methods", 5, "Protocol and registration",
-                "complete" if has_proto else "incomplete"),
+            _ci(
+                "Methods", 5, "Protocol and registration", "complete" if has_proto else "incomplete"
+            ),
             _ci("Methods", 6, "Eligibility criteria (PCC)"),
-            _ci("Methods", 7, "Information sources",
-                "complete" if has_searches else "incomplete"),
-            _ci("Methods", 8, "Search",
-                "complete" if has_searches else "incomplete"),
-            _ci("Methods", 9, "Selection of sources",
-                "complete" if has_ta_screening else "incomplete"),
+            _ci("Methods", 7, "Information sources", "complete" if has_searches else "incomplete"),
+            _ci("Methods", 8, "Search", "complete" if has_searches else "incomplete"),
+            _ci(
+                "Methods",
+                9,
+                "Selection of sources",
+                "complete" if has_ta_screening else "incomplete",
+            ),
             _ci("Methods", 10, "Data charting process"),
             _ci("Methods", 11, "Data items"),
             _ci("Methods", 12, "Critical appraisal"),
             _ci("Methods", 13, "Synthesis of results"),
-            _ci("Results", 14, "Selection of sources",
-                "complete" if has_ft_screening else "incomplete"),
+            _ci(
+                "Results",
+                14,
+                "Selection of sources",
+                "complete" if has_ft_screening else "incomplete",
+            ),
             _ci("Results", 15, "Characteristics of sources"),
             _ci("Results", 16, "Critical appraisal"),
             _ci("Results", 17, "Results of individual sources"),
@@ -642,48 +660,43 @@ async def export_prisma_checklist(
         checklist = [
             _ci("Reporting of background", 1, "Problem definition"),
             _ci("Reporting of background", 2, "Hypothesis statement"),
-            _ci("Reporting of background", 3,
-                "Objective description"),
-            _ci("Reporting of background", 4,
-                "Type of study designs used"),
-            _ci("Reporting of search strategy", 5,
-                "Qualifications of searchers"),
-            _ci("Reporting of search strategy", 6,
+            _ci("Reporting of background", 3, "Objective description"),
+            _ci("Reporting of background", 4, "Type of study designs used"),
+            _ci("Reporting of search strategy", 5, "Qualifications of searchers"),
+            _ci(
+                "Reporting of search strategy",
+                6,
                 "Search strategy including databases",
-                "complete" if has_searches else "incomplete"),
-            _ci("Reporting of search strategy", 7,
-                "Effort to include all available studies"),
-            _ci("Reporting of search strategy", 8,
-                "Use of hand searching"),
-            _ci("Reporting of search strategy", 9,
+                "complete" if has_searches else "incomplete",
+            ),
+            _ci("Reporting of search strategy", 7, "Effort to include all available studies"),
+            _ci("Reporting of search strategy", 8, "Use of hand searching"),
+            _ci(
+                "Reporting of search strategy",
+                9,
                 "List of citations located and excluded",
-                "complete" if has_ft_screening else "incomplete"),
-            _ci("Reporting of methods", 10,
-                "Description of relevance assessment"),
-            _ci("Reporting of methods", 11,
-                "Assessment of study quality"),
-            _ci("Reporting of methods", 12,
-                "Method of data extraction"),
+                "complete" if has_ft_screening else "incomplete",
+            ),
+            _ci("Reporting of methods", 10, "Description of relevance assessment"),
+            _ci("Reporting of methods", 11, "Assessment of study quality"),
+            _ci("Reporting of methods", 12, "Method of data extraction"),
             _ci("Reporting of methods", 13, "Statistical methods"),
-            _ci("Reporting of results", 14,
+            _ci(
+                "Reporting of results",
+                14,
                 "Flow of studies (PRISMA diagram)",
-                "complete" if has_ft_screening else "incomplete"),
-            _ci("Reporting of results", 15,
-                "Study characteristics"),
-            _ci("Reporting of results", 16,
-                "Quantitative data synthesis"),
-            _ci("Reporting of discussion", 17,
-                "Quantitative assessment of bias"),
-            _ci("Reporting of discussion", 18,
-                "Justification for exclusions"),
-            _ci("Reporting of discussion", 19,
-                "Assessment of quality of included studies"),
+                "complete" if has_ft_screening else "incomplete",
+            ),
+            _ci("Reporting of results", 15, "Study characteristics"),
+            _ci("Reporting of results", 16, "Quantitative data synthesis"),
+            _ci("Reporting of discussion", 17, "Quantitative assessment of bias"),
+            _ci("Reporting of discussion", 18, "Justification for exclusions"),
+            _ci("Reporting of discussion", 19, "Assessment of quality of included studies"),
         ]
     else:
         return {
             "error": (
-                f"Unknown standard: {standard}. "
-                "Use 'prisma-2020', 'prisma-scr', or 'moose'."
+                f"Unknown standard: {standard}. Use 'prisma-2020', 'prisma-scr', or 'moose'."
             ),
         }
 

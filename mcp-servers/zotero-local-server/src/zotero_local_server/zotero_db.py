@@ -203,9 +203,7 @@ def get_attachments(data_dir: Path, item_key: str) -> list[dict[str, Any]]:
     conn = _connect(data_dir)
     try:
         # Find the parent item ID
-        parent = conn.execute(
-            "SELECT itemID FROM items WHERE key = ?", (item_key,)
-        ).fetchone()
+        parent = conn.execute("SELECT itemID FROM items WHERE key = ?", (item_key,)).fetchone()
         if not parent:
             return []
 
@@ -232,7 +230,7 @@ def get_attachments(data_dir: Path, item_key: str) -> list[dict[str, Any]]:
             # Resolve the file path on disk
             file_path: Path | None = None
             if raw_path.startswith("storage:"):
-                filename = raw_path[len("storage:"):]
+                filename = raw_path[len("storage:") :]
                 candidate = storage_dir / att_key / filename
                 if candidate.exists():
                     file_path = candidate
@@ -242,14 +240,16 @@ def get_attachments(data_dir: Path, item_key: str) -> list[dict[str, Any]]:
                 if candidate.exists():
                     file_path = candidate
 
-            attachments.append({
-                "key": att_key,
-                "content_type": content_type,
-                "filename": file_path.name if file_path else raw_path,
-                "path": str(file_path) if file_path else None,
-                "exists": file_path is not None and file_path.exists(),
-                "storage_hash": row["storageHash"] or "",
-            })
+            attachments.append(
+                {
+                    "key": att_key,
+                    "content_type": content_type,
+                    "filename": file_path.name if file_path else raw_path,
+                    "path": str(file_path) if file_path else None,
+                    "exists": file_path is not None and file_path.exists(),
+                    "storage_hash": row["storageHash"] or "",
+                }
+            )
 
         return attachments
 
@@ -265,9 +265,7 @@ def get_notes_for_item(data_dir: Path, item_key: str) -> list[dict[str, Any]]:
     """
     conn = _connect(data_dir)
     try:
-        parent = conn.execute(
-            "SELECT itemID FROM items WHERE key = ?", (item_key,)
-        ).fetchone()
+        parent = conn.execute("SELECT itemID FROM items WHERE key = ?", (item_key,)).fetchone()
         if not parent:
             return []
 
@@ -304,13 +302,15 @@ def get_notes_for_item(data_dir: Path, item_key: str) -> list[dict[str, Any]]:
                 ).fetchall()
                 tags = [t["name"] for t in tag_rows]
 
-            notes.append({
-                "key": note_key,
-                "note": row["note"] or "",
-                "tags": tags,
-                "date_added": row["dateAdded"] or "",
-                "date_modified": row["dateModified"] or "",
-            })
+            notes.append(
+                {
+                    "key": note_key,
+                    "note": row["note"] or "",
+                    "tags": tags,
+                    "date_added": row["dateAdded"] or "",
+                    "date_modified": row["dateModified"] or "",
+                }
+            )
 
         return notes
 
@@ -318,9 +318,7 @@ def get_notes_for_item(data_dir: Path, item_key: str) -> list[dict[str, Any]]:
         conn.close()
 
 
-def get_annotations_for_attachment(
-    data_dir: Path, attachment_key: str
-) -> list[dict[str, Any]]:
+def get_annotations_for_attachment(data_dir: Path, attachment_key: str) -> list[dict[str, Any]]:
     """Get Zotero reader annotations for a PDF attachment from the local database.
 
     Supports both Zotero 6 (annotations stored as child items with specific
@@ -335,9 +333,7 @@ def get_annotations_for_attachment(
     """
     conn = _connect(data_dir)
     try:
-        att = conn.execute(
-            "SELECT itemID FROM items WHERE key = ?", (attachment_key,)
-        ).fetchone()
+        att = conn.execute("SELECT itemID FROM items WHERE key = ?", (attachment_key,)).fetchone()
         if not att:
             return []
 
@@ -352,9 +348,7 @@ def get_annotations_for_attachment(
         conn.close()
 
 
-def _get_annotations_v7(
-    conn: sqlite3.Connection, attachment_id: int
-) -> list[dict[str, Any]]:
+def _get_annotations_v7(conn: sqlite3.Connection, attachment_id: int) -> list[dict[str, Any]]:
     """Zotero 7: read from itemAnnotations table."""
     rows = conn.execute(
         """
@@ -374,24 +368,24 @@ def _get_annotations_v7(
     for row in rows:
         ann_type_num = row["type"]
         type_map = {1: "highlight", 2: "note", 3: "image", 4: "underline", 5: "text"}
-        annotations.append({
-            "key": row["key"],
-            "type": type_map.get(ann_type_num, str(ann_type_num)),
-            "text": row["text"] or "",
-            "comment": row["comment"] or "",
-            "color": row["color"] or "",
-            "page_label": row["pageLabel"] or "",
-            "sort_index": row["sortIndex"] or "",
-            "date_added": row["dateAdded"] or "",
-            "date_modified": row["dateModified"] or "",
-        })
+        annotations.append(
+            {
+                "key": row["key"],
+                "type": type_map.get(ann_type_num, str(ann_type_num)),
+                "text": row["text"] or "",
+                "comment": row["comment"] or "",
+                "color": row["color"] or "",
+                "page_label": row["pageLabel"] or "",
+                "sort_index": row["sortIndex"] or "",
+                "date_added": row["dateAdded"] or "",
+                "date_modified": row["dateModified"] or "",
+            }
+        )
 
     return annotations
 
 
-def _get_annotations_v6(
-    conn: sqlite3.Connection, attachment_id: int
-) -> list[dict[str, Any]]:
+def _get_annotations_v6(conn: sqlite3.Connection, attachment_id: int) -> list[dict[str, Any]]:
     """Zotero 6: annotations stored as child note items with annotation fields."""
     rows = conn.execute(
         """
@@ -483,7 +477,7 @@ def get_all_pdf_attachments(
 
             file_path: Path | None = None
             if raw_path.startswith("storage:"):
-                filename = raw_path[len("storage:"):]
+                filename = raw_path[len("storage:") :]
                 candidate = storage_dir / att_key / filename
                 if candidate.exists():
                     file_path = candidate
@@ -493,12 +487,14 @@ def get_all_pdf_attachments(
                     file_path = candidate
 
             if file_path and file_path.exists():
-                results.append({
-                    "parent_key": row["parent_key"] or "",
-                    "attachment_key": att_key,
-                    "filename": file_path.name,
-                    "path": str(file_path),
-                })
+                results.append(
+                    {
+                        "parent_key": row["parent_key"] or "",
+                        "attachment_key": att_key,
+                        "filename": file_path.name,
+                        "path": str(file_path),
+                    }
+                )
 
         return results
 

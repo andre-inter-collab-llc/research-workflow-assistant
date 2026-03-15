@@ -82,14 +82,10 @@ def _parse_session_metadata(entry: dict[str, Any], session: ChatSession) -> None
 
     creation_ts = v.get("creationDate")
     if creation_ts and isinstance(creation_ts, (int, float)):
-        session.creation_date = datetime.fromtimestamp(
-            creation_ts / 1000, tz=UTC
-        )
+        session.creation_date = datetime.fromtimestamp(creation_ts / 1000, tz=UTC)
 
 
-def _apply_state_patch(
-    keys: list[str], value: Any, session: ChatSession
-) -> None:
+def _apply_state_patch(keys: list[str], value: Any, session: ChatSession) -> None:
     """Process kind-1 state patches (title, input text, etc.)."""
     if keys == ["customTitle"] and isinstance(value, str):
         session.title = value

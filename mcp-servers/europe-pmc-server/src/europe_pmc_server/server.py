@@ -107,10 +107,17 @@ async def search_europepmc(
     if project_path:
         try:
             _store_results(
-                project_path, "europe_pmc", query, results,
+                project_path,
+                "europe_pmc",
+                query,
+                results,
                 total_count=total_count,
-                parameters={"result_type": result_type, "page_size": page_size,
-                            "sort": sort, "open_access_only": open_access_only},
+                parameters={
+                    "result_type": result_type,
+                    "page_size": page_size,
+                    "sort": sort,
+                    "open_access_only": open_access_only,
+                },
             )
         except Exception:
             logger.warning("Failed to store Europe PMC search results", exc_info=True)
@@ -149,8 +156,12 @@ async def search_europepmc_scripted(
         Dictionary with total_count, results list, and script_path.
     """
     page_size = min(page_size, 1000)
-    params = {"result_type": result_type, "page_size": page_size,
-              "sort": sort, "open_access_only": open_access_only}
+    params = {
+        "result_type": result_type,
+        "page_size": page_size,
+        "sort": sort,
+        "open_access_only": open_access_only,
+    }
 
     script_result = generate_and_run_script(project_path, "europe_pmc", query, params)
 
@@ -165,8 +176,12 @@ async def search_europepmc_scripted(
 
     logger.warning("Script execution failed for Europe PMC, falling back to direct API call")
     return await search_europepmc(
-        query=query, result_type=result_type, page_size=page_size,
-        sort=sort, open_access_only=open_access_only, project_path=project_path,
+        query=query,
+        result_type=result_type,
+        page_size=page_size,
+        sort=sort,
+        open_access_only=open_access_only,
+        project_path=project_path,
     )
 
 
@@ -215,14 +230,16 @@ async def get_citations(source: str, ext_id: str, page_size: int = 25) -> dict[s
     citation_list = data.get("citationList", {}).get("citation", [])
     citations = []
     for c in citation_list:
-        citations.append({
-            "id": c.get("id", ""),
-            "source": c.get("source", ""),
-            "title": c.get("title", ""),
-            "authors": c.get("authorString", ""),
-            "journal": c.get("journalAbbreviation", ""),
-            "year": c.get("pubYear", ""),
-        })
+        citations.append(
+            {
+                "id": c.get("id", ""),
+                "source": c.get("source", ""),
+                "title": c.get("title", ""),
+                "authors": c.get("authorString", ""),
+                "journal": c.get("journalAbbreviation", ""),
+                "year": c.get("pubYear", ""),
+            }
+        )
 
     return {
         "source_id": f"{source}/{ext_id}",
@@ -255,14 +272,16 @@ async def get_references(source: str, ext_id: str, page_size: int = 25) -> dict[
     ref_list = data.get("referenceList", {}).get("reference", [])
     refs = []
     for r in ref_list:
-        refs.append({
-            "id": r.get("id", ""),
-            "source": r.get("source", ""),
-            "title": r.get("title", ""),
-            "authors": r.get("authorString", ""),
-            "journal": r.get("journalAbbreviation", ""),
-            "year": r.get("pubYear", ""),
-        })
+        refs.append(
+            {
+                "id": r.get("id", ""),
+                "source": r.get("source", ""),
+                "title": r.get("title", ""),
+                "authors": r.get("authorString", ""),
+                "journal": r.get("journalAbbreviation", ""),
+                "year": r.get("pubYear", ""),
+            }
+        )
 
     return {
         "source_id": f"{source}/{ext_id}",

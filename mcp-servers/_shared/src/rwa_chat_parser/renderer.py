@@ -40,9 +40,7 @@ def render_qmd(
     parts.append(f"**Session ID:** `{session.session_id}`  ")
     parts.append(f"**Model:** `{session.model_id}`  ")
     if session.creation_date:
-        parts.append(
-            f"**Date:** {session.creation_date.strftime('%Y-%m-%d %H:%M UTC')}  "
-        )
+        parts.append(f"**Date:** {session.creation_date.strftime('%Y-%m-%d %H:%M UTC')}  ")
     parts.append(f"**Turns:** {len(session.messages)}")
     parts.append("")
     parts.append("---")
@@ -52,10 +50,13 @@ def render_qmd(
     for i, msg in enumerate(session.messages, start=1):
         parts.append(f"## Turn {i}")
         parts.append("")
-        parts.append(_render_message(
-            msg, include_thinking=include_thinking,
-            detail_level=detail_level,
-        ))
+        parts.append(
+            _render_message(
+                msg,
+                include_thinking=include_thinking,
+                detail_level=detail_level,
+            )
+        )
         parts.append("")
 
     return "\n".join(parts)
@@ -66,11 +67,7 @@ def _yaml_header(session: ChatSession) -> str:
     title = session.title or "Chat Session Log"
     # Escape quotes in title for YAML
     safe_title = title.replace('"', '\\"')
-    date_str = (
-        session.creation_date.strftime("%Y-%m-%d")
-        if session.creation_date
-        else "today"
-    )
+    date_str = session.creation_date.strftime("%Y-%m-%d") if session.creation_date else "today"
 
     # Collect unique agent names
     agents = sorted({m.agent_name for m in session.messages if m.agent_name})
@@ -159,9 +156,7 @@ def _render_thinking(tb: ThinkingBlock) -> str:
         </details>""")
 
 
-def _render_tool_calls(
-    calls: list[ToolCall], *, detail_level: str
-) -> str:
+def _render_tool_calls(calls: list[ToolCall], *, detail_level: str) -> str:
     """Render tool calls as a list."""
     parts: list[str] = []
     parts.append("**Tool calls:**")

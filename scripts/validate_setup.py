@@ -156,15 +156,14 @@ def _check_projects_dir(workspace_root: Path) -> dict:
 
                 # Mark as initialized if any supported project marker is present.
                 is_initialized = (
-                    has_project_tracking
-                    or has_review_tracking
-                    or has_project_config
-                    or has_ai_log
+                    has_project_tracking or has_review_tracking or has_project_config or has_ai_log
                 )
-                projects.append({
-                    "name": child.name,
-                    "initialized": is_initialized,
-                })
+                projects.append(
+                    {
+                        "name": child.name,
+                        "initialized": is_initialized,
+                    }
+                )
 
     return {"status": "ok", "path": str(projects_root), "projects": projects}
 
@@ -225,10 +224,7 @@ def _check_zotero_local() -> dict:
     if data_dir is None:
         return {
             "status": "not-found",
-            "message": (
-                "Zotero data directory not detected."
-                " Set ZOTERO_DATA_DIR."
-            ),
+            "message": ("Zotero data directory not detected. Set ZOTERO_DATA_DIR."),
         }
 
     version = zotero_db.get_zotero_version(data_dir)
@@ -338,19 +334,13 @@ def _print_human_report(report: dict[str, object]) -> None:
 
     servers = report["servers"]  # type: ignore[index]
     server_ok = sum(1 for s in servers.values() if s.get("status") == "ok")
-    pkg_icon = 'OK' if server_ok == len(servers) else 'WARN'
-    print(
-        f"[{pkg_icon}] MCP packages importable:"
-        f" {server_ok}/{len(servers)}"
-    )
+    pkg_icon = "OK" if server_ok == len(servers) else "WARN"
+    print(f"[{pkg_icon}] MCP packages importable: {server_ok}/{len(servers)}")
 
     server_health = report["server_health"]  # type: ignore[index]
     healthy = sum(1 for s in server_health.values() if s.get("status") == "ok")
-    health_icon = 'OK' if healthy == len(server_health) else 'WARN'
-    print(
-        f"[{health_icon}] MCP startup checks passed:"
-        f" {healthy}/{len(server_health)}"
-    )
+    health_icon = "OK" if healthy == len(server_health) else "WARN"
+    print(f"[{health_icon}] MCP startup checks passed: {healthy}/{len(server_health)}")
 
     env_file = report.get("env_file", "missing")
     print(f"[{'OK' if env_file == 'exists' else 'FAIL'}] .env file: {env_file}")
@@ -367,8 +357,10 @@ def _print_human_report(report: dict[str, object]) -> None:
 
     env_keys = report["env_keys"]  # type: ignore[index]
     required = [
-        "NCBI_API_KEY", "OPENALEX_API_KEY",
-        "ZOTERO_API_KEY", "ZOTERO_USER_ID",
+        "NCBI_API_KEY",
+        "OPENALEX_API_KEY",
+        "ZOTERO_API_KEY",
+        "ZOTERO_USER_ID",
         "PROJECTS_ROOT",
     ]
     missing_required = [k for k in required if env_keys.get(k) in {"missing", "empty"}]
@@ -390,13 +382,10 @@ def _print_human_report(report: dict[str, object]) -> None:
     zotero_local = report["zotero_local"]  # type: ignore[index]
     zl_status = zotero_local.get("status")
     if zl_status == "ok":
-        zl_dir = zotero_local.get('data_dir')
-        zl_pdfs = zotero_local.get('pdf_count', 0)
-        zl_bbt = zotero_local.get('better_bibtex', 'unknown')
-        print(
-            f"[OK] Zotero local detected at {zl_dir} "
-            f"(PDFs: {zl_pdfs}, BBT: {zl_bbt})"
-        )
+        zl_dir = zotero_local.get("data_dir")
+        zl_pdfs = zotero_local.get("pdf_count", 0)
+        zl_bbt = zotero_local.get("better_bibtex", "unknown")
+        print(f"[OK] Zotero local detected at {zl_dir} (PDFs: {zl_pdfs}, BBT: {zl_bbt})")
     else:
         print(
             f"[WARN] Zotero local:"

@@ -7,6 +7,7 @@ Query   : community health worker maternal mental health low-income countries
 Created : 2026-03-15T11:58:19.940186+00:00
 Params  : {"filters": null, "rows": 20, "sort": "relevance"}
 """
+
 from pathlib import Path
 
 from rwa_result_store.search_runners import run_crossref
@@ -14,9 +15,9 @@ from rwa_result_store.search_runners import run_crossref
 PROJECT_PATH = str(Path(__file__).resolve().parent.parent)
 search_id = run_crossref(
     project_path=PROJECT_PATH,
-    query='community health worker maternal mental health low-income countries',
+    query="community health worker maternal mental health low-income countries",
     filters=None,
     rows=20,
-    sort='relevance',
+    sort="relevance",
 )
 print(search_id if search_id else "NO_RESULTS")

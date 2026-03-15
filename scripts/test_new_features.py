@@ -218,6 +218,7 @@ def test_csljson_export():
     print(f"  Result: {result}")
     if os.path.exists(output):
         import json
+
         with open(output, encoding="utf-8") as f:
             data = json.load(f)
         print(f"  CSL-JSON entries: {len(data)}")

@@ -36,8 +36,7 @@ _active_project: str | None = None
 mcp = FastMCP(
     "project-tracker",
     instructions=(
-        "Track research project phases, milestones, tasks,"
-        " decisions, and generate progress briefs"
+        "Track research project phases, milestones, tasks, decisions, and generate progress briefs"
     ),
 )
 
@@ -45,6 +44,7 @@ mcp = FastMCP(
 # ---------------------------------------------------------------------------
 # Path resolution helpers
 # ---------------------------------------------------------------------------
+
 
 def _resolve_project_dir(project_path: str | None = None, *, must_exist: bool = True) -> Path:
     """Resolve a project directory from the various possible sources.
@@ -209,7 +209,7 @@ def _next_id(items: list[dict[str, Any]], prefix: str) -> str:
         item_id = item.get("id", "")
         if item_id.startswith(prefix):
             try:
-                num = int(item_id[len(prefix):])
+                num = int(item_id[len(prefix) :])
                 max_num = max(max_num, num)
             except ValueError:
                 pass
@@ -229,8 +229,14 @@ async def setup_status() -> dict[str, Any]:
 
     # Check which keys are present in .env (value set vs empty)
     key_names = [
-        "NCBI_API_KEY", "OPENALEX_API_KEY", "OPENALEX_EMAIL", "S2_API_KEY",
-        "S2_API_KEY_STATUS", "CROSSREF_EMAIL", "ZOTERO_API_KEY", "ZOTERO_USER_ID",
+        "NCBI_API_KEY",
+        "OPENALEX_API_KEY",
+        "OPENALEX_EMAIL",
+        "S2_API_KEY",
+        "S2_API_KEY_STATUS",
+        "CROSSREF_EMAIL",
+        "ZOTERO_API_KEY",
+        "ZOTERO_USER_ID",
         "PROJECTS_ROOT",
     ]
     env_keys: dict[str, str] = {}
@@ -266,11 +272,13 @@ async def setup_status() -> dict[str, Any]:
                 proj_yaml = child / TRACKING_DIR / "project.yaml"
                 if proj_yaml.exists():
                     meta = yaml.safe_load(proj_yaml.read_text(encoding="utf-8")) or {}
-                    projects.append({
-                        "name": child.name,
-                        "title": meta.get("title", ""),
-                        "status": "initialized",
-                    })
+                    projects.append(
+                        {
+                            "name": child.name,
+                            "title": meta.get("title", ""),
+                            "status": "initialized",
+                        }
+                    )
                 else:
                     projects.append({"name": child.name, "title": "", "status": "empty"})
 
@@ -309,22 +317,26 @@ async def list_projects() -> dict[str, Any]:
             proj_yaml = child / TRACKING_DIR / "project.yaml"
             if proj_yaml.exists():
                 meta = yaml.safe_load(proj_yaml.read_text(encoding="utf-8")) or {}
-                projects.append({
-                    "name": child.name,
-                    "title": meta.get("title", ""),
-                    "current_phase": meta.get("current_phase", ""),
-                    "start_date": meta.get("start_date", ""),
-                    "target_end": meta.get("target_end", ""),
-                    "initialized": True,
-                    "path": str(child),
-                })
+                projects.append(
+                    {
+                        "name": child.name,
+                        "title": meta.get("title", ""),
+                        "current_phase": meta.get("current_phase", ""),
+                        "start_date": meta.get("start_date", ""),
+                        "target_end": meta.get("target_end", ""),
+                        "initialized": True,
+                        "path": str(child),
+                    }
+                )
             else:
-                projects.append({
-                    "name": child.name,
-                    "title": "",
-                    "initialized": False,
-                    "path": str(child),
-                })
+                projects.append(
+                    {
+                        "name": child.name,
+                        "title": "",
+                        "initialized": False,
+                        "path": str(child),
+                    }
+                )
 
     return {
         "projects_root": str(projects_root),
@@ -505,13 +517,9 @@ async def init_project(
     base.mkdir(parents=True, exist_ok=True)
 
     project_authors = _normalize_authors(authors, pi, team)
-    project_lead = pi or (
-        project_authors[0].get("name", "") if project_authors else ""
-    )
+    project_lead = pi or (project_authors[0].get("name", "") if project_authors else "")
     project_team = team or [
-        author.get("name", "")
-        for author in project_authors[1:]
-        if author.get("name")
+        author.get("name", "") for author in project_authors[1:] if author.get("name")
     ]
 
     project = {
@@ -579,15 +587,17 @@ async def define_phases(
 
     phase_list = []
     for p in phases:
-        phase_list.append({
-            "name": p["name"],
-            "target_start": p.get("target_start", ""),
-            "target_end": p.get("target_end", ""),
-            "status": "not-started",
-            "milestones": [],
-            "started_at": None,
-            "completed_at": None,
-        })
+        phase_list.append(
+            {
+                "name": p["name"],
+                "target_start": p.get("target_start", ""),
+                "target_end": p.get("target_end", ""),
+                "status": "not-started",
+                "milestones": [],
+                "started_at": None,
+                "completed_at": None,
+            }
+        )
 
     project["phases"] = phase_list
     if phase_list:
@@ -624,14 +634,16 @@ async def define_milestones(
     for p in project.get("phases", []):
         if p["name"] == phase:
             for m in milestones:
-                p["milestones"].append({
-                    "id": _next_id(p["milestones"], "M"),
-                    "name": m["name"],
-                    "target_date": m.get("target_date", ""),
-                    "status": "not-started",
-                    "notes": "",
-                    "completed_at": None,
-                })
+                p["milestones"].append(
+                    {
+                        "id": _next_id(p["milestones"], "M"),
+                        "name": m["name"],
+                        "target_date": m.get("target_date", ""),
+                        "status": "not-started",
+                        "notes": "",
+                        "completed_at": None,
+                    }
+                )
             phase_found = True
             break
 
@@ -838,13 +850,15 @@ async def log_meeting(
         "recorded_at": _now(),
     }
 
-    for item in (action_items or []):
-        meeting["action_items"].append({
-            "description": item.get("description", ""),
-            "assignee": item.get("assignee", ""),
-            "due_date": item.get("due_date", ""),
-            "status": "open",
-        })
+    for item in action_items or []:
+        meeting["action_items"].append(
+            {
+                "description": item.get("description", ""),
+                "assignee": item.get("assignee", ""),
+                "due_date": item.get("due_date", ""),
+                "status": "open",
+            }
+        )
 
     filename = f"meetings/{date}_meeting.yaml"
     _save_yaml(filename, meeting, base)
@@ -902,12 +916,14 @@ async def get_project_status(
     for p in project.get("phases", []):
         milestones_complete = sum(1 for m in p["milestones"] if m["status"] == "completed")
         milestones_total = len(p["milestones"])
-        phase_status.append({
-            "name": p["name"],
-            "status": p["status"],
-            "milestones": f"{milestones_complete}/{milestones_total} completed",
-            "target_end": p.get("target_end", ""),
-        })
+        phase_status.append(
+            {
+                "name": p["name"],
+                "status": p["status"],
+                "milestones": f"{milestones_complete}/{milestones_total} completed",
+                "target_end": p.get("target_end", ""),
+            }
+        )
 
     task_counts = {
         "total": len(tasks),
@@ -919,7 +935,8 @@ async def get_project_status(
 
     blockers = [
         {"type": "task", "id": t["id"], "description": t["description"]}
-        for t in tasks if t["status"] == "blocked"
+        for t in tasks
+        if t["status"] == "blocked"
     ]
     for p in project.get("phases", []):
         for m in p["milestones"]:
@@ -962,32 +979,36 @@ async def get_overdue_items(
     for p in project.get("phases", []):
         for m in p["milestones"]:
             if m["target_date"] and m["target_date"] < today and m["status"] not in ("completed",):
-                overdue_milestones.append({
-                    "id": m["id"],
-                    "name": m["name"],
-                    "phase": p["name"],
-                    "target_date": m["target_date"],
-                    "status": m["status"],
-                    "days_overdue": (
-                        datetime.strptime(today, "%Y-%m-%d")
-                        - datetime.strptime(m["target_date"], "%Y-%m-%d")
-                    ).days,
-                })
+                overdue_milestones.append(
+                    {
+                        "id": m["id"],
+                        "name": m["name"],
+                        "phase": p["name"],
+                        "target_date": m["target_date"],
+                        "status": m["status"],
+                        "days_overdue": (
+                            datetime.strptime(today, "%Y-%m-%d")
+                            - datetime.strptime(m["target_date"], "%Y-%m-%d")
+                        ).days,
+                    }
+                )
 
     overdue_tasks = []
     for t in tasks:
         if t["due_date"] and t["due_date"] < today and t["status"] not in ("completed",):
-            overdue_tasks.append({
-                "id": t["id"],
-                "description": t["description"],
-                "assignee": t["assignee"],
-                "due_date": t["due_date"],
-                "status": t["status"],
-                "days_overdue": (
-                    datetime.strptime(today, "%Y-%m-%d")
-                    - datetime.strptime(t["due_date"], "%Y-%m-%d")
-                ).days,
-            })
+            overdue_tasks.append(
+                {
+                    "id": t["id"],
+                    "description": t["description"],
+                    "assignee": t["assignee"],
+                    "due_date": t["due_date"],
+                    "status": t["status"],
+                    "days_overdue": (
+                        datetime.strptime(today, "%Y-%m-%d")
+                        - datetime.strptime(t["due_date"], "%Y-%m-%d")
+                    ).days,
+                }
+            )
 
     return {
         "overdue_milestones": overdue_milestones,
@@ -1038,8 +1059,7 @@ async def generate_brief(
                 completed_milestones.append(f"- {m['name']} ({p['name']})")
             elif m["status"] in ("not-started", "in-progress"):
                 upcoming_milestones.append(
-                    f"- {m['name']} ({p['name']})"
-                    f" - target: {m.get('target_date', 'TBD')}"
+                    f"- {m['name']} ({p['name']}) - target: {m.get('target_date', 'TBD')}"
                 )
 
     open_tasks = [t for t in tasks if t["status"] in ("not-started", "in-progress")]
@@ -1060,13 +1080,14 @@ async def generate_brief(
     if audience in ("supervisor", "funder"):
         # High-level summary for supervisors/funders
         completed_count = sum(
-            sum(1 for m in p["milestones"] if m["status"] == "completed")
-            for p in phases
+            sum(1 for m in p["milestones"] if m["status"] == "completed") for p in phases
         )
         total_count = sum(len(p["milestones"]) for p in phases)
         lines.append(f"Overall progress: {completed_count}/{total_count} milestones completed.")
-        lines.append(f"Tasks: {sum(1 for t in tasks if t['status'] == 'completed')} completed, "
-                      f"{len(open_tasks)} in progress/pending, {len(blocked_tasks)} blocked.")
+        lines.append(
+            f"Tasks: {sum(1 for t in tasks if t['status'] == 'completed')} completed, "
+            f"{len(open_tasks)} in progress/pending, {len(blocked_tasks)} blocked."
+        )
     else:
         lines.append(f"Tasks: {len(open_tasks)} open, {len(blocked_tasks)} blocked")
 

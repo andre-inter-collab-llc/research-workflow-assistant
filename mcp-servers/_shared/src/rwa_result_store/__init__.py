@@ -78,11 +78,26 @@ GROUP BY
 """
 
 # Fields extracted into dedicated columns (everything else goes to extra_json)
-_CORE_KEYS = frozenset({
-    "doi", "pmid", "title", "authors", "journal", "year",
-    "volume", "issue", "pages", "page", "abstract",
-    "source", "fulljournalname", "venue", "publication_year", "pubdate",
-})
+_CORE_KEYS = frozenset(
+    {
+        "doi",
+        "pmid",
+        "title",
+        "authors",
+        "journal",
+        "year",
+        "volume",
+        "issue",
+        "pages",
+        "page",
+        "abstract",
+        "source",
+        "fulljournalname",
+        "venue",
+        "publication_year",
+        "pubdate",
+    }
+)
 
 
 def _db_path(project_path: str) -> Path:
@@ -165,17 +180,15 @@ def store_results(
         cursor = conn.execute(
             "INSERT INTO searches (source, query, timestamp, total_count, parameters_json) "
             "VALUES (?, ?, ?, ?, ?)",
-            (source, query, now, total_count,
-             json.dumps(parameters) if parameters else None),
+            (source, query, now, total_count, json.dumps(parameters) if parameters else None),
         )
         search_id = cursor.lastrowid
 
         for r in results:
             authors_json = _normalize_authors(r.get("authors", []))
-            journal = (r.get("journal", "")
-                       or r.get("fulljournalname", "")
-                       or r.get("venue", "")
-                       or "")
+            journal = (
+                r.get("journal", "") or r.get("fulljournalname", "") or r.get("venue", "") or ""
+            )
             year = _extract_year(r)
             pages = r.get("pages", "") or r.get("page", "") or ""
             extra = {k: v for k, v in r.items() if k not in _CORE_KEYS and v}
@@ -241,9 +254,7 @@ def get_results(
             where_clauses.append("source = ?")
             params.append(source)
         if query and not deduplicated:
-            where_clauses.append(
-                "search_id IN (SELECT search_id FROM searches WHERE query LIKE ?)"
-            )
+            where_clauses.append("search_id IN (SELECT search_id FROM searches WHERE query LIKE ?)")
             params.append(f"%{query}%")
 
         sql = f"SELECT * FROM {table}"
@@ -506,7 +517,9 @@ def generate_and_run_script(
     if result.returncode != 0:
         logger.warning(
             "Script %s exited with code %d. stderr: %s",
-            script_path.name, result.returncode, result.stderr[:500],
+            script_path.name,
+            result.returncode,
+            result.stderr[:500],
         )
         return None
 
@@ -528,9 +541,7 @@ def generate_and_run_script(
     conn = init_db(project_path)
     conn.row_factory = sqlite3.Row
     try:
-        rows = conn.execute(
-            "SELECT * FROM results WHERE search_id = ?", (search_id,)
-        ).fetchall()
+        rows = conn.execute("SELECT * FROM results WHERE search_id = ?", (search_id,)).fetchall()
         results = [dict(row) for row in rows]
 
         row = conn.execute(
@@ -546,6 +557,7 @@ def generate_and_run_script(
 # ---------------------------------------------------------------------------
 # Bibliographic format exports (BibTeX, RIS, CSL-JSON)
 # ---------------------------------------------------------------------------
+
 
 def _parse_authors(authors_json: str | None) -> list[str]:
     """Parse authors_json column into a list of name strings."""
@@ -870,8 +882,10 @@ def register_result_store_tools(mcp_instance: Any) -> None:
         """
         try:
             path = export_results_bibliography(
-                project_path, fmt=format,
-                output_path=output_path, deduplicated=deduplicated,
+                project_path,
+                fmt=format,
+                output_path=output_path,
+                deduplicated=deduplicated,
             )
         except ValueError as exc:
             return {"status": "error", "file": "", "message": str(exc)}

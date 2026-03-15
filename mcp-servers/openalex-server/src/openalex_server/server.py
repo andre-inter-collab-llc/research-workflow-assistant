@@ -133,7 +133,10 @@ async def search_works(
     if project_path:
         try:
             _store_results(
-                project_path, "openalex", query, works,
+                project_path,
+                "openalex",
+                query,
+                works,
                 total_count=total_count,
                 parameters={"filters": filters, "sort": sort, "per_page": per_page},
             )
@@ -187,8 +190,11 @@ async def search_works_scripted(
 
     logger.warning("Script execution failed for OpenAlex, falling back to direct API call")
     return await search_works(
-        query=query, filters=filters, sort=sort,
-        per_page=per_page, project_path=project_path,
+        query=query,
+        filters=filters,
+        sort=sort,
+        per_page=per_page,
+        project_path=project_path,
     )
 
 
@@ -298,21 +304,23 @@ async def get_concepts(query: str, per_page: int = 20) -> dict[str, Any]:
 
     concepts = []
     for c in data.get("results", []):
-        concepts.append({
-            "openalex_id": c.get("id", ""),
-            "display_name": c.get("display_name", ""),
-            "level": c.get("level"),
-            "description": c.get("description", ""),
-            "works_count": c.get("works_count", 0),
-            "related_concepts": [
-                {
-                    "name": rc.get("display_name", ""),
-                    "level": rc.get("level"),
-                    "score": rc.get("score", 0),
-                }
-                for rc in (c.get("related_concepts") or [])[:5]
-            ],
-        })
+        concepts.append(
+            {
+                "openalex_id": c.get("id", ""),
+                "display_name": c.get("display_name", ""),
+                "level": c.get("level"),
+                "description": c.get("description", ""),
+                "works_count": c.get("works_count", 0),
+                "related_concepts": [
+                    {
+                        "name": rc.get("display_name", ""),
+                        "level": rc.get("level"),
+                        "score": rc.get("score", 0),
+                    }
+                    for rc in (c.get("related_concepts") or [])[:5]
+                ],
+            }
+        )
 
     return {"total_count": data.get("meta", {}).get("count", 0), "concepts": concepts}
 
@@ -353,8 +361,7 @@ async def get_author_works(author_id: str, per_page: int = 25) -> dict[str, Any]
             "cited_by_count": author.get("cited_by_count", 0),
             "h_index": author.get("summary_stats", {}).get("h_index", 0),
             "affiliations": [
-                inst.get("display_name", "")
-                for inst in (author.get("affiliations") or [])[:3]
+                inst.get("display_name", "") for inst in (author.get("affiliations") or [])[:3]
             ],
         },
         "works": works,
@@ -380,16 +387,18 @@ async def search_sources(query: str, per_page: int = 20) -> dict[str, Any]:
 
     sources = []
     for s in data.get("results", []):
-        sources.append({
-            "openalex_id": s.get("id", ""),
-            "display_name": s.get("display_name", ""),
-            "type": s.get("type", ""),
-            "issn_l": s.get("issn_l", ""),
-            "is_oa": s.get("is_oa", False),
-            "works_count": s.get("works_count", 0),
-            "cited_by_count": s.get("cited_by_count", 0),
-            "homepage_url": s.get("homepage_url", ""),
-        })
+        sources.append(
+            {
+                "openalex_id": s.get("id", ""),
+                "display_name": s.get("display_name", ""),
+                "type": s.get("type", ""),
+                "issn_l": s.get("issn_l", ""),
+                "is_oa": s.get("is_oa", False),
+                "works_count": s.get("works_count", 0),
+                "cited_by_count": s.get("cited_by_count", 0),
+                "homepage_url": s.get("homepage_url", ""),
+            }
+        )
 
     return {"total_count": data.get("meta", {}).get("count", 0), "sources": sources}
 

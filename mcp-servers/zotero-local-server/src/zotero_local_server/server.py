@@ -60,9 +60,7 @@ def _resolve_pdf_path(data_dir: Path, item_key: str) -> str | None:
     # First check if the key is directly an attachment
     attachments = zotero_db.get_attachments(data_dir, item_key)
     pdfs = [
-        a for a in attachments
-        if a.get("content_type") == "application/pdf"
-        and a.get("exists")
+        a for a in attachments if a.get("content_type") == "application/pdf" and a.get("exists")
     ]
     if pdfs:
         return pdfs[0]["path"]
@@ -266,20 +264,22 @@ async def search_pdf_content(
         hits = pdf_reader.search_text(pdf_path, query, context_chars=context_chars)
         if hits:
             total_matches = sum(h.match_count for h in hits)
-            results.append({
-                "parent_key": pdf_info.get("parent_key", ""),
-                "attachment_key": pdf_info.get("attachment_key", ""),
-                "filename": pdf_info.get("filename", ""),
-                "total_matches": total_matches,
-                "pages": [
-                    {
-                        "page": h.page_number,
-                        "match_count": h.match_count,
-                        "snippet": h.snippet,
-                    }
-                    for h in hits
-                ],
-            })
+            results.append(
+                {
+                    "parent_key": pdf_info.get("parent_key", ""),
+                    "attachment_key": pdf_info.get("attachment_key", ""),
+                    "filename": pdf_info.get("filename", ""),
+                    "total_matches": total_matches,
+                    "pages": [
+                        {
+                            "page": h.page_number,
+                            "match_count": h.match_count,
+                            "snippet": h.snippet,
+                        }
+                        for h in hits
+                    ],
+                }
+            )
 
     return {
         "query": query,
@@ -331,11 +331,13 @@ async def export_annotations_report(
         pdf_path = _resolve_pdf_path(data_dir, item_key)
         item_info = zotero_db.get_item_by_key(data_dir, item_key)
         title = (item_info or {}).get("title", item_key)
-        items_to_process.append({
-            "key": item_key,
-            "title": title,
-            "pdf_path": pdf_path,
-        })
+        items_to_process.append(
+            {
+                "key": item_key,
+                "title": title,
+                "pdf_path": pdf_path,
+            }
+        )
     elif collection_key:
         all_pdfs = zotero_db.get_all_pdf_attachments(data_dir, collection_key)
         seen_parents: set[str] = set()
@@ -346,11 +348,13 @@ async def export_annotations_report(
             seen_parents.add(parent_key)
             item_info = zotero_db.get_item_by_key(data_dir, parent_key)
             title = (item_info or {}).get("title", parent_key)
-            items_to_process.append({
-                "key": parent_key,
-                "title": title,
-                "pdf_path": pdf_info.get("path"),
-            })
+            items_to_process.append(
+                {
+                    "key": parent_key,
+                    "title": title,
+                    "pdf_path": pdf_info.get("path"),
+                }
+            )
     else:
         return {"error": "Provide either item_key or collection_key"}
 
@@ -381,7 +385,7 @@ async def export_annotations_report(
                 page_str = f" (p. {page})" if page else ""
 
                 if ann_type == "highlight" and text:
-                    lines.append(f"- **Highlight**{page_str}: \"{text}\"")
+                    lines.append(f'- **Highlight**{page_str}: "{text}"')
                     if comment:
                         lines.append(f"  - *Comment*: {comment}")
                 elif ann_type == "note" and (text or comment):
@@ -399,13 +403,13 @@ async def export_annotations_report(
                 for ann in pdf_result.annotations:
                     page_str = f" (p. {ann.page})"
                     if ann.type == "highlight" and ann.highlighted_text:
-                        lines.append(f"- **Highlight**{page_str}: \"{ann.highlighted_text}\"")
+                        lines.append(f'- **Highlight**{page_str}: "{ann.highlighted_text}"')
                         if ann.content:
                             lines.append(f"  - *Comment*: {ann.content}")
                     elif ann.content:
                         lines.append(f"- **{ann.type.title()}**{page_str}: {ann.content}")
                         if ann.highlighted_text:
-                            lines.append(f"  - *Selected text*: \"{ann.highlighted_text}\"")
+                            lines.append(f'  - *Selected text*: "{ann.highlighted_text}"')
                 lines.append("")
 
         # Notes
@@ -525,8 +529,7 @@ async def bbt_get_citekey(item_key: str) -> dict[str, Any]:
     """
     if not await _bbt_available():
         return {
-            "error": "Better BibTeX is not available."
-            " Ensure Zotero is running with BBT installed.",
+            "error": "Better BibTeX is not available. Ensure Zotero is running with BBT installed.",
         }
 
     try:
@@ -552,8 +555,7 @@ async def bbt_search_by_citekey(citekey: str) -> dict[str, Any]:
     """
     if not await _bbt_available():
         return {
-            "error": "Better BibTeX is not available."
-            " Ensure Zotero is running with BBT installed.",
+            "error": "Better BibTeX is not available. Ensure Zotero is running with BBT installed.",
         }
 
     try:
@@ -585,16 +587,14 @@ async def bbt_export(
     """
     if not await _bbt_available():
         return {
-            "error": "Better BibTeX is not available."
-            " Ensure Zotero is running with BBT installed.",
+            "error": "Better BibTeX is not available. Ensure Zotero is running with BBT installed.",
         }
 
     valid_formats = {"betterbibtex", "betterbiblatex", "bettercsljson"}
     if format not in valid_formats:
         return {
             "error": (
-                f"Invalid format '{format}'."
-                f" Must be one of: {', '.join(sorted(valid_formats))}"
+                f"Invalid format '{format}'. Must be one of: {', '.join(sorted(valid_formats))}"
             ),
         }
 
@@ -609,8 +609,7 @@ async def bbt_export(
             {"translator": translator_map[format]},
         ]
         result = await _bbt_call(
-            "collection.export" if collection_key
-            else "library.export",
+            "collection.export" if collection_key else "library.export",
             params,
         )
         return {"format": format, "content": result}
@@ -630,8 +629,7 @@ async def bbt_cayw() -> dict[str, Any]:
     """
     if not await _bbt_available():
         return {
-            "error": "Better BibTeX is not available."
-            " Ensure Zotero is running with BBT installed.",
+            "error": "Better BibTeX is not available. Ensure Zotero is running with BBT installed.",
         }
 
     try:

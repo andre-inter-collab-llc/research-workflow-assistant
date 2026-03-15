@@ -7,6 +7,7 @@ Query   : community health worker maternal mental health low-income countries
 Created : 2026-03-15T11:58:50.531349+00:00
 Params  : {"year_range": null, "fields_of_study": null, "open_access_only": false, "limit": 20}
 """
+
 from pathlib import Path
 
 from rwa_result_store.search_runners import run_semantic_scholar
@@ -14,7 +15,7 @@ from rwa_result_store.search_runners import run_semantic_scholar
 PROJECT_PATH = str(Path(__file__).resolve().parent.parent)
 search_id = run_semantic_scholar(
     project_path=PROJECT_PATH,
-    query='community health worker maternal mental health low-income countries',
+    query="community health worker maternal mental health low-income countries",
     year_range=None,
     fields_of_study=None,
     open_access_only=False,
