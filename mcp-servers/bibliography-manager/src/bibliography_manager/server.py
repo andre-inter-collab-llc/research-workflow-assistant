@@ -12,7 +12,6 @@ All data is stored per-project in SQLite (data/search_results.db),
 the same database used by the search MCP servers.
 """
 
-import json
 import logging
 from pathlib import Path
 from typing import Any

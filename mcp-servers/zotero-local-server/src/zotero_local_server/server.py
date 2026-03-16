@@ -516,11 +516,10 @@ async def extract_highlights_as_evidence(
             if ann.type in ("highlight", "underline"):
                 hex_color = ""
                 if ann.color:
-                    hex_color = "#{:02x}{:02x}{:02x}".format(
-                        int(ann.color[0] * 255),
-                        int(ann.color[1] * 255),
-                        int(ann.color[2] * 255),
-                    )
+                    r = int(ann.color[0] * 255)
+                    g = int(ann.color[1] * 255)
+                    b = int(ann.color[2] * 255)
+                    hex_color = f"#{r:02x}{g:02x}{b:02x}"
                 evidence.append(
                     {
                         "source": "pdf_embedded",
