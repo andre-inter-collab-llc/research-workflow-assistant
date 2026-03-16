@@ -103,17 +103,19 @@ Database searches yielded 265,416 records: PubMed (n = 59), OpenAlex (n = 1,442)
 ```{mermaid}
 %%| label: fig-prisma
 %%| fig-cap: "PRISMA 2020 flow diagram of study selection."
+%%| fig-width: 5
+%%{init: {'flowchart': {'nodeSpacing': 10, 'rankSpacing': 20, 'padding': 8}} }%%
 flowchart TD
-    A["Records identified from databases<br/>(n = 265,416)<br/>PubMed: 59 · OpenAlex: 1,442<br/>Semantic Scholar: 162 · CrossRef: 263,753"] --> B["Top records retrieved<br/>(n = 200)"]
-    B --> C["Duplicates removed<br/>(n = 15)"]
-    C --> D["Records screened at title/abstract<br/>(n = 185)"]
-    D --> E["Records excluded<br/>(n = 0)"]
-    D --> F["Full-text records assessed<br/>(n = 46)"]
+    A["Databases searched (n = 265,416)<br/>PubMed 59 · OpenAlex 1,442<br/>Sem. Scholar 162 · CrossRef 263,753"] --> B["Top records retrieved (n = 200)"]
+    B --> C["Duplicates removed (n = 15)"]
+    C --> D["Title/abstract screened (n = 185)"]
+    D --> E["Excluded (n = 0)"]
+    D --> F["Full-text assessed (n = 46)"]
     F --> G["Excluded (n = 39)"]
     F --> H["Included (n = 7)"]
-    G --- G1["Wrong design — SR/MA (9)<br/>Protocol only (12)<br/>Wrong design — non-RCT (7)<br/>Wrong outcome (6)<br/>HIC setting (3)<br/>Wrong population (1)<br/>Unable to retrieve (1)"]
-    H --> I["Qualitative synthesis<br/>(n = 7)"]
-    I --> J["Quantitative synthesis (n = 0)<br/>(meta-analysis not feasible)"]
+    G --- G1["SR/MA (9) · Protocol only (12)<br/>Non-RCT (7) · Wrong outcome (6)<br/>HIC setting (3) · Wrong pop. (1)<br/>Unable to retrieve (1)"]
+    H --> I["Qualitative synthesis (n = 7)"]
+    I --> J["Meta-analysis not feasible (n = 0)"]
 
     style A fill:#4472C4,color:#fff
     style H fill:#548235,color:#fff

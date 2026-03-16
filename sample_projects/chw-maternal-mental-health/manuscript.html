@@ -5131,7 +5131,7 @@ z-index: 1000;
   <li><a href="#acknowledgments-and-ai-disclosure" id="toc-acknowledgments-and-ai-disclosure" class="nav-link" data-scroll-target="#acknowledgments-and-ai-disclosure">Acknowledgments and AI Disclosure</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
-<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="manuscript.docx"><i class="bi bi-file-word"></i>MS Word</a></li><li><a href="..\..\manuscript.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="manuscript.docx"><i class="bi bi-file-word"></i>MS Word</a></li><li><a href="manuscript.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
 </div>
 <main class="content" id="quarto-document-content">
 
@@ -5239,23 +5239,24 @@ z-index: 1000;
 <div id="fig-prisma" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-prisma-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell" data-layout-align="default">
+<div class="cell" data-fig-width="5" data-layout-align="default">
 <div class="cell-output-display">
 <div id="fig-prisma" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-subfloat-fig figure">
 <div aria-describedby="fig-prisma-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div>
-<pre class="mermaid mermaid-js" data-label="fig-prisma">flowchart TD
-    A[&quot;Records identified from databases&lt;br/&gt;(n = 265,416)&lt;br/&gt;PubMed: 59 · OpenAlex: 1,442&lt;br/&gt;Semantic Scholar: 162 · CrossRef: 263,753&quot;] --&gt; B[&quot;Top records retrieved&lt;br/&gt;(n = 200)&quot;]
-    B --&gt; C[&quot;Duplicates removed&lt;br/&gt;(n = 15)&quot;]
-    C --&gt; D[&quot;Records screened at title/abstract&lt;br/&gt;(n = 185)&quot;]
-    D --&gt; E[&quot;Records excluded&lt;br/&gt;(n = 0)&quot;]
-    D --&gt; F[&quot;Full-text records assessed&lt;br/&gt;(n = 46)&quot;]
+<pre class="mermaid mermaid-js" data-label="fig-prisma">%%{init: {&#39;flowchart&#39;: {&#39;nodeSpacing&#39;: 10, &#39;rankSpacing&#39;: 20, &#39;padding&#39;: 8}} }%%
+flowchart TD
+    A[&quot;Databases searched (n = 265,416)&lt;br/&gt;PubMed 59 · OpenAlex 1,442&lt;br/&gt;Sem. Scholar 162 · CrossRef 263,753&quot;] --&gt; B[&quot;Top records retrieved (n = 200)&quot;]
+    B --&gt; C[&quot;Duplicates removed (n = 15)&quot;]
+    C --&gt; D[&quot;Title/abstract screened (n = 185)&quot;]
+    D --&gt; E[&quot;Excluded (n = 0)&quot;]
+    D --&gt; F[&quot;Full-text assessed (n = 46)&quot;]
     F --&gt; G[&quot;Excluded (n = 39)&quot;]
     F --&gt; H[&quot;Included (n = 7)&quot;]
-    G --- G1[&quot;Wrong design — SR/MA (9)&lt;br/&gt;Protocol only (12)&lt;br/&gt;Wrong design — non-RCT (7)&lt;br/&gt;Wrong outcome (6)&lt;br/&gt;HIC setting (3)&lt;br/&gt;Wrong population (1)&lt;br/&gt;Unable to retrieve (1)&quot;]
-    H --&gt; I[&quot;Qualitative synthesis&lt;br/&gt;(n = 7)&quot;]
-    I --&gt; J[&quot;Quantitative synthesis (n = 0)&lt;br/&gt;(meta-analysis not feasible)&quot;]
+    G --- G1[&quot;SR/MA (9) · Protocol only (12)&lt;br/&gt;Non-RCT (7) · Wrong outcome (6)&lt;br/&gt;HIC setting (3) · Wrong pop. (1)&lt;br/&gt;Unable to retrieve (1)&quot;]
+    H --&gt; I[&quot;Qualitative synthesis (n = 7)&quot;]
+    I --&gt; J[&quot;Meta-analysis not feasible (n = 0)&quot;]
 
     style A fill:#4472C4,color:#fff
     style H fill:#548235,color:#fff
