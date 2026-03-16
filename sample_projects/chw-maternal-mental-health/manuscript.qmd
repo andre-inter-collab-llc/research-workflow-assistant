@@ -99,33 +99,29 @@ Research Workflow Assistant (RWA) [@vanzyl2026rwa], accessed through GitHub Copi
 Database searches yielded 265,416 records: PubMed (n = 59), OpenAlex (n = 1,442), Semantic Scholar (n = 162), Europe PMC (n = 0, API issue), and CrossRef (n = 263,753). After retrieving the top-ranked records from each database (n = 200) and removing 15 duplicates by DOI and PMID matching, 185 unique records underwent title and abstract screening. All 185 advanced to full-text assessment. Of the 46 records available for full-text screening, 39 were excluded: wrong design — systematic review, meta-analysis, or scoping review (n = 9); protocol without results (n = 12); wrong design — non-RCT or qualitative (n = 7); wrong outcome (n = 6); high-income country setting (n = 3); wrong population (n = 1); unable to retrieve (n = 1). Seven studies met all inclusion criteria and were included in the qualitative synthesis (@fig-prisma).
 
 ::: {#fig-prisma}
-**PRISMA 2020 Flow Diagram**
 
-```
-Records identified from databases (n = 265,416)
-  PubMed: 59 | OpenAlex: 1,442 | Semantic Scholar: 162 | CrossRef: 263,753
-                          |
-            Top records retrieved (n = 200)
-                          |
-            Duplicates removed (n = 15)
-                          |
-         Records screened at title/abstract (n = 185)
-                          |
-            Records excluded (n = 0)
-                          |
-        Full-text records assessed (n = 46)
-              |                        |
-     Excluded (n = 39)          Included (n = 7)
-       Wrong design - SR/MA (9)        |
-       Protocol only (12)        Qualitative synthesis (n = 7)
-       Wrong design - non-RCT (7)     |
-       Wrong outcome (6)         Quantitative synthesis (n = 0)
-       HIC setting (3)            (meta-analysis not feasible)
-       Wrong population (1)
-       Unable to retrieve (1)
+```{mermaid}
+%%| label: fig-prisma
+%%| fig-cap: "PRISMA 2020 flow diagram of study selection."
+flowchart TD
+    A["Records identified from databases<br/>(n = 265,416)<br/>PubMed: 59 · OpenAlex: 1,442<br/>Semantic Scholar: 162 · CrossRef: 263,753"] --> B["Top records retrieved<br/>(n = 200)"]
+    B --> C["Duplicates removed<br/>(n = 15)"]
+    C --> D["Records screened at title/abstract<br/>(n = 185)"]
+    D --> E["Records excluded<br/>(n = 0)"]
+    D --> F["Full-text records assessed<br/>(n = 46)"]
+    F --> G["Excluded (n = 39)"]
+    F --> H["Included (n = 7)"]
+    G --- G1["Wrong design — SR/MA (9)<br/>Protocol only (12)<br/>Wrong design — non-RCT (7)<br/>Wrong outcome (6)<br/>HIC setting (3)<br/>Wrong population (1)<br/>Unable to retrieve (1)"]
+    H --> I["Qualitative synthesis<br/>(n = 7)"]
+    I --> J["Quantitative synthesis (n = 0)<br/>(meta-analysis not feasible)"]
+
+    style A fill:#4472C4,color:#fff
+    style H fill:#548235,color:#fff
+    style I fill:#548235,color:#fff
+    style G fill:#C00000,color:#fff
+    style G1 fill:#F4B183,color:#000
 ```
 
-PRISMA 2020 flow diagram of study selection.
 :::
 
 ## Study Characteristics

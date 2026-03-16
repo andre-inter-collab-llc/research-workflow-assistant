@@ -437,6 +437,461 @@ async def export_annotations_report(
 
 
 # ---------------------------------------------------------------------------
+# Annotation-focused tools (evidence extraction & synthesis)
+# ---------------------------------------------------------------------------
+
+# Default color-to-category mapping (user can override in project-config.yaml)
+_DEFAULT_COLOR_MAP: dict[str, str] = {
+    "#ffd400": "finding",       # yellow
+    "#ff6666": "concern",       # red
+    "#5fb236": "method",        # green
+    "#2ea8e5": "quote",         # blue
+    "#a28ae5": "theory",        # purple
+    "#e56eee": "definition",    # magenta
+    "#f19837": "example",       # orange
+}
+
+
+def _color_category(color: str, color_map: dict[str, str] | None = None) -> str:
+    """Map a hex color to a human-readable category."""
+    cmap = color_map or _DEFAULT_COLOR_MAP
+    if not color:
+        return "uncategorized"
+    color_lower = color.strip().lower()
+    return cmap.get(color_lower, "uncategorized")
+
+
+@mcp.tool()
+async def extract_highlights_as_evidence(
+    item_key: str,
+    color_map: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    """Extract all highlights from a Zotero item as a structured evidence table.
+
+    Combines Zotero reader annotations with PDF-embedded annotations.
+    Each highlight is returned with: quote, page, color-coded category,
+    and user comment.
+
+    Args:
+        item_key: Zotero item key (parent or attachment).
+        color_map: Optional dict mapping hex colors to category names.
+            Defaults: yellow=finding, red=concern, green=method, blue=quote.
+
+    Returns:
+        Dictionary with an evidence table (list of structured rows).
+    """
+    data_dir = _data_dir()
+    evidence: list[dict[str, str]] = []
+
+    # Zotero reader annotations from database
+    db_annotations: list[dict[str, Any]] = []
+    attachments = zotero_db.get_attachments(data_dir, item_key)
+    for att in attachments:
+        if att.get("content_type") == "application/pdf":
+            anns = zotero_db.get_annotations_for_attachment(data_dir, att["key"])
+            db_annotations.extend(anns)
+
+    # Also try item_key directly as attachment
+    direct_anns = zotero_db.get_annotations_for_attachment(data_dir, item_key)
+    db_annotations.extend(direct_anns)
+
+    for ann in db_annotations:
+        if ann.get("type") in ("highlight", "underline"):
+            evidence.append(
+                {
+                    "source": "zotero_reader",
+                    "quote": ann.get("text", ""),
+                    "page": ann.get("page_label", ""),
+                    "color": ann.get("color", ""),
+                    "category": _color_category(ann.get("color", ""), color_map),
+                    "comment": ann.get("comment", ""),
+                }
+            )
+
+    # PDF-embedded annotations
+    pdf_path = _resolve_pdf_path(data_dir, item_key)
+    if pdf_path:
+        pdf_result = pdf_reader.extract_annotations(pdf_path)
+        for ann in pdf_result.annotations:
+            if ann.type in ("highlight", "underline"):
+                hex_color = ""
+                if ann.color:
+                    hex_color = "#{:02x}{:02x}{:02x}".format(
+                        int(ann.color[0] * 255),
+                        int(ann.color[1] * 255),
+                        int(ann.color[2] * 255),
+                    )
+                evidence.append(
+                    {
+                        "source": "pdf_embedded",
+                        "quote": ann.highlighted_text,
+                        "page": str(ann.page),
+                        "color": hex_color,
+                        "category": _color_category(hex_color, color_map),
+                        "comment": ann.content,
+                    }
+                )
+
+    return {
+        "item_key": item_key,
+        "evidence_count": len(evidence),
+        "evidence": evidence,
+    }
+
+
+@mcp.tool()
+async def extract_annotations_by_color(
+    item_key: str,
+    color: str | None = None,
+    category: str | None = None,
+    color_map: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    """Filter annotations by color or category for a Zotero item.
+
+    Either specify a hex color directly, or a category name that maps
+    to a color via the color map.
+
+    Args:
+        item_key: Zotero item key.
+        color: Hex color to filter (e.g., '#ffd400' for yellow).
+        category: Category name to filter (e.g., 'finding', 'concern').
+        color_map: Optional custom color-to-category mapping.
+
+    Returns:
+        Dictionary with filtered annotations.
+    """
+    # Get all evidence first
+    result = await extract_highlights_as_evidence(item_key, color_map)
+    all_evidence = result.get("evidence", [])
+
+    if color:
+        color_lower = color.strip().lower()
+        filtered = [e for e in all_evidence if e.get("color", "").lower() == color_lower]
+    elif category:
+        cat_lower = category.strip().lower()
+        filtered = [e for e in all_evidence if e.get("category", "").lower() == cat_lower]
+    else:
+        # Group by category
+        by_category: dict[str, list[dict[str, str]]] = {}
+        for e in all_evidence:
+            cat = e.get("category", "uncategorized")
+            by_category.setdefault(cat, []).append(e)
+        return {
+            "item_key": item_key,
+            "total": len(all_evidence),
+            "by_category": {k: {"count": len(v), "annotations": v} for k, v in by_category.items()},
+        }
+
+    return {
+        "item_key": item_key,
+        "filter": color or category,
+        "count": len(filtered),
+        "annotations": filtered,
+    }
+
+
+@mcp.tool()
+async def search_annotations(
+    query: str,
+    collection_key: str | None = None,
+    limit: int = 50,
+) -> dict[str, Any]:
+    """Search across all Zotero reader annotations in the library.
+
+    Searches both highlighted text and user comments. Requires Zotero 7.
+
+    Args:
+        query: Search term or phrase (case-insensitive).
+        collection_key: Optional collection key to limit scope.
+        limit: Maximum results (default 50, max 200).
+
+    Returns:
+        Dictionary with matching annotations and their parent item info.
+    """
+    limit = min(limit, 200)
+    data_dir = _data_dir()
+    results = zotero_db.search_all_annotations(data_dir, query, collection_key, limit)
+
+    # Enrich with parent item titles
+    enriched = []
+    for ann in results:
+        parent_key = ann.get("parent_key", "")
+        title = ""
+        if parent_key:
+            item_info = zotero_db.get_item_by_key(data_dir, parent_key)
+            title = (item_info or {}).get("title", "")
+        enriched.append({**ann, "parent_title": title})
+
+    return {
+        "query": query,
+        "count": len(enriched),
+        "results": enriched,
+    }
+
+
+@mcp.tool()
+async def build_evidence_table(
+    item_keys: list[str] | None = None,
+    collection_key: str | None = None,
+    color_map: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    """Compile annotations and notes into a structured evidence synthesis table.
+
+    Processes either a list of item keys or an entire collection.
+    Returns a table suitable for evidence synthesis in systematic reviews.
+
+    Args:
+        item_keys: List of Zotero item keys. If None, uses collection_key.
+        collection_key: Collection to process (used if item_keys is None).
+        color_map: Optional custom color-to-category mapping.
+
+    Returns:
+        Dictionary with an evidence table grouped by item.
+    """
+    data_dir = _data_dir()
+
+    keys_to_process: list[str] = []
+    if item_keys:
+        keys_to_process = item_keys
+    elif collection_key:
+        all_pdfs = zotero_db.get_all_pdf_attachments(data_dir, collection_key)
+        seen: set[str] = set()
+        for pdf_info in all_pdfs:
+            pk = pdf_info.get("parent_key", "")
+            if pk and pk not in seen:
+                seen.add(pk)
+                keys_to_process.append(pk)
+    else:
+        return {"error": "Provide either item_keys or collection_key."}
+
+    table: list[dict[str, Any]] = []
+    for key in keys_to_process:
+        item_info = zotero_db.get_item_by_key(data_dir, key)
+        title = (item_info or {}).get("title", key)
+        creators = (item_info or {}).get("creators", [])
+        date = (item_info or {}).get("date", "")
+
+        evidence_result = await extract_highlights_as_evidence(key, color_map)
+        evidence = evidence_result.get("evidence", [])
+
+        notes = zotero_db.get_notes_for_item(data_dir, key)
+        import re
+        note_texts = []
+        for n in notes:
+            text = re.sub(r"<[^>]+>", "", n.get("note", "")).strip()
+            if text:
+                note_texts.append(text[:500])
+
+        table.append(
+            {
+                "item_key": key,
+                "title": title,
+                "creators": creators,
+                "date": date,
+                "highlights": evidence,
+                "highlight_count": len(evidence),
+                "notes": note_texts,
+                "note_count": len(note_texts),
+            }
+        )
+
+    return {
+        "items_processed": len(table),
+        "evidence_table": table,
+    }
+
+
+@mcp.tool()
+async def extract_pdf_figures(
+    item_key: str,
+    min_size: int = 10000,
+) -> dict[str, Any]:
+    """Extract embedded images/figures from the PDF associated with a Zotero item.
+
+    Uses PyMuPDF to list images on each page with their dimensions and size.
+    Does not return actual image data — returns metadata for identification.
+
+    Args:
+        item_key: Zotero item key (parent or attachment).
+        min_size: Minimum image size in bytes to include (default 10000,
+            to skip tiny icons/logos).
+
+    Returns:
+        Dictionary with figure metadata per page.
+    """
+    import pymupdf
+
+    data_dir = _data_dir()
+    pdf_path = _resolve_pdf_path(data_dir, item_key)
+
+    if not pdf_path:
+        return {"item_key": item_key, "error": "No PDF attachment found for this item"}
+
+    try:
+        doc = pymupdf.open(pdf_path)
+    except Exception as exc:
+        return {"item_key": item_key, "error": f"Cannot open PDF: {exc}"}
+
+    try:
+        figures: list[dict[str, Any]] = []
+        for page_num in range(len(doc)):
+            page = doc[page_num]
+            images = page.get_images(full=True)
+            for img_index, img in enumerate(images):
+                xref = img[0]
+                try:
+                    base_image = doc.extract_image(xref)
+                except Exception:
+                    continue
+
+                size = len(base_image.get("image", b""))
+                if size < min_size:
+                    continue
+
+                figures.append(
+                    {
+                        "page": page_num + 1,
+                        "index": img_index,
+                        "width": base_image.get("width", 0),
+                        "height": base_image.get("height", 0),
+                        "colorspace": base_image.get("cs-name", ""),
+                        "bpc": base_image.get("bpc", 0),
+                        "size_bytes": size,
+                        "ext": base_image.get("ext", ""),
+                    }
+                )
+
+        return {
+            "item_key": item_key,
+            "total_figures": len(figures),
+            "figures": figures,
+        }
+
+    finally:
+        doc.close()
+
+
+@mcp.tool()
+async def get_item_reading_progress(item_key: str) -> dict[str, Any]:
+    """Report reading progress based on annotation coverage.
+
+    Compares pages with annotations to total pages in the PDF to estimate
+    how much of the paper has been actively reviewed.
+
+    Args:
+        item_key: Zotero item key (parent or attachment).
+
+    Returns:
+        Dictionary with total pages, annotated pages, and coverage percentage.
+    """
+    data_dir = _data_dir()
+    pdf_path = _resolve_pdf_path(data_dir, item_key)
+
+    if not pdf_path:
+        return {"item_key": item_key, "error": "No PDF attachment found for this item"}
+
+    # Get total page count
+    try:
+        import pymupdf
+        doc = pymupdf.open(pdf_path)
+        total_pages = len(doc)
+        doc.close()
+    except Exception as exc:
+        return {"item_key": item_key, "error": f"Cannot open PDF: {exc}"}
+
+    # Count annotated pages from Zotero DB
+    annotated_pages: set[str] = set()
+
+    attachments = zotero_db.get_attachments(data_dir, item_key)
+    for att in attachments:
+        if att.get("content_type") == "application/pdf":
+            anns = zotero_db.get_annotations_for_attachment(data_dir, att["key"])
+            for ann in anns:
+                pl = ann.get("page_label", "")
+                if pl:
+                    annotated_pages.add(pl)
+
+    # Also try as direct attachment
+    direct_anns = zotero_db.get_annotations_for_attachment(data_dir, item_key)
+    for ann in direct_anns:
+        pl = ann.get("page_label", "")
+        if pl:
+            annotated_pages.add(pl)
+
+    # Also check PDF-embedded annotations
+    pdf_result = pdf_reader.extract_annotations(pdf_path)
+    for ann in pdf_result.annotations:
+        annotated_pages.add(str(ann.page))
+
+    num_annotated = len(annotated_pages)
+    coverage = round((num_annotated / total_pages * 100), 1) if total_pages > 0 else 0.0
+
+    return {
+        "item_key": item_key,
+        "total_pages": total_pages,
+        "annotated_pages": num_annotated,
+        "coverage_percent": coverage,
+        "annotated_page_numbers": sorted(annotated_pages),
+    }
+
+
+@mcp.tool()
+async def compare_annotations(
+    item_keys: list[str],
+    color_map: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    """Compare annotations across multiple Zotero items side by side.
+
+    Useful for evidence synthesis — shows what was highlighted/noted
+    across papers in a structured comparison format.
+
+    Args:
+        item_keys: List of 2+ Zotero item keys to compare.
+        color_map: Optional custom color-to-category mapping.
+
+    Returns:
+        Dictionary with per-item annotation summaries and cross-item analysis.
+    """
+    if len(item_keys) < 2:
+        return {"error": "Provide at least 2 item keys to compare."}
+
+    data_dir = _data_dir()
+    items: list[dict[str, Any]] = []
+
+    all_categories: dict[str, int] = {}
+
+    for key in item_keys:
+        item_info = zotero_db.get_item_by_key(data_dir, key)
+        title = (item_info or {}).get("title", key)
+
+        evidence_result = await extract_highlights_as_evidence(key, color_map)
+        evidence = evidence_result.get("evidence", [])
+
+        # Category breakdown
+        categories: dict[str, int] = {}
+        for e in evidence:
+            cat = e.get("category", "uncategorized")
+            categories[cat] = categories.get(cat, 0) + 1
+            all_categories[cat] = all_categories.get(cat, 0) + 1
+
+        items.append(
+            {
+                "item_key": key,
+                "title": title,
+                "total_annotations": len(evidence),
+                "categories": categories,
+                "annotations": evidence,
+            }
+        )
+
+    return {
+        "items_compared": len(items),
+        "items": items,
+        "overall_categories": all_categories,
+    }
+
+
+# ---------------------------------------------------------------------------
 # Optional Better BibTeX integration
 # ---------------------------------------------------------------------------
 
@@ -637,6 +1092,86 @@ async def bbt_cayw() -> dict[str, Any]:
         return {"citations": result}
     except Exception as exc:
         return {"error": str(exc)}
+
+
+@mcp.tool()
+async def bbt_auto_pin(item_keys: list[str]) -> dict[str, Any]:
+    """Pin Better BibTeX citation keys for one or more items.
+
+    Pinned keys are never automatically changed by BBT when item
+    metadata is updated. Useful for ensuring stable @citekeys in
+    manuscripts.
+
+    Args:
+        item_keys: List of Zotero item keys to pin.
+
+    Returns:
+        Dictionary with pinned status for each item.
+    """
+    if not await _bbt_available():
+        return {
+            "error": "Better BibTeX is not available. Ensure Zotero is running with BBT installed.",
+        }
+
+    results: list[dict[str, str]] = []
+    for key in item_keys:
+        try:
+            citekey = await _bbt_call("item.citationkey", [{"itemKey": key}])
+            # Pin by exporting and re-setting the key explicitly
+            await _bbt_call("item.citationkey.set", [{"itemKey": key, "citationKey": citekey}])
+            results.append({"item_key": key, "citekey": citekey, "status": "pinned"})
+        except Exception as exc:
+            results.append({"item_key": key, "status": "error", "error": str(exc)})
+
+    return {"results": results}
+
+
+@mcp.tool()
+async def bbt_sync_bib_file(
+    file_path: str,
+    collection_key: str | None = None,
+    format: str = "betterbibtex",
+) -> dict[str, Any]:
+    """Export a BBT-managed .bib file to a project directory.
+
+    Writes the Better BibTeX export to disk, keeping it in sync with
+    the Zotero collection. Call this before rendering a Quarto document
+    to ensure the bibliography is up to date.
+
+    Args:
+        file_path: Absolute path for the output .bib file.
+        collection_key: Collection to export (None for entire library).
+        format: BBT format: 'betterbibtex', 'betterbiblatex', 'bettercsljson'.
+
+    Returns:
+        Dictionary with status, file path, and entry count.
+    """
+    import pathlib
+
+    result = await bbt_export(collection_key=collection_key, format=format)
+    if "error" in result:
+        return result
+
+    content = result.get("content", "")
+    if not content:
+        return {"status": "empty", "message": "BBT export returned empty content."}
+
+    out_path = pathlib.Path(file_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(content, encoding="utf-8")
+
+    # Count entries
+    if format in ("betterbibtex", "betterbiblatex"):
+        count = content.count("@")
+    else:
+        count = content.count('"id"')
+
+    return {
+        "status": "synced",
+        "file_path": str(out_path),
+        "format": format,
+        "entries": count,
+    }
 
 
 def serve() -> None:

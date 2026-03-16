@@ -207,6 +207,40 @@ Respect API rate limits for all external services:
   - **macOS/Linux:** `source .venv/bin/activate`
 - If an automated tool fails to detect the environment, fall back to explicit venv activation in the terminal. Never fall back to the global Python.
 
+### Posit / Quarto Standards
+
+[Quarto](https://quarto.org/) is the **default output layer** for the Research Workflow Assistant. All generated reports, manuscripts, protocols, analysis scripts, and dashboards use Quarto Markdown (`.qmd`). Quarto was chosen because it:
+
+- Supports **R and Python** code execution in a single document
+- Renders to **HTML, PDF, Word, PowerPoint, dashboards, websites, books, and Revealjs slides** from one source
+- Provides **native citation/bibliography** support via Pandoc citeproc
+- Includes **native Mermaid diagram** support (no external dependencies)
+- Is developed by [Posit](https://posit.co/) and works with RStudio, Positron (VS Code-based IDE), and standalone VS Code
+
+Agents should:
+- Default to `.qmd` for all generated documents (not `.md`, `.Rmd`, or `.ipynb`)
+- Use Quarto YAML front matter with `format: html` (and optionally `pdf`, `docx`) unless the user specifies otherwise
+- Reference `templates/` for available document scaffolds
+- Recommend [Quarto CLI](https://quarto.org/docs/get-started/) installation when rendering is needed
+- See `docs/posit-quarto-guide.md` for the full Posit/Quarto ecosystem guide
+
+### Diagram and Table Defaults
+
+**Diagrams:** The default diagram tool is **Mermaid**, which is natively supported by Quarto via ` ```{mermaid} ` code blocks (no extensions or installs required). Use Mermaid for:
+- PRISMA flow diagrams
+- Study selection flowcharts
+- Workflow diagrams
+- Gantt charts and timelines
+- Concept maps
+
+Users may use alternatives (Graphviz, D2, PlantUML) if they prefer, but agents should default to Mermaid unless told otherwise.
+
+**Tables:** The default package for publication-ready summary tables is:
+- **R:** `gtsummary` (with `gt` as the rendering backend). Alternatives: `flextable`, `kableExtra`, `huxtable`.
+- **Python:** `great_tables` (by Posit). Alternatives: `itables` (interactive HTML), `tabulate`.
+
+Agents should use these defaults when generating table code unless the user requests a specific package.
+
 ## Multi-Project Awareness
 
 ### Project Context
@@ -263,11 +297,14 @@ The repository scaffold is complete. All files listed below are implemented and 
 
 - **8 MCP servers** (Python, using `mcp` SDK + `httpx`): PubMed, OpenAlex, Semantic Scholar, Europe PMC, CrossRef, Zotero, PRISMA Tracker, Project Tracker
 - **1 local MCP server** (Python, using `mcp` SDK + `pymupdf`): Zotero Local (PDF text/annotation extraction, keyword search, Better BibTeX integration)
+- **1 bibliography MCP server** (Python, using `mcp` SDK): Bibliography Manager (local reference management for non-Zotero users — import BibTeX/RIS, link PDFs, notes, annotations, export for Quarto)
 - **1 utility MCP server** (Python, using `mcp` SDK): Chat Exporter (export Copilot Chat sessions to QMD for reproducibility)
-- **5 custom Copilot agents** (`.agent.md`): systematic-reviewer, data-analyst, academic-writer, research-planner, project-manager
-- **1 developer agent** (`.agent.md`): developer — handles bug fixes, feature requests, and repo improvements
+- **6 custom Copilot agents** (`.agent.md`): systematic-reviewer, data-analyst, academic-writer, research-planner, project-manager, critical-reviewer
+- **2 operational agents** (`.agent.md`): research-orchestrator, developer
+- **1 setup agent** (`.agent.md`): setup — guided first-time configuration
+- **1 troubleshooter agent** (`.agent.md`): troubleshooter — diagnoses environment and MCP issues
 - **6 compliance documents**: ICMJE authorship checklist, AI disclosure template, PRISMA 2020, PRISMA-ScR, MOOSE, Cochrane RoB 2
-- **9 Quarto/Markdown templates**: review protocol, review manuscript, search strategy, PRISMA flow, IMRaD manuscript, progress briefs (Quarto + markdown), meeting notes, decision log
+- **12+ Quarto/Markdown templates**: review protocol, review manuscript, search strategy, PRISMA flow, IMRaD manuscript, progress briefs (Quarto + markdown), meeting notes, decision log, critical appraisal checklists (CASP RCT, CASP qualitative, STROBE, cross-study summary)
 - **4 documentation files** in `docs/`: getting-started, api-setup-guide, database-access, architecture
 - **Configuration**: `.vscode/mcp.json`, `.vscode/settings.json`, `.env.example`, `pyproject.toml`, `.gitignore`, LICENSE (MIT)
 
@@ -278,7 +315,7 @@ When the developer opens this project for the first time, guide them through the
 1. **Set up Python environment and install MCP servers**
    - Create a virtual environment: `python -m venv .venv`
    - Activate it: `.venv\Scripts\activate` (Windows) or `source .venv/bin/activate` (macOS/Linux)
-   - Install all servers: `pip install -e mcp-servers/_shared -e mcp-servers/pubmed-server -e mcp-servers/openalex-server -e mcp-servers/semantic-scholar-server -e mcp-servers/europe-pmc-server -e mcp-servers/crossref-server -e mcp-servers/zotero-server -e mcp-servers/zotero-local-server -e mcp-servers/prisma-tracker -e mcp-servers/project-tracker -e mcp-servers/chat-exporter`
+   - Install all servers: `pip install -e mcp-servers/_shared -e mcp-servers/pubmed-server -e mcp-servers/openalex-server -e mcp-servers/semantic-scholar-server -e mcp-servers/europe-pmc-server -e mcp-servers/crossref-server -e mcp-servers/zotero-server -e mcp-servers/zotero-local-server -e mcp-servers/prisma-tracker -e mcp-servers/project-tracker -e mcp-servers/chat-exporter -e mcp-servers/bibliography-manager`
 
 2. **Configure API keys**
    - Copy `.env.example` to `.env`
@@ -288,7 +325,7 @@ When the developer opens this project for the first time, guide them through the
 
 3. **Verify MCP servers start correctly**
    - Open VS Code Command Palette > "MCP: List Servers"
-   - All 10 servers should show as started. If not, click Start (▶) or run "MCP: Restart Servers"
+   - All 11 servers should show as started. If not, click Start (▶) or run "MCP: Restart Servers"
    - The `command` in `.vscode/mcp.json` must point to the **venv Python** (`${workspaceFolder}/.venv/Scripts/python` on Windows, `${workspaceFolder}/.venv/bin/python` on macOS/Linux). If it says just `python`, update it.
    - After starting or restarting servers, open a **new** Copilot Chat session — existing sessions may not pick up newly started servers
    - Test individual servers: `python -m pubmed_server` (with venv active)

@@ -1,0 +1,184 @@
+---
+title: "Summary Table Template (gtsummary)"
+date: today
+format:
+  html:
+    toc: true
+    self-contained: true
+---
+
+<!--
+  Template: summary-table.qmd
+  Purpose:  Demonstrate publication-ready summary tables using gtsummary.
+            gtsummary is the default package for descriptive/summary tables
+            in the Research Workflow Assistant.
+
+  Usage:
+    1. Copy this file into your project directory.
+    2. Replace the example data with your dataset.
+    3. Customize the table specifications for your variables.
+    4. Render with:  quarto render summary-table.qmd
+-->
+
+# Publication-Ready Summary Tables with gtsummary
+
+The `gtsummary` package creates publication-ready analytical and summary tables
+in R. It integrates with `gt` for rendering and supports export to Word, PDF,
+HTML, and LaTeX. See the [gtsummary documentation](https://www.danieldsjoberg.com/gtsummary/) for full details.
+
+## Setup
+
+```{r}
+#| label: setup
+#| message: false
+
+# Install if needed (uncomment):
+# install.packages(c("gtsummary", "gt", "tidyverse"))
+
+library(gtsummary)
+library(gt)
+library(tidyverse)
+```
+
+## Example 1: Demographic / Baseline Characteristics Table (Table 1)
+
+The most common use — a "Table 1" summarizing participant characteristics by group.
+
+```{r}
+#| label: tbl-demographics
+#| tbl-cap: "Baseline Characteristics of Study Participants"
+
+# Using built-in trial dataset from gtsummary
+trial |>
+  select(trt, age, grade, stage, marker) |>
+  tbl_summary(
+    by = trt,                          # stratify by treatment group
+    missing = "ifany",                 # show missing counts if any
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd})",
+      all_categorical() ~ "{n} ({p}%)"
+    ),
+    label = list(
+      age ~ "Age (years)",
+      grade ~ "Tumor Grade",
+      stage ~ "T Stage",
+      marker ~ "Marker Level"
+    )
+  ) |>
+  add_p() |>                           # add p-values
+  add_overall() |>                     # add overall column
+  modify_header(label ~ "**Characteristic**") |>
+  bold_labels()
+```
+
+## Example 2: Regression Table
+
+Summarize regression model results in publication format.
+
+```{r}
+#| label: tbl-regression
+#| tbl-cap: "Logistic Regression: Predictors of Treatment Response"
+
+glm(response ~ age + grade + stage, data = trial, family = binomial) |>
+  tbl_regression(
+    exponentiate = TRUE,              # show odds ratios
+    label = list(
+      age ~ "Age (years)",
+      grade ~ "Tumor Grade",
+      stage ~ "T Stage"
+    )
+  ) |>
+  bold_p(t = 0.05) |>                # bold significant p-values
+  add_global_p()                      # add global p for multi-level vars
+```
+
+## Example 3: Cross-Tabulation
+
+```{r}
+#| label: tbl-cross
+#| tbl-cap: "Treatment Response by Tumor Grade"
+
+trial |>
+  tbl_cross(
+    row = grade,
+    col = response,
+    percent = "row",
+    label = list(grade ~ "Tumor Grade", response ~ "Response")
+  ) |>
+  add_p(source_note = TRUE)
+```
+
+## Example 4: Stacked / Merged Tables
+
+Combine multiple tables for multi-outcome or multi-model presentations.
+
+```{r}
+#| label: tbl-stacked
+#| tbl-cap: "Outcomes by Treatment Group"
+
+# Table for continuous outcomes
+t1 <- trial |>
+  select(trt, marker, ttdeath) |>
+  tbl_summary(
+    by = trt,
+    statistic = all_continuous() ~ "{median} ({p25}, {p75})",
+    missing = "no"
+  ) |>
+  add_p()
+
+# Table for categorical outcomes
+t2 <- trial |>
+  select(trt, response, death) |>
+  tbl_summary(by = trt, missing = "no") |>
+  add_p()
+
+# Stack them
+tbl_stack(list(t1, t2), group_header = c("Continuous Outcomes", "Categorical Outcomes"))
+```
+
+## Exporting Tables
+
+```{r}
+#| label: exports
+#| eval: false
+
+# To Word document (via flextable):
+tbl <- trial |>
+  select(trt, age, grade) |>
+  tbl_summary(by = trt)
+
+# Save as Word
+tbl |> as_flex_table() |> flextable::save_as_docx(path = "table1.docx")
+
+# Save as LaTeX (for PDF manuscripts)
+tbl |> as_gt() |> gt::as_latex()
+
+# Save as HTML
+tbl |> as_gt() |> gt::gtsave("table1.html")
+```
+
+## Software Citation
+
+```{r}
+#| label: cite-packages
+#| eval: false
+
+# Generate BibTeX entries for gtsummary and gt
+knitr::write_bib(c("gtsummary", "gt"), file = "packages.bib")
+
+# Example Methods text:
+# "Summary tables were created using the gtsummary package (v2.0.0;
+#  Sjoberg et al., 2021) in R Statistical Software (v4.4.1; R Core
+#  Team, 2025)."
+```
+
+## Alternative Packages
+
+If `gtsummary` does not fit your needs:
+
+- **`flextable`** — Best for Word (.docx) output; full control over cell formatting
+- **`kableExtra`** — Lightweight; good for PDF/LaTeX with `knitr::kable()`
+- **`huxtable`** — Flexible; supports conditional formatting, multi-format export
+- **`gt`** — The rendering engine behind `gtsummary`; use directly for custom tables
+
+For Python users, see `great_tables` (by Posit) or `itables` (interactive HTML).

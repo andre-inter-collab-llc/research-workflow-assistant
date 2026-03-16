@@ -1,0 +1,188 @@
+---
+title: "Critical Appraisal: CASP RCT Checklist"
+subtitle: "[Study Reference]"
+date: today
+format:
+  html:
+    toc: true
+    self-contained: true
+---
+
+# Study Information
+
+| Field | Value |
+|-------|-------|
+| **Title** | |
+| **Authors** | |
+| **Year** | |
+| **Journal** | |
+| **DOI** | |
+| **Study Design** | Randomized Controlled Trial |
+| **Appraiser** | |
+| **Appraisal Date** | |
+
+# CASP RCT Checklist
+
+## Section A: Are the Results Valid?
+
+### 1. Did the trial address a clearly focused research question?
+
+**Consider**: Population, Intervention, Comparator, Outcomes (PICO)
+
+**Evidence from paper**:
+
+> [Extract relevant text here]
+
+**Rating**: ☐ Yes  ☐ Can't tell  ☐ No
+
+**Reasoning**:
+
+---
+
+### 2. Was the assignment of participants to treatments randomized?
+
+**Consider**: How was randomization done? Was it concealed from researchers?
+
+**Evidence from paper**:
+
+> [Extract relevant text here]
+
+**Rating**: ☐ Yes  ☐ Can't tell  ☐ No
+
+**Reasoning**:
+
+---
+
+### 3. Were all participants who entered the trial accounted for at its conclusion?
+
+**Consider**: Were they analyzed in the groups they were randomized to (intention-to-treat)? Were losses to follow-up reported and explained?
+
+**Evidence from paper**:
+
+> [Extract relevant text here]
+
+**Rating**: ☐ Yes  ☐ Can't tell  ☐ No
+
+**Reasoning**:
+
+---
+
+### 4. Were participants, investigators, and outcome assessors blind to treatment allocation?
+
+**Consider**: Was blinding feasible? Was it done?
+
+**Evidence from paper**:
+
+> [Extract relevant text here]
+
+**Rating**: ☐ Yes  ☐ Can't tell  ☐ No
+
+**Reasoning**:
+
+---
+
+### 5. Were the groups similar at the start of the trial?
+
+**Consider**: Baseline characteristics, confounders
+
+**Evidence from paper**:
+
+> [Extract relevant text here]
+
+**Rating**: ☐ Yes  ☐ Can't tell  ☐ No
+
+**Reasoning**:
+
+---
+
+### 6. Aside from the experimental intervention, were the groups treated equally?
+
+**Consider**: Co-interventions, compliance
+
+**Evidence from paper**:
+
+> [Extract relevant text here]
+
+**Rating**: ☐ Yes  ☐ Can't tell  ☐ No
+
+**Reasoning**:
+
+---
+
+## Section B: What Are the Results?
+
+### 7. How large was the treatment effect?
+
+**Consider**: Effect size, confidence intervals
+
+**Evidence from paper**:
+
+> [Extract relevant text here]
+
+**Summary**:
+
+---
+
+### 8. How precise was the estimate of the treatment effect?
+
+**Consider**: Confidence intervals, p-values
+
+**Evidence from paper**:
+
+> [Extract relevant text here]
+
+**Summary**:
+
+---
+
+## Section C: Will the Results Help Locally?
+
+### 9. Can the results be applied to the local population or your review question?
+
+**Consider**: Population differences, setting
+
+**Evidence from paper**:
+
+> [Extract relevant text here]
+
+**Rating**: ☐ Yes  ☐ Can't tell  ☐ No
+
+**Reasoning**:
+
+---
+
+### 10. Were all clinically important outcomes considered?
+
+**Consider**: Were there outcomes you would have liked to see?
+
+**Evidence from paper**:
+
+> [Extract relevant text here]
+
+**Rating**: ☐ Yes  ☐ Can't tell  ☐ No
+
+**Reasoning**:
+
+---
+
+### 11. Are the benefits worth the harms and costs?
+
+**Consider**: Even if not addressed by the trial, what do you think?
+
+**Rating**: ☐ Yes  ☐ Can't tell  ☐ No
+
+**Reasoning**:
+
+---
+
+# Overall Assessment
+
+| Domain | Rating |
+|--------|--------|
+| Internal validity (Q1–Q6) | |
+| Results (Q7–Q8) | |
+| Applicability (Q9–Q11) | |
+
+**Overall quality summary**:
+
+**Notes on applicability to review question**:

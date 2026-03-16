@@ -32,8 +32,8 @@ Decision path:
 - [VS Code](https://code.visualstudio.com/) 1.99+ with GitHub Copilot (agent mode enabled)
 - [Python](https://www.python.org/downloads/) 3.11 or later
 - [R](https://cran.r-project.org/) 4.0+ (optional — for R-based analysis workflows)
-- [Quarto](https://quarto.org/docs/get-started/) CLI (optional — for rendering templates)
-- [Zotero](https://www.zotero.org/) desktop app (optional — for reference management)
+- [Quarto](https://quarto.org/docs/get-started/) CLI (**recommended** — required for rendering all RWA templates to HTML, PDF, Word, PowerPoint, dashboards, and slides. Quarto is the default output layer for all RWA documents. See [docs/posit-quarto-guide.md](posit-quarto-guide.md) for the full ecosystem guide.)
+- [Zotero](https://www.zotero.org/) desktop app (optional — for reference management; see [docs/zotero-plugins-guide.md](zotero-plugins-guide.md) for recommended plugins)
 - A GitHub Copilot subscription with chat access
 
 ## Installation

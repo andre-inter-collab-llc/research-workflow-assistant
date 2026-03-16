@@ -1,0 +1,67 @@
+---
+title: "Cross-Study Quality Summary"
+subtitle: "[Review Topic]"
+date: today
+format:
+  html:
+    toc: true
+    self-contained: true
+---
+
+# Overview
+
+This document summarizes critical appraisal results across multiple studies.
+
+| Field | Value |
+|-------|-------|
+| **Review question** | |
+| **Checklist used** | |
+| **Number of studies** | |
+| **Appraiser** | |
+| **Date** | |
+
+# Summary Table
+
+| Study | Q1 | Q2 | Q3 | Q4 | Q5 | Q6 | Q7 | Q8 | Q9 | Q10 | Q11 | Overall |
+|-------|----|----|----|----|----|----|----|----|----|----|-----|---------|
+| Author (Year) | | | | | | | | | | | | |
+| Author (Year) | | | | | | | | | | | | |
+| Author (Year) | | | | | | | | | | | | |
+
+*Key: Y = Yes, N = No, CT = Can't tell, NA = Not applicable*
+
+# Domain-Level Summary
+
+## Validity
+
+| Criterion | Studies rated Yes | Studies rated No | Studies rated Can't Tell |
+|-----------|------------------|------------------|--------------------------|
+| | | | |
+
+## Results
+
+| Criterion | Studies rated Yes | Studies rated No | Studies rated Can't Tell |
+|-----------|------------------|------------------|--------------------------|
+| | | | |
+
+## Applicability
+
+| Criterion | Studies rated Yes | Studies rated No | Studies rated Can't Tell |
+|-----------|------------------|------------------|--------------------------|
+| | | | |
+
+# Evidence Mapping
+
+| Outcome | Strong evidence (studies) | Moderate evidence (studies) | Weak/absent evidence |
+|---------|--------------------------|----------------------------|---------------------|
+| | | | |
+
+# Notes
+
+**Patterns observed** (for researcher's interpretation):
+
+**Limitations of the appraisal process**:
+
+---
+
+*AI-assisted note: This summary table was generated with Research Workflow Assistant support. All quality ratings were made by the human appraiser. See individual appraisal reports for detailed evidence and reasoning.*

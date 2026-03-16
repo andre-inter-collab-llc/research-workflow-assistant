@@ -1,0 +1,181 @@
+---
+title: "Critical Appraisal: CASP Qualitative Checklist"
+subtitle: "[Study Reference]"
+date: today
+format:
+  html:
+    toc: true
+    self-contained: true
+---
+
+# Study Information
+
+| Field | Value |
+|-------|-------|
+| **Title** | |
+| **Authors** | |
+| **Year** | |
+| **Journal** | |
+| **DOI** | |
+| **Study Design** | Qualitative |
+| **Methodology** | [e.g., Grounded theory, Phenomenology, Ethnography, etc.] |
+| **Appraiser** | |
+| **Appraisal Date** | |
+
+# CASP Qualitative Checklist
+
+## Section A: Are the Results Valid?
+
+### 1. Was there a clear statement of the aims of the research?
+
+**Consider**: What was the goal? Why is it important? Is it relevant?
+
+**Evidence from paper**:
+
+> [Extract relevant text here]
+
+**Rating**: ☐ Yes  ☐ Can't tell  ☐ No
+
+**Reasoning**:
+
+---
+
+### 2. Is a qualitative methodology appropriate?
+
+**Consider**: Does the research seek to interpret or illuminate the actions and/or subjective experiences of research participants?
+
+**Evidence from paper**:
+
+> [Extract relevant text here]
+
+**Rating**: ☐ Yes  ☐ Can't tell  ☐ No
+
+**Reasoning**:
+
+---
+
+### 3. Was the research design appropriate to address the aims of the research?
+
+**Consider**: Has the researcher justified the research design?
+
+**Evidence from paper**:
+
+> [Extract relevant text here]
+
+**Rating**: ☐ Yes  ☐ Can't tell  ☐ No
+
+**Reasoning**:
+
+---
+
+### 4. Was the recruitment strategy appropriate to the aims of the research?
+
+**Consider**: Has the researcher explained how participants were selected? Were they the most appropriate to provide access to the type of knowledge sought?
+
+**Evidence from paper**:
+
+> [Extract relevant text here]
+
+**Rating**: ☐ Yes  ☐ Can't tell  ☐ No
+
+**Reasoning**:
+
+---
+
+### 5. Was the data collected in a way that addressed the research issue?
+
+**Consider**: Setting, data collection methods, saturation, justification
+
+**Evidence from paper**:
+
+> [Extract relevant text here]
+
+**Rating**: ☐ Yes  ☐ Can't tell  ☐ No
+
+**Reasoning**:
+
+---
+
+### 6. Has the relationship between researcher and participants been adequately considered?
+
+**Consider**: Reflexivity, researcher's role, potential bias
+
+**Evidence from paper**:
+
+> [Extract relevant text here]
+
+**Rating**: ☐ Yes  ☐ Can't tell  ☐ No
+
+**Reasoning**:
+
+---
+
+## Section B: What Are the Results?
+
+### 7. Have ethical issues been taken into consideration?
+
+**Consider**: Informed consent, confidentiality, ethics approval
+
+**Evidence from paper**:
+
+> [Extract relevant text here]
+
+**Rating**: ☐ Yes  ☐ Can't tell  ☐ No
+
+**Reasoning**:
+
+---
+
+### 8. Was the data analysis sufficiently rigorous?
+
+**Consider**: Description of analysis process, sufficient data presented, contradictory data considered, researcher's role in analysis
+
+**Evidence from paper**:
+
+> [Extract relevant text here]
+
+**Rating**: ☐ Yes  ☐ Can't tell  ☐ No
+
+**Reasoning**:
+
+---
+
+### 9. Is there a clear statement of findings?
+
+**Consider**: Explicit findings, adequate discussion, evidence for and against, credibility
+
+**Evidence from paper**:
+
+> [Extract relevant text here]
+
+**Rating**: ☐ Yes  ☐ Can't tell  ☐ No
+
+**Reasoning**:
+
+---
+
+## Section C: Will the Results Help Locally?
+
+### 10. How valuable is the research?
+
+**Consider**: Contribution to knowledge, transferability, implications for policy/practice, future research
+
+**Evidence from paper**:
+
+> [Extract relevant text here]
+
+**Assessment**:
+
+---
+
+# Overall Assessment
+
+| Domain | Rating |
+|--------|--------|
+| Validity (Q1–Q6) | |
+| Results (Q7–Q9) | |
+| Value (Q10) | |
+
+**Overall quality summary**:
+
+**Notes on applicability to review question**:

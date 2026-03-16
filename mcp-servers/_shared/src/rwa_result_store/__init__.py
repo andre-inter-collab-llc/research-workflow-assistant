@@ -53,6 +53,45 @@ CREATE INDEX IF NOT EXISTS idx_results_pmid
     ON results(pmid) WHERE pmid IS NOT NULL AND pmid != '';
 CREATE INDEX IF NOT EXISTS idx_results_search_id
     ON results(search_id);
+
+CREATE TABLE IF NOT EXISTS attachments (
+    attachment_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    result_id INTEGER NOT NULL REFERENCES results(result_id),
+    file_path TEXT NOT NULL,
+    mime_type TEXT,
+    label TEXT,
+    added_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_attachments_result
+    ON attachments(result_id);
+
+CREATE TABLE IF NOT EXISTS notes (
+    note_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    result_id INTEGER NOT NULL REFERENCES results(result_id),
+    note_type TEXT NOT NULL DEFAULT 'general',
+    content TEXT NOT NULL,
+    tags_json TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_notes_result
+    ON notes(result_id);
+
+CREATE TABLE IF NOT EXISTS annotations (
+    annotation_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    attachment_id INTEGER NOT NULL REFERENCES attachments(attachment_id),
+    result_id INTEGER NOT NULL REFERENCES results(result_id),
+    page INTEGER,
+    annotation_type TEXT,
+    color TEXT,
+    content TEXT,
+    comment TEXT,
+    extracted_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_annotations_attachment
+    ON annotations(attachment_id);
+CREATE INDEX IF NOT EXISTS idx_annotations_result
+    ON annotations(result_id);
 """
 
 _DEDUP_VIEW = """\
@@ -806,6 +845,556 @@ def export_results_bibliography(
     if func is None:
         raise ValueError(f"Unsupported format: {fmt!r}. Use one of: {list(exporters)}")
     return func(project_path, output_path=output_path, deduplicated=deduplicated)
+
+
+# ---------------------------------------------------------------------------
+# Attachment management
+# ---------------------------------------------------------------------------
+
+
+def link_file(
+    project_path: str,
+    result_id: int,
+    file_path: str,
+    mime_type: str | None = None,
+    label: str | None = None,
+) -> int:
+    """Link a file (PDF, supplementary material, etc.) to a search result.
+
+    Args:
+        project_path: Absolute path to the project directory.
+        result_id: The result to attach the file to.
+        file_path: Absolute or project-relative path to the file.
+        mime_type: Optional MIME type (e.g. 'application/pdf').
+        label: Optional human-readable label.
+
+    Returns:
+        The attachment_id of the new record.
+    """
+    conn = init_db(project_path)
+    try:
+        now = datetime.now(UTC).isoformat()
+        cursor = conn.execute(
+            "INSERT INTO attachments (result_id, file_path, mime_type, label, added_at) "
+            "VALUES (?, ?, ?, ?, ?)",
+            (result_id, file_path, mime_type, label, now),
+        )
+        conn.commit()
+        return cursor.lastrowid
+    finally:
+        conn.close()
+
+
+def get_attachments(
+    project_path: str,
+    result_id: int,
+) -> list[dict[str, Any]]:
+    """Return all attachments linked to a result."""
+    db = _db_path(project_path)
+    if not db.exists():
+        return []
+    conn = init_db(project_path)
+    conn.row_factory = sqlite3.Row
+    try:
+        rows = conn.execute(
+            "SELECT * FROM attachments WHERE result_id = ?", (result_id,)
+        ).fetchall()
+        return [dict(r) for r in rows]
+    finally:
+        conn.close()
+
+
+# ---------------------------------------------------------------------------
+# Notes management
+# ---------------------------------------------------------------------------
+
+
+def add_note(
+    project_path: str,
+    result_id: int,
+    content: str,
+    note_type: str = "general",
+    tags: list[str] | None = None,
+) -> int:
+    """Add a note to a search result.
+
+    Args:
+        project_path: Absolute path to the project directory.
+        result_id: The result to annotate.
+        content: The note text (Markdown supported).
+        note_type: Category — ``'general'``, ``'critique'``, ``'summary'``,
+            ``'extraction'``, ``'methodology'``.
+        tags: Optional list of freeform tags.
+
+    Returns:
+        The note_id of the new record.
+    """
+    conn = init_db(project_path)
+    try:
+        now = datetime.now(UTC).isoformat()
+        cursor = conn.execute(
+            "INSERT INTO notes (result_id, note_type, content, tags_json, created_at, updated_at) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (result_id, note_type, content, json.dumps(tags) if tags else None, now, now),
+        )
+        conn.commit()
+        return cursor.lastrowid
+    finally:
+        conn.close()
+
+
+def update_note(
+    project_path: str,
+    note_id: int,
+    content: str | None = None,
+    note_type: str | None = None,
+    tags: list[str] | None = None,
+) -> bool:
+    """Update an existing note. Returns True if the note was found and updated."""
+    db = _db_path(project_path)
+    if not db.exists():
+        return False
+    conn = init_db(project_path)
+    try:
+        sets: list[str] = []
+        params: list[Any] = []
+        if content is not None:
+            sets.append("content = ?")
+            params.append(content)
+        if note_type is not None:
+            sets.append("note_type = ?")
+            params.append(note_type)
+        if tags is not None:
+            sets.append("tags_json = ?")
+            params.append(json.dumps(tags))
+        if not sets:
+            return False
+        sets.append("updated_at = ?")
+        params.append(datetime.now(UTC).isoformat())
+        params.append(note_id)
+        cursor = conn.execute(
+            f"UPDATE notes SET {', '.join(sets)} WHERE note_id = ?", params
+        )
+        conn.commit()
+        return cursor.rowcount > 0
+    finally:
+        conn.close()
+
+
+def get_notes(
+    project_path: str,
+    result_id: int | None = None,
+    note_type: str | None = None,
+) -> list[dict[str, Any]]:
+    """Query notes, optionally filtering by result and/or type."""
+    db = _db_path(project_path)
+    if not db.exists():
+        return []
+    conn = init_db(project_path)
+    conn.row_factory = sqlite3.Row
+    try:
+        where: list[str] = []
+        params: list[Any] = []
+        if result_id is not None:
+            where.append("result_id = ?")
+            params.append(result_id)
+        if note_type is not None:
+            where.append("note_type = ?")
+            params.append(note_type)
+        sql = "SELECT * FROM notes"
+        if where:
+            sql += " WHERE " + " AND ".join(where)
+        sql += " ORDER BY created_at DESC"
+        rows = conn.execute(sql, params).fetchall()
+        return [dict(r) for r in rows]
+    finally:
+        conn.close()
+
+
+def search_notes(
+    project_path: str,
+    query: str,
+) -> list[dict[str, Any]]:
+    """Full-text search across note content and tags."""
+    db = _db_path(project_path)
+    if not db.exists():
+        return []
+    conn = init_db(project_path)
+    conn.row_factory = sqlite3.Row
+    try:
+        pattern = f"%{query}%"
+        rows = conn.execute(
+            "SELECT n.*, r.title AS result_title, r.doi, r.pmid "
+            "FROM notes n JOIN results r ON n.result_id = r.result_id "
+            "WHERE n.content LIKE ? OR n.tags_json LIKE ? "
+            "ORDER BY n.updated_at DESC",
+            (pattern, pattern),
+        ).fetchall()
+        return [dict(r) for r in rows]
+    finally:
+        conn.close()
+
+
+# ---------------------------------------------------------------------------
+# Annotation storage (extracted from PDFs)
+# ---------------------------------------------------------------------------
+
+
+def store_annotations(
+    project_path: str,
+    attachment_id: int,
+    result_id: int,
+    annotations: list[dict[str, Any]],
+) -> int:
+    """Bulk-store annotations extracted from a PDF attachment.
+
+    Each annotation dict should have optional keys:
+    ``page``, ``annotation_type``, ``color``, ``content``, ``comment``.
+
+    Returns:
+        Number of annotations stored.
+    """
+    conn = init_db(project_path)
+    try:
+        now = datetime.now(UTC).isoformat()
+        count = 0
+        for a in annotations:
+            conn.execute(
+                "INSERT INTO annotations "
+                "(attachment_id, result_id, page, annotation_type, color, "
+                "content, comment, extracted_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    attachment_id,
+                    result_id,
+                    a.get("page"),
+                    a.get("annotation_type", "highlight"),
+                    a.get("color"),
+                    a.get("content", ""),
+                    a.get("comment", ""),
+                    now,
+                ),
+            )
+            count += 1
+        conn.commit()
+        return count
+    finally:
+        conn.close()
+
+
+def get_annotations(
+    project_path: str,
+    result_id: int | None = None,
+    attachment_id: int | None = None,
+    color: str | None = None,
+) -> list[dict[str, Any]]:
+    """Query stored annotations with optional filters."""
+    db = _db_path(project_path)
+    if not db.exists():
+        return []
+    conn = init_db(project_path)
+    conn.row_factory = sqlite3.Row
+    try:
+        where: list[str] = []
+        params: list[Any] = []
+        if result_id is not None:
+            where.append("result_id = ?")
+            params.append(result_id)
+        if attachment_id is not None:
+            where.append("attachment_id = ?")
+            params.append(attachment_id)
+        if color is not None:
+            where.append("color = ?")
+            params.append(color)
+        sql = "SELECT * FROM annotations"
+        if where:
+            sql += " WHERE " + " AND ".join(where)
+        sql += " ORDER BY page, annotation_id"
+        rows = conn.execute(sql, params).fetchall()
+        return [dict(r) for r in rows]
+    finally:
+        conn.close()
+
+
+def search_annotations(
+    project_path: str,
+    query: str,
+) -> list[dict[str, Any]]:
+    """Search annotation content and comments."""
+    db = _db_path(project_path)
+    if not db.exists():
+        return []
+    conn = init_db(project_path)
+    conn.row_factory = sqlite3.Row
+    try:
+        pattern = f"%{query}%"
+        rows = conn.execute(
+            "SELECT a.*, r.title AS result_title, r.doi "
+            "FROM annotations a JOIN results r ON a.result_id = r.result_id "
+            "WHERE a.content LIKE ? OR a.comment LIKE ? "
+            "ORDER BY a.result_id, a.page",
+            (pattern, pattern),
+        ).fetchall()
+        return [dict(r) for r in rows]
+    finally:
+        conn.close()
+
+
+# ---------------------------------------------------------------------------
+# BibTeX / RIS import
+# ---------------------------------------------------------------------------
+
+
+def _parse_bibtex_entries(text: str) -> list[dict[str, Any]]:
+    """Minimal BibTeX parser — handles @article{key, field={value}} entries."""
+    entries: list[dict[str, Any]] = []
+    # Split on @ followed by an entry type
+    raw_entries = re.split(r"(?=@\w+\{)", text.strip())
+    for raw in raw_entries:
+        raw = raw.strip()
+        if not raw:
+            continue
+        # Match entry type and key
+        m = re.match(r"@(\w+)\{([^,]*),?(.*)\}", raw, re.DOTALL)
+        if not m:
+            continue
+        entry: dict[str, Any] = {"_type": m.group(1).lower(), "_key": m.group(2).strip()}
+        body = m.group(3)
+        # Extract field = {value} or field = "value"
+        for fm in re.finditer(
+            r"(\w+)\s*=\s*(?:\{((?:[^{}]|\{[^{}]*\})*)\}|\"([^\"]*)\")", body
+        ):
+            field = fm.group(1).lower()
+            value = (fm.group(2) or fm.group(3) or "").strip()
+            entry[field] = value
+        entries.append(entry)
+    return entries
+
+
+def import_bibtex(
+    project_path: str,
+    bibtex_text: str | None = None,
+    file_path: str | None = None,
+    source: str = "bibtex_import",
+) -> int:
+    """Import references from BibTeX text or file into the result store.
+
+    Returns:
+        The search_id under which the imported items are stored.
+    """
+    if file_path:
+        bibtex_text = Path(file_path).read_text(encoding="utf-8")
+    if not bibtex_text:
+        return 0
+
+    entries = _parse_bibtex_entries(bibtex_text)
+    if not entries:
+        return 0
+
+    results: list[dict[str, Any]] = []
+    for e in entries:
+        authors_raw = e.get("author", "")
+        authors = [a.strip() for a in authors_raw.split(" and ")] if authors_raw else []
+        results.append(
+            {
+                "doi": e.get("doi", ""),
+                "pmid": e.get("pmid", ""),
+                "title": e.get("title", ""),
+                "authors": authors,
+                "journal": e.get("journal", ""),
+                "year": e.get("year", ""),
+                "volume": e.get("volume", ""),
+                "issue": e.get("number", ""),
+                "pages": e.get("pages", ""),
+                "abstract": e.get("abstract", ""),
+                "_bibtex_key": e.get("_key", ""),
+                "_bibtex_type": e.get("_type", ""),
+            }
+        )
+
+    return store_results(
+        project_path,
+        source,
+        f"BibTeX import ({len(results)} entries)",
+        results,
+        total_count=len(results),
+        parameters={"format": "bibtex", "file_path": file_path},
+    )
+
+
+def _parse_ris_entries(text: str) -> list[dict[str, Any]]:
+    """Minimal RIS parser."""
+    entries: list[dict[str, Any]] = []
+    current: dict[str, Any] = {}
+    current_authors: list[str] = []
+
+    for line in text.splitlines():
+        line = line.rstrip()
+        if not line:
+            continue
+        # RIS lines: XX  - value
+        m = re.match(r"^([A-Z][A-Z0-9])\s{2}-\s?(.*)", line)
+        if not m:
+            continue
+        tag, value = m.group(1), m.group(2).strip()
+        if tag == "TY":
+            current = {"_type": value}
+            current_authors = []
+        elif tag == "ER":
+            if current:
+                current["authors"] = current_authors
+                entries.append(current)
+            current = {}
+            current_authors = []
+        elif tag == "AU":
+            current_authors.append(value)
+        elif tag == "TI" or tag == "T1":
+            current["title"] = value
+        elif tag == "JO" or tag == "JF" or tag == "T2":
+            current.setdefault("journal", value)
+        elif tag == "PY" or tag == "Y1":
+            current["year"] = value[:4] if len(value) >= 4 else value
+        elif tag == "VL":
+            current["volume"] = value
+        elif tag == "IS":
+            current["issue"] = value
+        elif tag == "SP":
+            current["pages"] = value
+        elif tag == "EP":
+            sp = current.get("pages", "")
+            if sp:
+                current["pages"] = f"{sp}-{value}"
+            else:
+                current["pages"] = value
+        elif tag == "DO":
+            current["doi"] = value
+        elif tag == "AN":
+            current["pmid"] = value
+        elif tag == "AB":
+            current["abstract"] = value
+    # If file doesn't end with ER
+    if current:
+        current["authors"] = current_authors
+        entries.append(current)
+    return entries
+
+
+def import_ris(
+    project_path: str,
+    ris_text: str | None = None,
+    file_path: str | None = None,
+    source: str = "ris_import",
+) -> int:
+    """Import references from RIS text or file into the result store.
+
+    Returns:
+        The search_id under which the imported items are stored.
+    """
+    if file_path:
+        ris_text = Path(file_path).read_text(encoding="utf-8")
+    if not ris_text:
+        return 0
+
+    entries = _parse_ris_entries(ris_text)
+    if not entries:
+        return 0
+
+    results: list[dict[str, Any]] = []
+    for e in entries:
+        results.append(
+            {
+                "doi": e.get("doi", ""),
+                "pmid": e.get("pmid", ""),
+                "title": e.get("title", ""),
+                "authors": e.get("authors", []),
+                "journal": e.get("journal", ""),
+                "year": e.get("year", ""),
+                "volume": e.get("volume", ""),
+                "issue": e.get("issue", ""),
+                "pages": e.get("pages", ""),
+                "abstract": e.get("abstract", ""),
+            }
+        )
+
+    return store_results(
+        project_path,
+        source,
+        f"RIS import ({len(results)} entries)",
+        results,
+        total_count=len(results),
+        parameters={"format": "ris", "file_path": file_path},
+    )
+
+
+# ---------------------------------------------------------------------------
+# Reading list / status tracking
+# ---------------------------------------------------------------------------
+
+
+def get_reading_list(
+    project_path: str,
+    note_type: str | None = None,
+    has_attachments: bool | None = None,
+    has_notes: bool | None = None,
+) -> list[dict[str, Any]]:
+    """Return a reading-list view joining results with attachment/note counts.
+
+    Args:
+        project_path: Absolute path to the project directory.
+        note_type: Optional filter — only include results that have a note of this type.
+        has_attachments: If True, only results with linked files.
+            If False, only results without.
+        has_notes: If True, only results with notes. If False, only without.
+
+    Returns:
+        List of dicts with result fields plus ``attachment_count``,
+        ``note_count``, ``annotation_count``.
+    """
+    db = _db_path(project_path)
+    if not db.exists():
+        return []
+    conn = init_db(project_path)
+    conn.row_factory = sqlite3.Row
+    try:
+        sql = (
+            "SELECT r.result_id, r.doi, r.pmid, r.title, r.authors_json, "
+            "r.journal, r.year, r.source, "
+            "COALESCE(att.cnt, 0) AS attachment_count, "
+            "COALESCE(nt.cnt, 0) AS note_count, "
+            "COALESCE(ann.cnt, 0) AS annotation_count "
+            "FROM results r "
+            "LEFT JOIN (SELECT result_id, COUNT(*) AS cnt FROM attachments GROUP BY result_id) att "
+            "ON r.result_id = att.result_id "
+            "LEFT JOIN (SELECT result_id, COUNT(*) AS cnt FROM notes GROUP BY result_id) nt "
+            "ON r.result_id = nt.result_id "
+            "LEFT JOIN (SELECT result_id, COUNT(*) AS cnt FROM annotations GROUP BY result_id) ann "
+            "ON r.result_id = ann.result_id "
+        )
+        where: list[str] = []
+        params: list[Any] = []
+
+        if note_type is not None:
+            where.append(
+                "r.result_id IN (SELECT result_id FROM notes WHERE note_type = ?)"
+            )
+            params.append(note_type)
+        if has_attachments is True:
+            where.append("COALESCE(att.cnt, 0) > 0")
+        elif has_attachments is False:
+            where.append("COALESCE(att.cnt, 0) = 0")
+        if has_notes is True:
+            where.append("COALESCE(nt.cnt, 0) > 0")
+        elif has_notes is False:
+            where.append("COALESCE(nt.cnt, 0) = 0")
+
+        if where:
+            sql += " WHERE " + " AND ".join(where)
+        sql += " ORDER BY r.result_id"
+
+        rows = conn.execute(sql, params).fetchall()
+        return [dict(r) for r in rows]
+    finally:
+        conn.close()
 
 
 def register_result_store_tools(mcp_instance: Any) -> None:

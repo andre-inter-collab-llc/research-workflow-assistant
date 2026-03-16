@@ -41,7 +41,7 @@ Generate reproducible code in the user's preferred language (R or Python):
 - `survival` + `survminer` (survival analysis)
 - `lme4` (mixed-effects models)
 - `broom` (tidy model output)
-- `gtsummary` (publication-ready tables)
+- `gtsummary` + `gt` (publication-ready summary tables — **default for all summary/descriptive tables**)
 - `flextable` (Word-compatible tables)
 - `pwr` (power analysis)
 - `mice` (multiple imputation)
@@ -68,6 +68,14 @@ Generate reproducible code in the user's preferred language (R or Python):
 - **Diagnostic test accuracy**: Sensitivity, specificity, ROC curves
 - **Power analysis**: Sample size calculations for common designs
 
+### Publication-Ready Tables
+
+Default packages for summary and descriptive tables:
+- **R:** `gtsummary` (with `gt` rendering backend) — use for demographic tables, regression summaries, cross-tabulations, and any publication-ready summary table. Alternatives: `flextable` (Word-compatible), `kableExtra`, `huxtable`.
+- **Python:** `great_tables` (by Posit) — use for formatted summary tables. Alternatives: `itables` (interactive HTML), `tabulate`.
+
+Use these defaults unless the user requests a specific package. See `analysis-templates/R/summary-table.qmd` for a gtsummary template.
+
 ### Visualization
 
 Create publication-quality figures:
@@ -75,7 +83,7 @@ Create publication-quality figures:
 - Funnel plots (publication bias)
 - Kaplan-Meier curves
 - ROC curves
-- Flow diagrams
+- Flow diagrams (use **Mermaid** ` ```{mermaid} ` blocks — natively supported by Quarto)
 - Descriptive plots (bar, box, violin, density)
 
 ## Workflow

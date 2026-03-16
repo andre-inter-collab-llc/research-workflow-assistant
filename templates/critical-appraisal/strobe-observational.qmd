@@ -1,0 +1,268 @@
+---
+title: "Critical Appraisal: STROBE Checklist for Observational Studies"
+subtitle: "[Study Reference]"
+date: today
+format:
+  html:
+    toc: true
+    self-contained: true
+---
+
+# Study Information
+
+| Field | Value |
+|-------|-------|
+| **Title** | |
+| **Authors** | |
+| **Year** | |
+| **Journal** | |
+| **DOI** | |
+| **Study Design** | ☐ Cohort  ☐ Case-control  ☐ Cross-sectional |
+| **Appraiser** | |
+| **Appraisal Date** | |
+
+# STROBE Checklist
+
+*Based on the Strengthening the Reporting of Observational Studies in Epidemiology (STROBE) Statement.*
+
+## Title and Abstract
+
+### 1. Title and abstract
+
+**(a)** Indicate the study design in the title or abstract:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+**(b)** Provide an informative and balanced summary:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+---
+
+## Introduction
+
+### 2. Background/rationale
+
+Explain scientific background and rationale:
+
+**Evidence from paper**:
+
+> [Extract relevant text here]
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+---
+
+### 3. Objectives
+
+State specific objectives, including pre-specified hypotheses:
+
+**Evidence from paper**:
+
+> [Extract relevant text here]
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+---
+
+## Methods
+
+### 4. Study design
+
+Present key elements of study design early in the paper:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+---
+
+### 5. Setting
+
+Describe the setting, locations, and relevant dates:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+---
+
+### 6. Participants
+
+**(a)** Give eligibility criteria, sources and methods of selection, follow-up:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+**(b)** For matched studies, give matching criteria and number matched:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No  ☐ N/A
+
+---
+
+### 7. Variables
+
+Define all outcomes, exposures, predictors, confounders:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+---
+
+### 8. Data sources/measurement
+
+Describe sources of data and assessment methods:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+---
+
+### 9. Bias
+
+Describe any efforts to address potential sources of bias:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+---
+
+### 10. Study size
+
+Explain how study size was arrived at:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+---
+
+### 11. Quantitative variables
+
+Explain how quantitative variables were handled in the analyses:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+---
+
+### 12. Statistical methods
+
+**(a)** Describe all statistical methods:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+**(b)** Describe methods for examining subgroups and interactions:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No  ☐ N/A
+
+**(c)** Explain how missing data were addressed:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+**(d)** Describe any sensitivity analyses:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No  ☐ N/A
+
+---
+
+## Results
+
+### 13. Participants
+
+Report numbers at each stage (consider flow diagram):
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+---
+
+### 14. Descriptive data
+
+**(a)** Give characteristics of participants and information on exposures:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+**(b)** Indicate number with missing data per variable:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+---
+
+### 15. Outcome data
+
+Report number of outcome events or summary measures:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+---
+
+### 16. Main results
+
+**(a)** Give unadjusted and adjusted estimates with CI and p-values:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+**(b)** Report category boundaries for continuous variables:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No  ☐ N/A
+
+**(c)** Report results of subgroup and interaction analyses:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No  ☐ N/A
+
+---
+
+### 17. Other analyses
+
+Report other analyses (sensitivity, etc.):
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No  ☐ N/A
+
+---
+
+## Discussion
+
+### 18. Key results
+
+Summarize key results with reference to objectives:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+---
+
+### 19. Limitations
+
+Discuss limitations including bias:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+---
+
+### 20. Interpretation
+
+Give cautious overall interpretation:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+---
+
+### 21. Generalizability
+
+Discuss generalizability (external validity):
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+---
+
+## Other Information
+
+### 22. Funding
+
+Give source of funding and role of funders:
+
+**Rating**: ☐ Yes  ☐ Partial  ☐ No
+
+---
+
+# Overall Assessment
+
+| Section | Items Reported (Yes) | Items Partial | Items Not Reported |
+|---------|---------------------|---------------|-------------------|
+| Introduction (2–3) | | | |
+| Methods (4–12) | | | |
+| Results (13–17) | | | |
+| Discussion (18–21) | | | |
+| Other (22) | | | |
+
+**Overall reporting quality summary**:
+
+**Notes on applicability to review question**:

@@ -155,7 +155,7 @@ Pre-built checklists and templates:
 
 ### 5. Templates (`templates/`)
 
-Quarto and Markdown templates organized by use case:
+Quarto and Markdown templates organized by use case. [Quarto](https://quarto.org/) is the **default output layer** for all RWA documents — manuscripts, protocols, reports, analysis scripts, dashboards, and progress briefs are all `.qmd` files. Quarto supports multi-format rendering (HTML, PDF, Word, PowerPoint, dashboards, websites, books, slides), native Mermaid diagrams, and built-in citation management. See `docs/posit-quarto-guide.md` for the full Posit/Quarto ecosystem guide.
 
 ```
 templates/

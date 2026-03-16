@@ -64,9 +64,10 @@ For each workflow type, provide both:
 Stage sequence:
 1. Planning and protocol -> `@research-planner`
 2. Search and screening -> `@systematic-reviewer`
-3. Synthesis and analysis -> `@data-analyst` (if quantitative synthesis is needed)
-4. Manuscript drafting and citations -> `@academic-writer`
-5. Timeline, milestones, and reporting -> `@project-manager`
+3. Critical appraisal -> `@critical-reviewer`
+4. Synthesis and analysis -> `@data-analyst` (if quantitative synthesis is needed)
+5. Manuscript drafting and citations -> `@academic-writer`
+6. Timeline, milestones, and reporting -> `@project-manager`
 
 Default handoff prompt template:
 `@research-planner Continue project [PROJECT_NAME] at stage "Planning and protocol". Use the existing project context and prepare the protocol scaffold with human decision checkpoints.`
@@ -76,18 +77,20 @@ Default handoff prompt template:
 Stage sequence:
 1. Planning and protocol framing -> `@research-planner`
 2. Search, charting, and screening support -> `@systematic-reviewer`
-3. Evidence mapping and descriptive analysis -> `@data-analyst`
-4. Write-up and reporting -> `@academic-writer`
-5. Progress tracking and briefs -> `@project-manager`
+3. Critical appraisal (optional, per protocol) -> `@critical-reviewer`
+4. Evidence mapping and descriptive analysis -> `@data-analyst`
+5. Write-up and reporting -> `@academic-writer`
+6. Progress tracking and briefs -> `@project-manager`
 
 ### 3) Meta-Analysis
 
 Stage sequence:
 1. Question/protocol and eligibility framework -> `@research-planner`
 2. Literature search and extraction support -> `@systematic-reviewer`
-3. Statistical meta-analysis workflow -> `@data-analyst`
-4. Manuscript/report drafting -> `@academic-writer`
-5. Ongoing coordination -> `@project-manager`
+3. Critical appraisal and risk of bias -> `@critical-reviewer`
+4. Statistical meta-analysis workflow -> `@data-analyst`
+5. Manuscript/report drafting -> `@academic-writer`
+6. Ongoing coordination -> `@project-manager`
 
 ### 4) General Research Study
 

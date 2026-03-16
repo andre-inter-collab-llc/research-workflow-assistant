@@ -500,3 +500,136 @@ def get_all_pdf_attachments(
 
     finally:
         conn.close()
+
+
+def search_all_annotations(
+    data_dir: Path,
+    query: str,
+    collection_key: str | None = None,
+    limit: int = 50,
+) -> list[dict[str, Any]]:
+    """Search across all Zotero reader annotations for a keyword or phrase.
+
+    Searches both annotation text (highlighted passages) and comments.
+    Requires Zotero 7 (``itemAnnotations`` table).
+
+    Args:
+        data_dir: Zotero data directory.
+        query: Search term (case-insensitive substring match).
+        collection_key: Optional collection key to limit scope.
+        limit: Maximum results.
+
+    Returns:
+        List of matching annotation dicts with parent item info.
+    """
+    version = get_zotero_version(data_dir)
+    if version < 7:
+        return []
+
+    conn = _connect(data_dir)
+    try:
+        query_like = f"%{query}%"
+
+        if collection_key:
+            rows = conn.execute(
+                """
+                SELECT ia2.text, ia2.comment, ia2.color, ia2.pageLabel, ia2.type,
+                       att.key AS att_key, parent.key AS parent_key,
+                       i.key AS ann_key, i.dateAdded, i.dateModified
+                FROM itemAnnotations ia2
+                JOIN items i ON ia2.itemID = i.itemID
+                JOIN items att ON ia2.parentItemID = att.itemID
+                JOIN itemAttachments iatt ON ia2.parentItemID = iatt.itemID
+                LEFT JOIN items parent ON iatt.parentItemID = parent.itemID
+                JOIN collectionItems ci ON ci.itemID = iatt.parentItemID
+                JOIN collections c ON ci.collectionID = c.collectionID
+                WHERE c.key = ?
+                  AND (ia2.text LIKE ? OR ia2.comment LIKE ?)
+                  AND i.itemID NOT IN (SELECT itemID FROM deletedItems)
+                ORDER BY i.dateModified DESC
+                LIMIT ?
+                """,
+                (collection_key, query_like, query_like, limit),
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                """
+                SELECT ia2.text, ia2.comment, ia2.color, ia2.pageLabel, ia2.type,
+                       att.key AS att_key, parent.key AS parent_key,
+                       i.key AS ann_key, i.dateAdded, i.dateModified
+                FROM itemAnnotations ia2
+                JOIN items i ON ia2.itemID = i.itemID
+                JOIN items att ON ia2.parentItemID = att.itemID
+                JOIN itemAttachments iatt ON ia2.parentItemID = iatt.itemID
+                LEFT JOIN items parent ON iatt.parentItemID = parent.itemID
+                WHERE (ia2.text LIKE ? OR ia2.comment LIKE ?)
+                  AND i.itemID NOT IN (SELECT itemID FROM deletedItems)
+                ORDER BY i.dateModified DESC
+                LIMIT ?
+                """,
+                (query_like, query_like, limit),
+            ).fetchall()
+
+        type_map = {1: "highlight", 2: "note", 3: "image", 4: "underline", 5: "text"}
+        results = []
+        for row in rows:
+            results.append(
+                {
+                    "key": row["ann_key"],
+                    "type": type_map.get(row["type"], str(row["type"])),
+                    "text": row["text"] or "",
+                    "comment": row["comment"] or "",
+                    "color": row["color"] or "",
+                    "page_label": row["pageLabel"] or "",
+                    "attachment_key": row["att_key"],
+                    "parent_key": row["parent_key"] or "",
+                    "date_added": row["dateAdded"] or "",
+                    "date_modified": row["dateModified"] or "",
+                }
+            )
+
+        return results
+
+    finally:
+        conn.close()
+
+
+def get_annotation_page_count(data_dir: Path, attachment_key: str) -> int:
+    """Count distinct pages that have annotations for an attachment.
+
+    Requires Zotero 7.
+
+    Args:
+        data_dir: Zotero data directory.
+        attachment_key: The attachment item key.
+
+    Returns:
+        Number of distinct annotated pages (0 if Zotero 6 or no annotations).
+    """
+    version = get_zotero_version(data_dir)
+    if version < 7:
+        return 0
+
+    conn = _connect(data_dir)
+    try:
+        att = conn.execute("SELECT itemID FROM items WHERE key = ?", (attachment_key,)).fetchone()
+        if not att:
+            return 0
+
+        row = conn.execute(
+            """
+            SELECT COUNT(DISTINCT ia2.pageLabel) AS page_count
+            FROM itemAnnotations ia2
+            JOIN items i ON ia2.itemID = i.itemID
+            WHERE ia2.parentItemID = ?
+              AND ia2.pageLabel IS NOT NULL
+              AND ia2.pageLabel != ''
+              AND i.itemID NOT IN (SELECT itemID FROM deletedItems)
+            """,
+            (att["itemID"],),
+        ).fetchone()
+
+        return row["page_count"] if row else 0
+
+    finally:
+        conn.close()

@@ -49,7 +49,8 @@
                 "-e", "${workspaceFolder}/mcp-servers/zotero-local-server",
                 "-e", "${workspaceFolder}/mcp-servers/prisma-tracker",
                 "-e", "${workspaceFolder}/mcp-servers/project-tracker",
-                "-e", "${workspaceFolder}/mcp-servers/chat-exporter"
+                "-e", "${workspaceFolder}/mcp-servers/chat-exporter",
+                "-e", "${workspaceFolder}/mcp-servers/bibliography-manager"
             ],
             "windows": {
                 "command": "${workspaceFolder}/.venv/Scripts/pip.exe"

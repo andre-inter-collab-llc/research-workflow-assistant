@@ -2,6 +2,8 @@
 
 An open-source, modular AI research assistant that runs inside **[VS Code](https://code.visualstudio.com/) + [GitHub Copilot](https://github.com/features/copilot)**. It connects to academic databases via MCP (Model Context Protocol) servers and encodes research best practices through custom Copilot agents. Built for reproducibility, ICMJE compliance, and human-centered research.
 
+All RWA outputs — manuscripts, protocols, reports, analysis scripts, dashboards, and progress briefs — use **[Quarto](https://quarto.org/)** (by [Posit](https://posit.co/)) as the default document format. Quarto supports R and Python code execution, multi-format rendering (HTML, PDF, Word, PowerPoint, dashboards, websites, books, slides), native Mermaid diagrams, and built-in bibliography management. See [docs/posit-quarto-guide.md](docs/posit-quarto-guide.md) for the full ecosystem guide.
+
 > **Model note:** This project was developed and tested using **Claude Opus 4.6** and **GPT-5.3-Codex** in GitHub Copilot agent mode. You can switch between models depending on task type and preference. Other models available in Copilot ([model comparison](https://docs.github.com/en/copilot/reference/ai-models/model-comparison)) may also work, but behavior can vary by agent workflow, so validate critical outputs after switching.
 
 > **First time here?** Start with [docs/quick-start.md](docs/quick-start.md),

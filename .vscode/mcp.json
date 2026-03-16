@@ -109,6 +109,15 @@
                 "PROJECT_DIR": "${workspaceFolder}",
                 "PROJECTS_ROOT": "${env:PROJECTS_ROOT}"
             }
+        },
+        "bibliography-manager": {
+            "type": "stdio",
+            "command": "${workspaceFolder}/.venv/Scripts/python",
+            "args": [
+                "-m",
+                "bibliography_manager"
+            ],
+            "cwd": "${workspaceFolder}/mcp-servers/bibliography-manager/src"
         }
     }
 }

@@ -18,6 +18,15 @@ research_assistant:
   # Zotero collection name for this project's references (optional)
   # zotero_collection: "My Review"
 
+  # Bibliography management backend:
+  #   "zotero"  — Use Zotero (Web API + local) for reference management (default)
+  #   "local"   — Use the built-in bibliography-manager MCP server (no Zotero needed)
+  #
+  # The "local" backend stores everything in data/search_results.db and supports
+  # BibTeX/RIS import, PDF attachment, notes, and annotations. References can be
+  # migrated to Zotero later with bib_migrate_to_zotero.
+  bibliography_backend: zotero
+
   # Override the Zotero data directory for this project (optional).
   # If blank, inherits from ZOTERO_DATA_DIR env var or auto-detects.
   # zotero_data_dir: "C:\Users\you\Zotero"

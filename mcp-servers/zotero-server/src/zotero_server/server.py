@@ -986,6 +986,470 @@ async def import_from_result_store(
     return await batch_add_by_doi(dois=dois, collection_key=collection_key, confirm=confirm)
 
 
+# ---------------------------------------------------------------------------
+# Item metadata & relations
+# ---------------------------------------------------------------------------
+
+
+@mcp.tool()
+async def get_item_metadata(item_key: str) -> dict[str, Any]:
+    """Fetch full metadata for a single Zotero item by its key.
+
+    Returns all available fields including abstract, notes count, and
+    related items — more detail than the summary returned by search_library.
+
+    Args:
+        item_key: The Zotero item key.
+
+    Returns:
+        Dictionary with complete item metadata.
+    """
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        item = await _get(client, _user_url(f"items/{item_key}"))
+
+    data = item.get("data", {})
+    formatted = _format_item(item)
+    # Add fields not included in _format_item
+    formatted.update(
+        {
+            "volume": data.get("volume", ""),
+            "issue": data.get("issue", ""),
+            "pages": data.get("pages", ""),
+            "publisher": data.get("publisher", ""),
+            "isbn": data.get("ISBN", ""),
+            "issn": data.get("ISSN", ""),
+            "language": data.get("language", ""),
+            "rights": data.get("rights", ""),
+            "extra": data.get("extra", ""),
+            "date_added": data.get("dateAdded", ""),
+            "date_modified": data.get("dateModified", ""),
+            "relations": data.get("relations", {}),
+            "num_children": item.get("meta", {}).get("numChildren", 0),
+        }
+    )
+    return formatted
+
+
+@mcp.tool()
+async def update_item_metadata(
+    item_key: str,
+    title: str | None = None,
+    abstract: str | None = None,
+    date: str | None = None,
+    journal: str | None = None,
+    doi: str | None = None,
+    url: str | None = None,
+    volume: str | None = None,
+    issue: str | None = None,
+    pages: str | None = None,
+    extra: str | None = None,
+) -> dict[str, Any]:
+    """Update editable fields on an existing Zotero item.
+
+    Only non-None fields are updated; all others are left unchanged.
+
+    Args:
+        item_key: The Zotero item key.
+        title: New title.
+        abstract: New abstract.
+        date: New date string.
+        journal: New publication title / journal name.
+        doi: New DOI.
+        url: New URL.
+        volume: New volume.
+        issue: New issue.
+        pages: New pages.
+        extra: New "Extra" field content.
+
+    Returns:
+        Dictionary with the updated item metadata.
+    """
+    field_map: dict[str, str | None] = {
+        "title": title,
+        "abstractNote": abstract,
+        "date": date,
+        "publicationTitle": journal,
+        "DOI": doi,
+        "url": url,
+        "volume": volume,
+        "issue": issue,
+        "pages": pages,
+        "extra": extra,
+    }
+    patch_data = {k: v for k, v in field_map.items() if v is not None}
+    if not patch_data:
+        return {"status": "no_changes", "message": "No fields provided to update."}
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        item = await _get(client, _user_url(f"items/{item_key}"))
+        version = item.get("version", 0)
+        await _patch(client, _user_url(f"items/{item_key}"), patch_data, version)
+        updated = await _get(client, _user_url(f"items/{item_key}"))
+
+    return {"status": "updated", "item": _format_item(updated)}
+
+
+@mcp.tool()
+async def get_related_items(item_key: str) -> dict[str, Any]:
+    """Retrieve items linked via Zotero's "Related" feature.
+
+    Args:
+        item_key: The Zotero item key.
+
+    Returns:
+        Dictionary with the source item key and a list of related items.
+    """
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        item = await _get(client, _user_url(f"items/{item_key}"))
+        relations = item.get("data", {}).get("relations", {})
+        # Related items are stored as dc:relation URIs
+        related_uris = relations.get("dc:relation", [])
+        if isinstance(related_uris, str):
+            related_uris = [related_uris]
+
+        related_items = []
+        for uri in related_uris:
+            # URI format: http://zotero.org/users/{id}/items/{key}
+            related_key = uri.rsplit("/", 1)[-1] if "/" in uri else uri
+            try:
+                rel_item = await _get(client, _user_url(f"items/{related_key}"))
+                related_items.append(_format_item(rel_item))
+            except httpx.HTTPStatusError:
+                related_items.append({"key": related_key, "error": "not_found"})
+
+    return {"item_key": item_key, "related_items": related_items}
+
+
+@mcp.tool()
+async def add_related_items(item_key_a: str, item_key_b: str) -> dict[str, Any]:
+    """Link two items as related in Zotero (bidirectional).
+
+    Args:
+        item_key_a: First item key.
+        item_key_b: Second item key.
+
+    Returns:
+        Status of the operation.
+    """
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        user_id = await _ensure_user_id(client)
+        uri_a = f"http://zotero.org/users/{user_id}/items/{item_key_a}"
+        uri_b = f"http://zotero.org/users/{user_id}/items/{item_key_b}"
+
+        # Add B as related to A
+        item_a = await _get(client, _user_url(f"items/{item_key_a}"))
+        relations_a = item_a.get("data", {}).get("relations", {})
+        existing_a = relations_a.get("dc:relation", [])
+        if isinstance(existing_a, str):
+            existing_a = [existing_a]
+        if uri_b not in existing_a:
+            existing_a.append(uri_b)
+            relations_a["dc:relation"] = existing_a
+            await _patch(
+                client,
+                _user_url(f"items/{item_key_a}"),
+                {"relations": relations_a},
+                item_a.get("version", 0),
+            )
+
+        # Add A as related to B
+        item_b = await _get(client, _user_url(f"items/{item_key_b}"))
+        relations_b = item_b.get("data", {}).get("relations", {})
+        existing_b = relations_b.get("dc:relation", [])
+        if isinstance(existing_b, str):
+            existing_b = [existing_b]
+        if uri_a not in existing_b:
+            existing_b.append(uri_a)
+            relations_b["dc:relation"] = existing_b
+            await _patch(
+                client,
+                _user_url(f"items/{item_key_b}"),
+                {"relations": relations_b},
+                item_b.get("version", 0),
+            )
+
+    return {
+        "status": "linked",
+        "item_key_a": item_key_a,
+        "item_key_b": item_key_b,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Collections & tags
+# ---------------------------------------------------------------------------
+
+
+@mcp.tool()
+async def get_collection_items(
+    collection_key: str,
+    limit: int = 50,
+    sort: str = "dateModified",
+    direction: str = "desc",
+) -> dict[str, Any]:
+    """List all items in a Zotero collection with full metadata.
+
+    Args:
+        collection_key: The collection key.
+        limit: Maximum results (default 50, max 100).
+        sort: Sort field: 'dateModified', 'dateAdded', 'title', 'creator',
+            'itemType', 'date', 'publisher'. Default 'dateModified'.
+        direction: Sort direction: 'asc' or 'desc'. Default 'desc'.
+
+    Returns:
+        Dictionary with collection info and list of items.
+    """
+    limit = min(limit, 100)
+    url = _user_url(f"collections/{collection_key}/items")
+    params = {
+        "limit": str(limit),
+        "sort": sort,
+        "direction": direction,
+        "itemType": "-attachment -note -annotation",
+    }
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        items = await _get(client, url, params)
+
+    return {
+        "collection_key": collection_key,
+        "items": [_format_item(item) for item in items],
+        "count": len(items),
+    }
+
+
+@mcp.tool()
+async def get_tags(limit: int = 100) -> dict[str, Any]:
+    """List all tags in the user's Zotero library with usage counts.
+
+    Args:
+        limit: Maximum tags to return (default 100, max 500).
+
+    Returns:
+        Dictionary with list of tags and their usage counts.
+    """
+    limit = min(limit, 500)
+    url = _user_url("tags")
+    params = {"limit": str(limit)}
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        tags_data = await _get(client, url, params)
+
+    tags = []
+    for tag_entry in tags_data:
+        meta = tag_entry.get("meta", {})
+        tags.append(
+            {
+                "tag": tag_entry.get("tag", ""),
+                "type": meta.get("type", 0),
+                "num_items": meta.get("numItems", 0),
+            }
+        )
+
+    tags.sort(key=lambda t: t["num_items"], reverse=True)
+    return {"tags": tags, "count": len(tags)}
+
+
+@mcp.tool()
+async def rename_tag(old_tag: str, new_tag: str) -> dict[str, Any]:
+    """Rename a tag across all items in the Zotero library.
+
+    Finds all items with the old tag, replaces it with the new tag on each item.
+
+    Args:
+        old_tag: The existing tag name to rename.
+        new_tag: The new tag name.
+
+    Returns:
+        Dictionary with the number of items updated.
+    """
+    url = _user_url("items")
+    params = {"tag": old_tag, "limit": "100", "itemType": "-attachment -note -annotation"}
+
+    updated_count = 0
+    async with httpx.AsyncClient(timeout=60.0) as client:
+        items = await _get(client, url, params)
+
+        for item in items:
+            data = item.get("data", {})
+            version = item.get("version", 0)
+            item_key = data.get("key", item.get("key", ""))
+            existing_tags = data.get("tags", [])
+
+            new_tags = []
+            changed = False
+            for t in existing_tags:
+                if t.get("tag", "") == old_tag:
+                    new_tags.append({"tag": new_tag})
+                    changed = True
+                else:
+                    new_tags.append(t)
+
+            if changed:
+                await _patch(
+                    client,
+                    _user_url(f"items/{item_key}"),
+                    {"tags": new_tags},
+                    version,
+                )
+                updated_count += 1
+
+    return {
+        "status": "renamed",
+        "old_tag": old_tag,
+        "new_tag": new_tag,
+        "items_updated": updated_count,
+    }
+
+
+@mcp.tool()
+async def delete_tag(tag: str) -> dict[str, Any]:
+    """Remove a tag from all items in the Zotero library.
+
+    Args:
+        tag: The tag name to remove.
+
+    Returns:
+        Dictionary with the number of items updated.
+    """
+    url = _user_url("items")
+    params = {"tag": tag, "limit": "100", "itemType": "-attachment -note -annotation"}
+
+    updated_count = 0
+    async with httpx.AsyncClient(timeout=60.0) as client:
+        items = await _get(client, url, params)
+
+        for item in items:
+            data = item.get("data", {})
+            version = item.get("version", 0)
+            item_key = data.get("key", item.get("key", ""))
+            existing_tags = data.get("tags", [])
+
+            new_tags = [t for t in existing_tags if t.get("tag", "") != tag]
+            if len(new_tags) != len(existing_tags):
+                await _patch(
+                    client,
+                    _user_url(f"items/{item_key}"),
+                    {"tags": new_tags},
+                    version,
+                )
+                updated_count += 1
+
+    return {
+        "status": "deleted",
+        "tag": tag,
+        "items_updated": updated_count,
+    }
+
+
+# ---------------------------------------------------------------------------
+# DOI lookup in library
+# ---------------------------------------------------------------------------
+
+
+@mcp.tool()
+async def get_item_by_doi(doi: str) -> dict[str, Any]:
+    """Look up an item in the user's Zotero library by DOI.
+
+    Checks if the user already has a reference with this DOI.
+    Does NOT search external databases — only the local library.
+
+    Args:
+        doi: Digital Object Identifier to search for.
+
+    Returns:
+        Dictionary with the matching item or a not-found status.
+    """
+    url = _user_url("items")
+    params = {"q": doi, "limit": "10", "itemType": "-attachment -note -annotation"}
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        items = await _get(client, url, params)
+
+    # Filter for exact DOI match (search may return partial matches)
+    doi_lower = doi.strip().lower()
+    for item in items:
+        item_doi = item.get("data", {}).get("DOI", "").strip().lower()
+        if item_doi == doi_lower:
+            return {"status": "found", "item": _format_item(item)}
+
+    return {"status": "not_found", "doi": doi}
+
+
+# ---------------------------------------------------------------------------
+# Group libraries (read-only)
+# ---------------------------------------------------------------------------
+
+
+@mcp.tool()
+async def get_groups() -> dict[str, Any]:
+    """List group libraries the user belongs to.
+
+    Returns:
+        Dictionary with list of groups (id, name, type, member count).
+    """
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        user_id = await _ensure_user_id(client)
+        url = f"{ZOTERO_BASE}/users/{user_id}/groups"
+        groups_data = await _get(client, url)
+
+    groups = []
+    for g in groups_data:
+        data = g.get("data", {})
+        meta = g.get("meta", {})
+        groups.append(
+            {
+                "id": g.get("id", data.get("id", "")),
+                "name": data.get("name", ""),
+                "type": data.get("type", ""),
+                "owner": data.get("owner", ""),
+                "num_items": meta.get("numItems", 0),
+            }
+        )
+
+    return {"groups": groups}
+
+
+@mcp.tool()
+async def search_group_library(
+    group_id: int,
+    query: str,
+    limit: int = 25,
+) -> dict[str, Any]:
+    """Search within a specific Zotero group library (read-only).
+
+    Args:
+        group_id: The group library ID (from get_groups).
+        query: Search query string.
+        limit: Maximum results (default 25, max 100).
+
+    Returns:
+        Dictionary with matching items from the group library.
+    """
+    limit = min(limit, 100)
+    url = f"{ZOTERO_BASE}/groups/{group_id}/items"
+    params = {
+        "q": query,
+        "limit": str(limit),
+        "sort": "relevance",
+        "itemType": "-attachment -note -annotation",
+    }
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        user_id = await _ensure_user_id(client)
+        url_canonical = _canonicalize_user_url(url, user_id)
+        resp = await client.get(url_canonical, headers=_headers(), params=params)
+        resp.raise_for_status()
+        items = resp.json()
+
+    return {
+        "group_id": group_id,
+        "query": query,
+        "items": [_format_item(item) for item in items],
+        "count": len(items),
+    }
+
+
 def serve() -> None:
     """Run the Zotero MCP server."""
     mcp.run(transport="stdio")
