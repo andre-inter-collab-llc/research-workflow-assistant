@@ -22,7 +22,7 @@ format:
     toc: true
     self-contained: true
 bibliography: references.bib
-csl: ../../apa.csl
+csl: apa.csl
 ---
 
 # Registration Information

@@ -7,12 +7,16 @@ Provides a Zotero-compatible workflow for researchers who don't use Zotero:
 - Store and search PDF annotations
 - Export to BibTeX, RIS, or CSL-JSON for Quarto/Pandoc
 - Track reading progress with a reading list view
+- Download and manage CSL citation styles
 
 All data is stored per-project in SQLite (data/search_results.db),
 the same database used by the search MCP servers.
 """
 
 import logging
+import shutil
+import urllib.request
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any
 
@@ -615,6 +619,184 @@ async def bib_migrate_to_zotero(
             "transferred — recreate them in Zotero or keep them in the "
             "project database as a reference."
         ),
+    }
+
+
+# ===================================================================
+# CSL citation style management
+# ===================================================================
+
+
+def _csl_dir() -> Path:
+    """Return the path to the shared CSL styles directory (repo-root/csl/)."""
+    # Walk up from this file to reach the repo root:
+    # server.py → bibliography_manager/ → src/ → bibliography-manager/ → mcp-servers/ → repo-root
+    return Path(__file__).resolve().parents[4] / "csl"
+
+
+def _parse_csl_title(csl_path: Path) -> str:
+    """Extract the <title> from a CSL file, or return the stem as fallback."""
+    try:
+        ns = {"csl": "http://purl.org/net/xbiblio/csl"}
+        tree = ET.parse(csl_path)
+        title_el = tree.getroot().find(".//csl:title", ns)
+        if title_el is not None and title_el.text:
+            return title_el.text
+    except ET.ParseError:
+        pass
+    return csl_path.stem
+
+
+@mcp.tool()
+async def bib_list_csl_styles() -> dict[str, Any]:
+    """List all citation styles available in the shared CSL library.
+
+    Returns a list of style IDs (file stems) and their full titles, sourced
+    from the ``csl/`` directory in the repository root.
+
+    Returns:
+        Dictionary with ``styles`` list, each containing ``id``, ``title``,
+        and ``file`` keys.
+    """
+    csl = _csl_dir()
+    if not csl.is_dir():
+        return {"status": "error", "message": f"CSL directory not found: {csl}"}
+    styles = []
+    for p in sorted(csl.glob("*.csl")):
+        styles.append({
+            "id": p.stem,
+            "title": _parse_csl_title(p),
+            "file": p.name,
+        })
+    return {"status": "ok", "count": len(styles), "styles": styles}
+
+
+@mcp.tool()
+async def bib_download_csl_style(
+    style_id: str,
+) -> dict[str, Any]:
+    """Download a CSL citation style from the Zotero Style Repository.
+
+    Fetches the style from ``https://www.zotero.org/styles/{style_id}`` and
+    saves it to the shared ``csl/`` directory.  Over 10 000 styles are
+    available — browse https://www.zotero.org/styles to find the style ID
+    (it is the last segment of the URL, e.g. ``elsevier-harvard``).
+
+    If the style already exists locally, it is overwritten (updated).
+    If the downloaded style is a *dependent* style (a thin redirect to a
+    parent style), the parent is also fetched automatically.
+
+    Args:
+        style_id: The CSL style identifier, e.g. ``vancouver-superscript``.
+
+    Returns:
+        Dictionary with the saved file path and style title.
+    """
+    csl = _csl_dir()
+    csl.mkdir(parents=True, exist_ok=True)
+
+    url = f"https://www.zotero.org/styles/{style_id}"
+    dest = csl / f"{style_id}.csl"
+
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "RWA/1.0"})
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            data = resp.read()
+    except urllib.error.HTTPError as exc:
+        if exc.code == 404:
+            return {
+                "status": "not_found",
+                "message": (
+                    f"Style '{style_id}' was not found in the Zotero Style "
+                    "Repository. Browse https://www.zotero.org/styles to find "
+                    "the correct style ID."
+                ),
+            }
+        return {"status": "error", "message": f"HTTP {exc.code}: {exc.reason}"}
+    except Exception as exc:
+        return {"status": "error", "message": str(exc)}
+
+    # Validate: must be XML with the CSL namespace
+    try:
+        root = ET.fromstring(data)
+    except ET.ParseError:
+        return {
+            "status": "error",
+            "message": "Downloaded file is not valid XML.",
+        }
+
+    ns = {"csl": "http://purl.org/net/xbiblio/csl"}
+    title_el = root.find(".//csl:title", ns)
+    title = title_el.text if (title_el is not None and title_el.text) else style_id
+
+    dest.write_bytes(data)
+    logger.info("Downloaded CSL style '%s' → %s", style_id, dest)
+
+    result: dict[str, Any] = {
+        "status": "ok",
+        "style_id": style_id,
+        "title": title,
+        "file": str(dest),
+    }
+
+    # Check for dependent style → also fetch the parent
+    links = root.findall(".//csl:link", ns)
+    for link in links:
+        if link.get("rel") == "independent-parent":
+            parent_url = link.get("href", "")
+            parent_id = parent_url.rstrip("/").rsplit("/", 1)[-1]
+            if parent_id and not (csl / f"{parent_id}.csl").exists():
+                logger.info(
+                    "Style '%s' is dependent — also fetching parent '%s'",
+                    style_id,
+                    parent_id,
+                )
+                parent_result = await bib_download_csl_style(parent_id)
+                result["parent_style"] = parent_result
+            break
+
+    return result
+
+
+@mcp.tool()
+async def bib_copy_csl_to_project(
+    style_id: str,
+    project_path: str,
+) -> dict[str, Any]:
+    """Copy a CSL style file from the shared library into a project directory.
+
+    This makes the project self-contained — it carries its own citation style
+    file rather than depending on a relative path to the repo-root CSL library.
+
+    Args:
+        style_id: The CSL style identifier (filename without ``.csl``),
+            e.g. ``vancouver-superscript``.
+        project_path: Absolute path to the project directory.
+
+    Returns:
+        Dictionary with the destination path and style title.
+    """
+    csl = _csl_dir()
+    src = csl / f"{style_id}.csl"
+    if not src.is_file():
+        available = [p.stem for p in sorted(csl.glob("*.csl"))]
+        return {
+            "status": "not_found",
+            "message": (
+                f"Style '{style_id}' is not in the CSL library. "
+                f"Available: {', '.join(available)}. "
+                "Use bib_download_csl_style to fetch it first."
+            ),
+        }
+
+    dest = Path(project_path) / f"{style_id}.csl"
+    shutil.copy2(src, dest)
+
+    return {
+        "status": "ok",
+        "style_id": style_id,
+        "title": _parse_csl_title(src),
+        "file": str(dest),
     }
 
 

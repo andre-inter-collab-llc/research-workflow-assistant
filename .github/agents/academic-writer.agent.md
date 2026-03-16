@@ -84,6 +84,11 @@ Before creating a new cite-bearing document, check the target project's `project
 For reports, manuscripts, and protocols that include citations:
 - Populate YAML frontmatter with the known author metadata
 - Include `bibliography` and `csl` fields unless the user explicitly wants a citation-free output
+- **Resolve the CSL citation style using this priority chain:**
+  1. Project's `project-config.yaml` → `research_assistant.output_defaults.csl`
+  2. User's `.rwa-user-config.yaml` → `default_citation_style` (+ `.csl` extension)
+  3. Fallback: `apa.csl`
+- Verify the resolved `.csl` file exists in the project directory. If it does not, use `bib_copy_csl_to_project` to copy it from the shared `csl/` library.
 - Add an editable RWA disclosure in the Methods section when AI-assisted workflow details are relevant
 - Add an acknowledgments / AI-disclosure section with ICMJE-compliant language
 - When Research Workflow Assistant (RWA) is cited in Methods or Acknowledgments, use [@vanzyl2026rwa] and add the matching BibTeX entry from `templates/rwa-citation.bib` to `references.bib`

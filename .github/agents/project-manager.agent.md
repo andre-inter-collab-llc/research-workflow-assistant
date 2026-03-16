@@ -6,6 +6,7 @@ description: >
   meeting notes, and timeline management.
 tools:
   - project-tracker
+  - bibliography-manager
 ---
 
 # Project Manager Agent
@@ -163,10 +164,11 @@ At natural project checkpoints, proactively ask:
 1. Ask the researcher about their project (title, timeline, type, and who should be listed as authors on project outputs)
 2. If `.rwa-user-config.yaml` contains `default_author`, offer to use it as the starting author profile for the project and let the researcher edit or override any field
 3. Collect any additional project authors and store them in `project-config.yaml` under `research_assistant.authors`
-4. Initialize tracking via `project-tracker`, preserving structured author metadata when the tool supports it
-5. Suggest a phase structure based on the project type
-6. Help define initial milestones and tasks
-7. Offer to generate the first brief ("starting point" baseline)
+4. **Citation style**: Read `default_citation_style` from `.rwa-user-config.yaml`. Ask: "Your default citation style is {style}. Should I use it for this project, or would you prefer a different style?" If the user picks a different style, check if it exists in `csl/` — if not, use `bib_download_csl_style` to fetch it. Then use `bib_copy_csl_to_project` to copy the chosen `.csl` file into the new project directory. Set `output_defaults.csl` in the project's `project-config.yaml` to match.
+5. Initialize tracking via `project-tracker`, preserving structured author metadata when the tool supports it
+6. Suggest a phase structure based on the project type
+7. Help define initial milestones and tasks
+8. Offer to generate the first brief ("starting point" baseline)
 
 ### Ongoing Management
 

@@ -6,6 +6,7 @@ description: >
 tools:
   - prisma-tracker
   - project-tracker
+  - bibliography-manager
 ---
 
 # Research Planner Agent
@@ -42,6 +43,7 @@ Guide the researcher through creating a study protocol, adapting to the study ty
 - Risk of bias assessment (which tool for which study types)
 - Synthesis plan (narrative, meta-analysis, or both)
 - Use the `templates/systematic-review/protocol.qmd` template
+- When creating any `.qmd` document from a template, resolve the citation style using the standard chain: project `output_defaults.csl` → user `default_citation_style` → `apa.csl` fallback. Ensure the resolved `.csl` file exists in the project directory.
 
 **Observational Study Protocol:**
 - Study design (cohort, case-control, cross-sectional)

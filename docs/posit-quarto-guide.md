@@ -147,6 +147,17 @@ Quarto uses Pandoc's citeproc for citations. The workflow:
 3. **Cite in text** — `[@smith2024]`, `[@smith2024; @jones2023]`, or `@smith2024`
 4. **Apply a style** — `csl: apa.csl` (or any [CSL style](https://www.zotero.org/styles))
 
+### Configuring Citation Styles
+
+RWA ships a shared CSL style library in `csl/` with 11 pre-bundled styles (APA, Vancouver, Vancouver Superscript, AMA, BMJ, Nature, NLM, IEEE, Harvard, Chicago Author-Date, Chicago Fullnote). Additional styles can be downloaded on demand from the [Zotero Style Repository](https://www.zotero.org/styles) (10,000+ styles) via the `bib_download_csl_style` tool.
+
+**Style resolution chain** (agents follow this priority order):
+1. **Project config** — `output_defaults.csl` in the project's `project-config.yaml`
+2. **User config** — `default_citation_style` in `.rwa-user-config.yaml`
+3. **Fallback** — `apa` (APA 7th edition)
+
+Each project gets its own local copy of the `.csl` file for portability. Set your personal default during `@setup` (Stage 7.5) or by editing `.rwa-user-config.yaml`.
+
 Zotero users with Better BibTeX get stable, auto-updating `.bib` files that sync with their Quarto documents.
 
 ## Cross-References

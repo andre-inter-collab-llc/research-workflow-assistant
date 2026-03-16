@@ -224,6 +224,22 @@ Agents should:
 - Recommend [Quarto CLI](https://quarto.org/docs/get-started/) installation when rendering is needed
 - See `docs/posit-quarto-guide.md` for the full Posit/Quarto ecosystem guide
 
+### Citation Style Defaults
+
+Citation formatting uses **CSL (Citation Style Language)** files processed by Pandoc citeproc. The repository ships a shared style library in `csl/` with common styles pre-bundled. Additional styles can be downloaded on demand from the [Zotero Style Repository](https://www.zotero.org/styles) (10,000+ styles) via the `bib_download_csl_style` tool.
+
+**Resolution chain** (agents must follow this priority order):
+1. **Project config** — `output_defaults.csl` in `project-config.yaml`
+2. **User config** — `default_citation_style` in `.rwa-user-config.yaml`
+3. **Fallback** — `apa` (APA 7th edition)
+
+**Rules for all agents:**
+- Each project directory gets its own copy of the `.csl` file (for portability). Use `bib_copy_csl_to_project` to copy from the shared library.
+- When instantiating a Quarto template, resolve the CSL style via the chain above and substitute the `csl:` field in the YAML front matter.
+- Never hardcode a path back to the repo-root `csl/` directory in project documents — always use a local copy.
+- If the resolved style is not in the shared library, download it first with `bib_download_csl_style`.
+- See `csl/README.md` for the full list of bundled styles and instructions for adding more.
+
 ### Diagram and Table Defaults
 
 **Diagrams:** The default diagram tool is **Mermaid**, which is natively supported by Quarto via ` ```{mermaid} ` code blocks (no extensions or installs required). Use Mermaid for:

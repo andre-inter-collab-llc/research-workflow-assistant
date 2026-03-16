@@ -55,6 +55,22 @@ research_assistant:
   #       url: "https://organization.example"
 
   # Defaults for cite-bearing outputs created in this project.
+  #
+  # Citation style: set `csl` to the filename of a CSL style file.
+  # During project creation the chosen .csl file is copied into the project
+  # directory so the project stays self-contained.
+  #
+  # Resolution chain (agents follow this order):
+  #   1. This project's output_defaults.csl
+  #   2. User default in .rwa-user-config.yaml → default_citation_style
+  #   3. Fallback: apa.csl
+  #
+  # Bundled styles (in repo-root csl/):
+  #   apa, vancouver, vancouver-superscript, american-medical-association,
+  #   bmj, nature, national-library-of-medicine, ieee, harvard-cite-them-right,
+  #   chicago-author-date-17th-edition, chicago-fullnote-bibliography
+  #
+  # Browse 10 000+ additional styles: https://www.zotero.org/styles
   output_defaults:
     bibliography: references.bib
     csl: apa.csl

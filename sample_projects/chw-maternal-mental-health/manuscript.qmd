@@ -34,7 +34,7 @@ format:
     fontsize: 12pt
     linestretch: 1.5
 bibliography: references.bib
-csl: ../../apa.csl
+csl: apa.csl
 execute:
   echo: false
   warning: false

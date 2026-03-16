@@ -14,6 +14,7 @@ tools:
   - zotero-local
   - project-tracker
   - prisma-tracker
+  - bibliography-manager
 ---
 
 # RWA Setup Agent
@@ -265,7 +266,43 @@ default_author:
 
 If `default_author` already exists, show which fields are already set and ask before overwriting them.
 
-**Transition**: "Your default author profile is saved. Would you like to create your first project?"
+**Transition**: "Your default author profile is saved. Let's choose your preferred citation style."
+
+## Stage 7.5 — Default Citation Style
+
+Ask the user to choose their preferred citation / referencing style. This becomes the default for all new projects (overridable per project).
+
+1. **List bundled styles**: Use the `bib_list_csl_styles` tool from the bibliography-manager MCP server to show the available styles. Present them in a clear table:
+
+   | ID | Style | Type |
+   |----|-------|------|
+   | `apa` | APA 7th edition | Author-date |
+   | `vancouver` | Vancouver / NLM (numbered) | Numbered |
+   | `vancouver-superscript` | Vancouver (superscript) | Superscript numbered |
+   | `american-medical-association` | AMA 11th edition | Superscript numbered |
+   | `bmj` | BMJ | Numbered |
+   | `nature` | Nature | Numbered |
+   | `national-library-of-medicine` | NLM / Citing Medicine 2nd ed. | Numbered |
+   | `ieee` | IEEE | Numbered (bracketed) |
+   | `harvard-cite-them-right` | Harvard (Cite Them Right 12th ed.) | Author-date |
+   | `chicago-author-date-17th-edition` | Chicago 17th (author-date) | Author-date |
+   | `chicago-fullnote-bibliography` | Chicago 18th (notes & bibliography) | Footnotes |
+
+2. **Ask**: "Which citation style do you prefer? Enter the style ID from the list above, or type a custom style ID from the [Zotero Style Repository](https://www.zotero.org/styles) (over 10 000 styles available). Press Enter to accept the default (APA)."
+
+3. **If the user enters a bundled style ID**: Confirm the selection.
+4. **If the user enters a custom style ID** not in the bundled list: Use the `bib_download_csl_style` tool to download it from the Zotero Style Repository. If the download fails (style not found), inform the user and ask them to try again or browse https://www.zotero.org/styles.
+5. **Default**: If the user presses Enter or says "default", use `apa`.
+
+Save the selection to `.rwa-user-config.yaml` under `default_citation_style`:
+
+```yaml
+default_citation_style: vancouver-superscript
+```
+
+If `default_citation_style` already exists, show the current value and ask if the user wants to change it.
+
+**Transition**: "Your default citation style is saved. Would you like to create your first project?"
 
 ## Stage 8 — First Project Setup (Optional)
 
@@ -316,7 +353,12 @@ Use the `project-tracker` server to:
 
 4. Create `ai-contributions-log.md` in the project directory with the standard template header.
 
-5. Create `project-config.yaml` in the project directory with:
+5. **Copy the citation style file** into the project directory. Ask the user:
+   - "Should I use your default citation style ({default_citation_style from .rwa-user-config.yaml}) for this project, or would you like a different style?"
+   - Use `bib_copy_csl_to_project` to copy the chosen `.csl` file from the shared `csl/` library into the project directory.
+   - If the user picks a style not yet in the library, use `bib_download_csl_style` first, then copy it.
+
+6. Create `project-config.yaml` in the project directory with:
    ```yaml
    research_assistant:
      tracking_location: self
@@ -338,10 +380,11 @@ Use the `project-tracker` server to:
                   url: {organization URL if provided}
          output_defaults:
             bibliography: references.bib
-            csl: apa.csl
+            csl: {chosen style}.csl
             include_rwa_methods_disclosure: true
             include_rwa_acknowledgments: true
    ```
+   Note: `output_defaults.csl` must match the CSL filename that was copied into the project directory in step 5.
 
 **Transition**: "Your project is set up! Here is a summary of everything we configured."
 
@@ -375,6 +418,9 @@ Print a clear summary:
 - Name: {name or "not configured"}
 - Affiliation: {organization or "not configured"}
 - ORCID: {configured/skipped}
+
+### Default Citation Style
+- Style: {style title} ({style ID}) / not configured (defaults to APA)
 
 ### First Project
 - {Project title} (created at {path}) / No project created yet
