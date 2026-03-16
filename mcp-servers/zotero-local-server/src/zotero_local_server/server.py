@@ -442,13 +442,13 @@ async def export_annotations_report(
 
 # Default color-to-category mapping (user can override in project-config.yaml)
 _DEFAULT_COLOR_MAP: dict[str, str] = {
-    "#ffd400": "finding",       # yellow
-    "#ff6666": "concern",       # red
-    "#5fb236": "method",        # green
-    "#2ea8e5": "quote",         # blue
-    "#a28ae5": "theory",        # purple
-    "#e56eee": "definition",    # magenta
-    "#f19837": "example",       # orange
+    "#ffd400": "finding",  # yellow
+    "#ff6666": "concern",  # red
+    "#5fb236": "method",  # green
+    "#2ea8e5": "quote",  # blue
+    "#a28ae5": "theory",  # purple
+    "#e56eee": "definition",  # magenta
+    "#f19837": "example",  # orange
 }
 
 
@@ -675,6 +675,7 @@ async def build_evidence_table(
 
         notes = zotero_db.get_notes_for_item(data_dir, key)
         import re
+
         note_texts = []
         for n in notes:
             text = re.sub(r"<[^>]+>", "", n.get("note", "")).strip()
@@ -792,6 +793,7 @@ async def get_item_reading_progress(item_key: str) -> dict[str, Any]:
     # Get total page count
     try:
         import pymupdf
+
         doc = pymupdf.open(pdf_path)
         total_pages = len(doc)
         doc.close()

@@ -972,9 +972,7 @@ def update_note(
         sets.append("updated_at = ?")
         params.append(datetime.now(UTC).isoformat())
         params.append(note_id)
-        cursor = conn.execute(
-            f"UPDATE notes SET {', '.join(sets)} WHERE note_id = ?", params
-        )
+        cursor = conn.execute(f"UPDATE notes SET {', '.join(sets)} WHERE note_id = ?", params)
         conn.commit()
         return cursor.rowcount > 0
     finally:
@@ -1161,9 +1159,7 @@ def _parse_bibtex_entries(text: str) -> list[dict[str, Any]]:
         entry: dict[str, Any] = {"_type": m.group(1).lower(), "_key": m.group(2).strip()}
         body = m.group(3)
         # Extract field = {value} or field = "value"
-        for fm in re.finditer(
-            r"(\w+)\s*=\s*(?:\{((?:[^{}]|\{[^{}]*\})*)\}|\"([^\"]*)\")", body
-        ):
+        for fm in re.finditer(r"(\w+)\s*=\s*(?:\{((?:[^{}]|\{[^{}]*\})*)\}|\"([^\"]*)\")", body):
             field = fm.group(1).lower()
             value = (fm.group(2) or fm.group(3) or "").strip()
             entry[field] = value
@@ -1374,9 +1370,7 @@ def get_reading_list(
         params: list[Any] = []
 
         if note_type is not None:
-            where.append(
-                "r.result_id IN (SELECT result_id FROM notes WHERE note_type = ?)"
-            )
+            where.append("r.result_id IN (SELECT result_id FROM notes WHERE note_type = ?)")
             params.append(note_type)
         if has_attachments is True:
             where.append("COALESCE(att.cnt, 0) > 0")

@@ -663,11 +663,13 @@ async def bib_list_csl_styles() -> dict[str, Any]:
         return {"status": "error", "message": f"CSL directory not found: {csl}"}
     styles = []
     for p in sorted(csl.glob("*.csl")):
-        styles.append({
-            "id": p.stem,
-            "title": _parse_csl_title(p),
-            "file": p.name,
-        })
+        styles.append(
+            {
+                "id": p.stem,
+                "title": _parse_csl_title(p),
+                "file": p.name,
+            }
+        )
     return {"status": "ok", "count": len(styles), "styles": styles}
 
 
