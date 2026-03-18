@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://github.com/andre-inter-collab-llc/research-workflow-assistant/blob/master/docs/getting-started.md
+    about: Read the getting started guide before opening an issue
+  - name: API Setup Guide
+    url: https://github.com/andre-inter-collab-llc/research-workflow-assistant/blob/master/docs/api-setup-guide.md
+    about: Troubleshoot API key and MCP server configuration

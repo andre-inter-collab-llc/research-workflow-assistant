@@ -86,3 +86,6 @@ admin/
 
 # Node (in case of any tooling)
 node_modules/
+
+# Backups (local, not committed)
+backups/

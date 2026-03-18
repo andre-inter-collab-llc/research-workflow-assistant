@@ -1,0 +1,27 @@
+# Research Workflow Assistant — Version History (Machine-Readable)
+#
+# CalVer format: YYYY.MM.DD (with .N suffix for same-day releases)
+# This file mirrors CHANGELOG.md in structured form.
+
+releases:
+  - version: "2026.03.18"
+    date: "2026-03-18"
+    summary: "Initial public release of the Research Workflow Assistant"
+    changes:
+      added:
+        - "11 MCP servers: pubmed, openalex, semantic-scholar, europe-pmc, crossref, zotero, zotero-local, bibliography-manager, prisma-tracker, project-tracker, chat-exporter"
+        - "Shared library (mcp-servers/_shared) for common utilities"
+        - "10 custom Copilot agents: systematic-reviewer, data-analyst, academic-writer, research-planner, project-manager, critical-reviewer, research-orchestrator, developer, setup, troubleshooter"
+        - "6 compliance documents: ICMJE checklist, AI disclosure template, PRISMA 2020, PRISMA-ScR, MOOSE, Cochrane RoB 2"
+        - "12+ Quarto/Markdown templates for protocols, manuscripts, search strategies, PRISMA flow, progress briefs, meeting notes, decision logs, critical appraisals"
+        - "11 CSL citation styles (APA, AMA, BMJ, Chicago, Harvard, IEEE, NLM, Nature, Vancouver)"
+        - "Documentation: getting-started, api-setup, database-access, architecture, posit-quarto guide, zotero-plugins guide, quick-start"
+        - "GitHub Actions CI/CD: multi-platform validation + ruff linting"
+        - "CalVer versioning with CHANGELOG.md + versions.yaml dual changelog"
+        - "Local release script (scripts/release.py) with backup and tagging"
+        - "GitHub Actions release workflow for automated GitHub Releases"
+        - "Community standards: CONTRIBUTING.md, CODE_OF_CONDUCT.md, SECURITY.md, issue templates, PR template"
+      changed: []
+      fixed: []
+      removed: []
+      security: []

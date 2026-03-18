@@ -1,0 +1,78 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+env:
+  NODE_OPTIONS: "--max_old_space_size=4096"
+  FORCE_COLOR: 3
+
+jobs:
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Create release zip
+        run: |
+          git archive --format=zip --prefix="rwa-${{ steps.version.outputs.VERSION }}/" \
+            -o "rwa-${{ steps.version.outputs.VERSION }}.zip" HEAD
+
+      - name: Generate environment lock file
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install -e mcp-servers/_shared \
+            -e mcp-servers/pubmed-server \
+            -e mcp-servers/openalex-server \
+            -e mcp-servers/semantic-scholar-server \
+            -e mcp-servers/europe-pmc-server \
+            -e mcp-servers/crossref-server \
+            -e mcp-servers/zotero-server \
+            -e mcp-servers/zotero-local-server \
+            -e mcp-servers/prisma-tracker \
+            -e mcp-servers/project-tracker \
+            -e mcp-servers/chat-exporter \
+            -e mcp-servers/bibliography-manager
+          pip freeze > "requirements-lock-${{ steps.version.outputs.VERSION }}.txt"
+
+      - name: Extract changelog for this version
+        id: changelog
+        run: |
+          # Extract the section for this version from CHANGELOG.md
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          NOTES=$(awk "/^## \[${VERSION}\]/{flag=1; next} /^## \[/{flag=0} flag" CHANGELOG.md)
+          if [ -z "$NOTES" ]; then
+            NOTES="Release ${VERSION}"
+          fi
+          # Write to file to handle multiline
+          echo "$NOTES" > release_notes.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "RWA ${{ steps.version.outputs.VERSION }}"
+          body_path: release_notes.md
+          files: |
+            rwa-${{ steps.version.outputs.VERSION }}.zip
+            requirements-lock-${{ steps.version.outputs.VERSION }}.txt
+          draft: false
+          prerelease: ${{ contains(steps.version.outputs.VERSION, 'alpha') || contains(steps.version.outputs.VERSION, 'beta') }}
