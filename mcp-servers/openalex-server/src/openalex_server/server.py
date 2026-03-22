@@ -51,7 +51,8 @@ def _require_project_path(project_path: str | None) -> str:
     resolved = Path(project_path).expanduser().resolve()
     if not resolved.exists() or not resolved.is_dir():
         raise ValueError(
-            f"Invalid project_path: '{project_path}'. It must point to an existing project directory."
+            f"Invalid project_path: '{project_path}'."
+            " It must point to an existing project directory."
         )
 
     return str(resolved)
@@ -113,10 +114,10 @@ def _reconstruct_abstract(inverted_index: dict[str, list[int]] | None) -> str:
 @mcp.tool()
 async def search_works(
     query: str,
+    project_path: str,
     filters: str | None = None,
     sort: str = "relevance_score:desc",
     per_page: int = 20,
-    project_path: str,
 ) -> dict[str, Any]:
     """Search OpenAlex for academic works (articles, books, datasets, etc.).
 

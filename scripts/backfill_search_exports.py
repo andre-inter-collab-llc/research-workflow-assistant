@@ -14,8 +14,8 @@ from __future__ import annotations
 
 import argparse
 import json
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 from rwa_result_store import export_results_csv, export_results_excel
 
@@ -36,7 +36,11 @@ def _candidate_projects_from_workspace(workspace_root: Path) -> list[Path]:
     return sorted(set(projects))
 
 
-def _resolve_projects(workspace_root: Path, explicit_paths: Iterable[str], all_projects: bool) -> list[Path]:
+def _resolve_projects(
+    workspace_root: Path,
+    explicit_paths: Iterable[str],
+    all_projects: bool,
+) -> list[Path]:
     resolved: list[Path] = []
 
     for raw in explicit_paths:
@@ -75,17 +79,21 @@ def _backfill_project(project_path: Path) -> dict[str, str | bool]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Backfill search exports from existing project DB files")
+    parser = argparse.ArgumentParser(
+        description="Backfill search exports from existing project DB files",
+    )
     parser.add_argument(
         "--project-path",
         action="append",
         default=[],
-        help="Project directory path (repeatable). Relative paths are resolved from workspace root.",
+        help="Project directory path (repeatable). "
+        "Relative paths are resolved from workspace root.",
     )
     parser.add_argument(
         "--all-projects",
         action="store_true",
-        help="Process all projects under my_projects/ and admin/communications/* containing a search DB.",
+        help="Process all projects under my_projects/ and "
+        "admin/communications/* containing a search DB.",
     )
     parser.add_argument("--json", action="store_true", help="Print machine-readable JSON output")
     args = parser.parse_args()

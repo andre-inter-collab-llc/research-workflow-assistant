@@ -50,7 +50,8 @@ def _require_project_path(project_path: str | None) -> str:
     resolved = Path(project_path).expanduser().resolve()
     if not resolved.exists() or not resolved.is_dir():
         raise ValueError(
-            f"Invalid project_path: '{project_path}'. It must point to an existing project directory."
+            f"Invalid project_path: '{project_path}'."
+            " It must point to an existing project directory."
         )
 
     return str(resolved)
@@ -110,10 +111,10 @@ def _format_work(item: dict[str, Any]) -> dict[str, Any]:
 @mcp.tool()
 async def search_works(
     query: str,
+    project_path: str,
     filters: str | None = None,
     rows: int = 20,
     sort: str = "relevance",
-    project_path: str,
 ) -> dict[str, Any]:
     """Search CrossRef for bibliographic works.
 
