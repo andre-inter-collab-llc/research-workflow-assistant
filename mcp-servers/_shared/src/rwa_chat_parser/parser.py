@@ -179,6 +179,10 @@ def _parse_response_items(items: list[Any], msg: ChatMessage) -> None:
 
         if item_kind == "thinking":
             content = item.get("value", "")
+            if isinstance(content, list):
+                content = "\n".join(str(c) for c in content)
+            elif not isinstance(content, str):
+                content = str(content)
             # Skip empty thinking blocks (stop markers)
             if content.strip():
                 msg.thinking_blocks.append(ThinkingBlock(content=content))
