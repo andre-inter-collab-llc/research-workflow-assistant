@@ -12,6 +12,9 @@ from typing import Any
 import httpx
 from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP
+from rwa_result_store import (
+    store_results as _store_results,
+)
 
 
 def _load_dotenv_from_workspace() -> None:
@@ -182,11 +185,49 @@ def _format_item(item: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _require_project_path(project_path: str | None) -> str:
+    """Validate and normalize project_path for persisted search operations."""
+    if not project_path or not project_path.strip():
+        raise ValueError(
+            "project_path is required. Provide the absolute path to the target project directory."
+        )
+
+    resolved = Path(project_path).expanduser().resolve()
+    if not resolved.exists() or not resolved.is_dir():
+        raise ValueError(
+            f"Invalid project_path: '{project_path}'. It must point to an existing project directory."
+        )
+
+    return str(resolved)
+
+
+def _normalize_for_storage(item: dict[str, Any]) -> dict[str, Any]:
+    """Normalize a formatted Zotero item into the shared search-result schema."""
+    date = str(item.get("date", "") or "")
+    year = date[:4] if len(date) >= 4 and date[:4].isdigit() else ""
+
+    return {
+        "zotero_key": item.get("key", ""),
+        "item_type": item.get("item_type", ""),
+        "title": item.get("title", ""),
+        "authors": [c.get("name", "") for c in item.get("creators", []) if c.get("name")],
+        "journal": item.get("journal", ""),
+        "doi": item.get("doi", ""),
+        "year": year,
+        "date": date,
+        "url": item.get("url", ""),
+        "abstract": item.get("abstract", ""),
+        "tags": item.get("tags", []),
+        "collections": item.get("collections", []),
+    }
+
+
 @mcp.tool()
 async def search_library(
     query: str,
     collection: str | None = None,
     limit: int = 25,
+    project_path: str = ".",
 ) -> dict[str, Any]:
     """Search the user's Zotero library.
 
@@ -194,10 +235,13 @@ async def search_library(
         query: Search query (searches title, creators, tags, and full-text).
         collection: Optional collection key to search within.
         limit: Maximum results (default 25, max 100).
+        project_path: Project directory path. Results are persisted to
+            {project_path}/data/search_results.db for later analysis.
 
     Returns:
         Dictionary with list of matching items.
     """
+    resolved_project_path = _require_project_path(project_path)
     limit = min(limit, 100)
     if collection:
         url = _user_url(f"collections/{collection}/items")
@@ -209,7 +253,21 @@ async def search_library(
     async with httpx.AsyncClient(timeout=30.0) as client:
         items = await _get(client, url, params)
 
-    return {"results": [_format_item(i) for i in items]}
+    formatted_results = [_format_item(i) for i in items]
+    stored_results = [_normalize_for_storage(item) for item in formatted_results]
+    _store_results(
+        resolved_project_path,
+        "zotero",
+        query,
+        stored_results,
+        total_count=len(stored_results),
+        parameters={
+            "collection": collection,
+            "limit": limit,
+        },
+    )
+
+    return {"results": formatted_results}
 
 
 @mcp.tool()

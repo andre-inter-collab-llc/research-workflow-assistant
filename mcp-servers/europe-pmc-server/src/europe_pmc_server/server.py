@@ -5,6 +5,7 @@ Rate limits: No explicit limit, but be respectful.
 """
 
 import logging
+from pathlib import Path
 from typing import Any
 
 import httpx
@@ -27,6 +28,22 @@ mcp = FastMCP(
 )
 
 register_result_store_tools(mcp)
+
+
+def _require_project_path(project_path: str | None) -> str:
+    """Validate and normalize project_path for persisted search operations."""
+    if not project_path or not project_path.strip():
+        raise ValueError(
+            "project_path is required. Provide the absolute path to the target project directory."
+        )
+
+    resolved = Path(project_path).expanduser().resolve()
+    if not resolved.exists() or not resolved.is_dir():
+        raise ValueError(
+            f"Invalid project_path: '{project_path}'. It must point to an existing project directory."
+        )
+
+    return str(resolved)
 
 
 async def _get(client: httpx.AsyncClient, path: str, params: dict[str, str]) -> dict[str, Any]:
@@ -64,7 +81,7 @@ async def search_europepmc(
     page_size: int = 25,
     sort: str = "relevance",
     open_access_only: bool = False,
-    project_path: str | None = None,
+    project_path: str,
 ) -> dict[str, Any]:
     """Search Europe PMC for biomedical and life sciences literature.
 
@@ -77,13 +94,14 @@ async def search_europepmc(
         page_size: Results per page (default 25, max 1000).
         sort: Sort order: 'relevance', 'date', or 'cited'. Default 'relevance'.
         open_access_only: If True, only return open access articles.
-        project_path: Optional project directory path. When provided, results are
-            persisted to {project_path}/data/search_results.db for later analysis.
+        project_path: Project directory path. Results are persisted to
+            {project_path}/data/search_results.db for later analysis.
 
     Returns:
         Dictionary with 'total_count' and list of 'results'.
     """
     page_size = min(page_size, 1000)
+    resolved_project_path = _require_project_path(project_path)
     full_query = query
     if open_access_only:
         full_query += " AND OPEN_ACCESS:y"
@@ -104,23 +122,19 @@ async def search_europepmc(
     results = [_format_result(r) for r in result_list]
     total_count = data.get("hitCount", 0)
 
-    if project_path:
-        try:
-            _store_results(
-                project_path,
-                "europe_pmc",
-                query,
-                results,
-                total_count=total_count,
-                parameters={
-                    "result_type": result_type,
-                    "page_size": page_size,
-                    "sort": sort,
-                    "open_access_only": open_access_only,
-                },
-            )
-        except Exception:
-            logger.warning("Failed to store Europe PMC search results", exc_info=True)
+    _store_results(
+        resolved_project_path,
+        "europe_pmc",
+        query,
+        results,
+        total_count=total_count,
+        parameters={
+            "result_type": result_type,
+            "page_size": page_size,
+            "sort": sort,
+            "open_access_only": open_access_only,
+        },
+    )
 
     return {
         "total_count": total_count,

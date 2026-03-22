@@ -70,7 +70,7 @@ Stage sequence:
 6. Timeline, milestones, and reporting -> `@project-manager`
 
 Default handoff prompt template:
-`@research-planner Continue project [PROJECT_NAME] at stage "Planning and protocol". Use the existing project context and prepare the protocol scaffold with human decision checkpoints.`
+`@research-planner Continue project [PROJECT_NAME] at stage "Planning and protocol". Use the existing project context and project_path=[PROJECT_PATH], then prepare the protocol scaffold with human decision checkpoints.`
 
 ### 2) Scoping Review
 

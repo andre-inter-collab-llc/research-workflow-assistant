@@ -6,6 +6,7 @@ Rate limits: Polite pool (50 req/sec) with mailto parameter, otherwise lower.
 
 import logging
 import os
+from pathlib import Path
 from typing import Any
 
 import httpx
@@ -37,6 +38,22 @@ def _base_params() -> dict[str, str]:
     if CONTACT_EMAIL:
         params["mailto"] = CONTACT_EMAIL
     return params
+
+
+def _require_project_path(project_path: str | None) -> str:
+    """Validate and normalize project_path for persisted search operations."""
+    if not project_path or not project_path.strip():
+        raise ValueError(
+            "project_path is required. Provide the absolute path to the target project directory."
+        )
+
+    resolved = Path(project_path).expanduser().resolve()
+    if not resolved.exists() or not resolved.is_dir():
+        raise ValueError(
+            f"Invalid project_path: '{project_path}'. It must point to an existing project directory."
+        )
+
+    return str(resolved)
 
 
 async def _get(client: httpx.AsyncClient, path: str, params: dict[str, str]) -> dict[str, Any]:
@@ -96,7 +113,7 @@ async def search_works(
     filters: str | None = None,
     rows: int = 20,
     sort: str = "relevance",
-    project_path: str | None = None,
+    project_path: str,
 ) -> dict[str, Any]:
     """Search CrossRef for bibliographic works.
 
@@ -107,13 +124,14 @@ async def search_works(
             has-orcid, is-update. See https://api.crossref.org/swagger-ui/index.html
         rows: Number of results per page (default 20, max 1000).
         sort: Sort field: 'relevance', 'published', 'indexed', 'is-referenced-by-count'.
-        project_path: Optional project directory path. When provided, results are
-            persisted to {project_path}/data/search_results.db for later analysis.
+        project_path: Project directory path. Results are persisted to
+            {project_path}/data/search_results.db for later analysis.
 
     Returns:
         Dictionary with 'total_count' and list of 'works'.
     """
     rows = min(rows, 1000)
+    resolved_project_path = _require_project_path(project_path)
     params = {**_base_params(), "query": query, "rows": str(rows), "sort": sort}
     if filters:
         params["filter"] = filters
@@ -126,18 +144,14 @@ async def search_works(
     works = [_format_work(item) for item in items]
     total_count = message.get("total-results", 0)
 
-    if project_path:
-        try:
-            _store_results(
-                project_path,
-                "crossref",
-                query,
-                works,
-                total_count=total_count,
-                parameters={"filters": filters, "rows": rows, "sort": sort},
-            )
-        except Exception:
-            logger.warning("Failed to store CrossRef search results", exc_info=True)
+    _store_results(
+        resolved_project_path,
+        "crossref",
+        query,
+        works,
+        total_count=total_count,
+        parameters={"filters": filters, "rows": rows, "sort": sort},
+    )
 
     return {
         "total_count": total_count,

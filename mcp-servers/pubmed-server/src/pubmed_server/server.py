@@ -7,6 +7,7 @@ Rate limits: 3 requests/sec without API key, 10 requests/sec with key.
 import logging
 import os
 import xml.etree.ElementTree as ET
+from pathlib import Path
 from typing import Any
 
 import httpx
@@ -38,6 +39,22 @@ def _base_params() -> dict[str, str]:
     if API_KEY:
         params["api_key"] = API_KEY
     return params
+
+
+def _require_project_path(project_path: str | None) -> str:
+    """Validate and normalize project_path for persisted search operations."""
+    if not project_path or not project_path.strip():
+        raise ValueError(
+            "project_path is required. Provide the absolute path to the target project directory."
+        )
+
+    resolved = Path(project_path).expanduser().resolve()
+    if not resolved.exists() or not resolved.is_dir():
+        raise ValueError(
+            f"Invalid project_path: '{project_path}'. It must point to an existing project directory."
+        )
+
+    return str(resolved)
 
 
 async def _get(client: httpx.AsyncClient, endpoint: str, params: dict[str, str]) -> str:
@@ -165,7 +182,7 @@ async def search_pubmed(
     max_results: int = 20,
     date_range: str | None = None,
     article_types: str | None = None,
-    project_path: str | None = None,
+    project_path: str,
 ) -> dict[str, Any]:
     """Search PubMed and return article summaries.
 
@@ -174,13 +191,14 @@ async def search_pubmed(
         max_results: Maximum number of results to return (default 20, max 200).
         date_range: Optional date filter as 'YYYY/MM/DD:YYYY/MM/DD' (mindate:maxdate).
         article_types: Optional publication type filter (e.g., 'Review', 'Clinical Trial').
-        project_path: Optional project directory path. When provided, results are
-            persisted to {project_path}/data/search_results.db for later analysis.
+        project_path: Project directory path. Results are persisted to
+            {project_path}/data/search_results.db for later analysis.
 
     Returns:
         Dictionary with 'total_count' and 'articles' list containing summaries.
     """
     max_results = min(max_results, 200)
+    resolved_project_path = _require_project_path(project_path)
 
     # Build search query with filters
     full_query = query
@@ -205,6 +223,18 @@ async def search_pubmed(
         pmids, total_count = _parse_esearch_ids(search_xml)
 
         if not pmids:
+            _store_results(
+                resolved_project_path,
+                "pubmed",
+                query,
+                [],
+                total_count=total_count,
+                parameters={
+                    "max_results": max_results,
+                    "date_range": date_range,
+                    "article_types": article_types,
+                },
+            )
             return {"total_count": total_count, "articles": []}
 
         # Step 2: ESummary to get article details
@@ -214,22 +244,18 @@ async def search_pubmed(
 
     result = {"total_count": total_count, "articles": articles}
 
-    if project_path:
-        try:
-            _store_results(
-                project_path,
-                "pubmed",
-                query,
-                articles,
-                total_count=total_count,
-                parameters={
-                    "max_results": max_results,
-                    "date_range": date_range,
-                    "article_types": article_types,
-                },
-            )
-        except Exception:
-            logger.warning("Failed to store PubMed search results", exc_info=True)
+    _store_results(
+        resolved_project_path,
+        "pubmed",
+        query,
+        articles,
+        total_count=total_count,
+        parameters={
+            "max_results": max_results,
+            "date_range": date_range,
+            "article_types": article_types,
+        },
+    )
 
     return result
 

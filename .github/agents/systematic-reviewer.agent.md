@@ -85,10 +85,12 @@ Document the strategy using `templates/systematic-review/search-strategy.qmd`.
 ### Phase 4: Database Searching
 
 Execute searches using MCP server tools in the order specified by the user:
-1. Run each database search and report the number of results
+1. Run each database search with a valid `project_path` and report the number of results
+   - For API-backed databases, prefer `*_scripted` tools when available (e.g., `search_pubmed_scripted`, `search_works_scripted`, `search_papers_scripted`, `search_europepmc_scripted`) to preserve reproducible scripts under `{project_path}/scripts/`.
+   - If using direct search tools, always pass `project_path` explicitly. Do not run searches without project context.
 2. Use `prisma-tracker` to record each search (database, query, date, result count)
 3. Download bibliographic records (title, authors, abstract, DOI, year, journal)
-4. Store results in a structured format
+4. Confirm results were persisted to `{project_path}/data/search_results.db` before moving to the next search
 
 For databases without API access (CINAHL, PsycINFO, Web of Science, Google Scholar, Cochrane Library):
 - Provide the database-specific query syntax

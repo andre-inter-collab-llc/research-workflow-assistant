@@ -116,7 +116,7 @@ Present them in this order:
 - **Action**: User provides email, or says "skip"
 
 ### 3d. Semantic Scholar API Key (Optional)
-- **What**: Higher rate limits for Semantic Scholar searches
+- **What**: Authenticated access to the Semantic Scholar API
 - **How**: Go to https://www.semanticscholar.org/product/api → "Request API Key" → fill out the form. **Note**: approval may take several business days. It is fine to skip this and add it later.
 - **Action**: User provides key, or says "skip" (recommend skipping if they don't have it yet)
 

@@ -236,6 +236,8 @@ _S2_PAPER_FIELDS = ",".join(
 
 _S2_MAX_RETRIES = 3
 _S2_BASE_BACKOFF = 1.0
+_S2_MIN_REQUEST_INTERVAL = 1.0  # proactive throttle: 1 req/sec
+_s2_last_request_time: float = 0.0
 
 
 def _s2_headers() -> dict[str, str]:
@@ -252,8 +254,15 @@ def _request_with_backoff(
     url: str,
     **kwargs: Any,
 ) -> httpx.Response:
-    """Make an HTTP request with exponential backoff on 429 (rate limit)."""
+    """Make an HTTP request with proactive throttling and exponential backoff on 429."""
+    global _s2_last_request_time
     for attempt in range(_S2_MAX_RETRIES + 1):
+        # Proactive throttle: enforce _S2_MIN_REQUEST_INTERVAL between requests
+        elapsed = time.monotonic() - _s2_last_request_time
+        if elapsed < _S2_MIN_REQUEST_INTERVAL:
+            time.sleep(_S2_MIN_REQUEST_INTERVAL - elapsed)
+        _s2_last_request_time = time.monotonic()
+
         resp = client.request(method, url, headers=_s2_headers(), **kwargs)
         if resp.status_code != 429 or attempt == _S2_MAX_RETRIES:
             resp.raise_for_status()

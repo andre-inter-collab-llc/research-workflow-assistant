@@ -92,7 +92,7 @@ NCBI_API_KEY=your_key_here
 # Required for OpenAlex (free API key)
 OPENALEX_API_KEY=your_key_here
 
-# Optional for Semantic Scholar (higher rate limits)
+# Optional for Semantic Scholar (authenticated access)
 S2_API_KEY=your_key_here
 
 # Recommended for CrossRef (polite pool)

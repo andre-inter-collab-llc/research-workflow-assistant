@@ -2,13 +2,14 @@
 
 API Documentation: https://api.semanticscholar.org/api-docs/
 License: https://www.semanticscholar.org/product/api/license
-Rate limits: 1 req/sec (unauthenticated), higher with API key.
-Retry policy: Exponential backoff on 429 responses per license terms.
+Rate limits: 1 req/sec (standard key, both authenticated and unauthenticated).
+Retry policy: Proactive 1 req/sec throttle + exponential backoff on 429 responses per license terms.
 """
 
 import asyncio
 import logging
 import os
+from pathlib import Path
 from typing import Any
 
 import httpx
@@ -29,6 +30,11 @@ API_KEY = os.environ.get("S2_API_KEY", "")
 
 MAX_RETRIES = 3
 BASE_BACKOFF = 1.0  # seconds
+MIN_REQUEST_INTERVAL = 1.0  # proactive throttle: 1 req/sec
+
+# Proactive rate limiter state
+_last_request_time: float = 0.0
+_rate_lock: asyncio.Lock | None = None  # lazily initialised (no running loop at import)
 
 PAPER_FIELDS = ",".join(
     [
@@ -63,6 +69,22 @@ mcp = FastMCP(
 register_result_store_tools(mcp)
 
 
+def _require_project_path(project_path: str | None) -> str:
+    """Validate and normalize project_path for persisted search operations."""
+    if not project_path or not project_path.strip():
+        raise ValueError(
+            "project_path is required. Provide the absolute path to the target project directory."
+        )
+
+    resolved = Path(project_path).expanduser().resolve()
+    if not resolved.exists() or not resolved.is_dir():
+        raise ValueError(
+            f"Invalid project_path: '{project_path}'. It must point to an existing project directory."
+        )
+
+    return str(resolved)
+
+
 def _headers() -> dict[str, str]:
     """Return request headers including API key if available."""
     headers: dict[str, str] = {}
@@ -77,8 +99,20 @@ async def _request_with_backoff(
     url: str,
     **kwargs: Any,
 ) -> httpx.Response:
-    """Make an HTTP request with exponential backoff on 429 responses."""
+    """Make an HTTP request with proactive throttling and exponential backoff on 429."""
+    global _last_request_time, _rate_lock
+    if _rate_lock is None:
+        _rate_lock = asyncio.Lock()
+
     for attempt in range(MAX_RETRIES + 1):
+        # Proactive throttle: enforce MIN_REQUEST_INTERVAL between requests
+        async with _rate_lock:
+            now = asyncio.get_event_loop().time()
+            elapsed = now - _last_request_time
+            if elapsed < MIN_REQUEST_INTERVAL:
+                await asyncio.sleep(MIN_REQUEST_INTERVAL - elapsed)
+            _last_request_time = asyncio.get_event_loop().time()
+
         resp = await client.request(method, url, headers=_headers(), **kwargs)
         if resp.status_code != 429 or attempt == MAX_RETRIES:
             resp.raise_for_status()
@@ -146,7 +180,7 @@ async def search_papers(
     fields_of_study: str | None = None,
     open_access_only: bool = False,
     limit: int = 20,
-    project_path: str | None = None,
+    project_path: str,
 ) -> dict[str, Any]:
     """Search Semantic Scholar for academic papers.
 
@@ -156,13 +190,14 @@ async def search_papers(
         fields_of_study: Comma-separated fields (e.g., 'Medicine,Computer Science').
         open_access_only: If True, only return open access papers.
         limit: Maximum results (default 20, max 100).
-        project_path: Optional project directory path. When provided, results are
-            persisted to {project_path}/data/search_results.db for later analysis.
+        project_path: Project directory path. Results are persisted to
+            {project_path}/data/search_results.db for later analysis.
 
     Returns:
         Dictionary with 'total' count and list of 'papers'.
     """
     limit = min(limit, 100)
+    resolved_project_path = _require_project_path(project_path)
     params: dict[str, str] = {"query": query, "limit": str(limit), "fields": PAPER_FIELDS}
 
     if year_range and "-" in year_range:
@@ -178,23 +213,19 @@ async def search_papers(
     papers = [_format_paper(p) for p in data.get("data", [])]
     total = data.get("total", 0)
 
-    if project_path:
-        try:
-            _store_results(
-                project_path,
-                "semantic_scholar",
-                query,
-                papers,
-                total_count=total,
-                parameters={
-                    "year_range": year_range,
-                    "fields_of_study": fields_of_study,
-                    "open_access_only": open_access_only,
-                    "limit": limit,
-                },
-            )
-        except Exception:
-            logger.warning("Failed to store Semantic Scholar search results", exc_info=True)
+    _store_results(
+        resolved_project_path,
+        "semantic_scholar",
+        query,
+        papers,
+        total_count=total,
+        parameters={
+            "year_range": year_range,
+            "fields_of_study": fields_of_study,
+            "open_access_only": open_access_only,
+            "limit": limit,
+        },
+    )
 
     return {"total": total, "papers": papers}
 

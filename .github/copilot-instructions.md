@@ -180,7 +180,7 @@ When tracking project progress or generating briefs:
 Respect API rate limits for all external services:
 - PubMed: 3 req/sec without key, 10 req/sec with NCBI_API_KEY
 - OpenAlex: 100 req/sec, $1/day free budget (API key required)
-- Semantic Scholar: 1 req/sec (unauthenticated), higher with API key. Exponential backoff on 429s required per license.
+- Semantic Scholar: 1 req/sec (standard key, both authenticated and unauthenticated). Proactive throttling + exponential backoff on 429s per license.
 - Europe PMC: reasonable use (no hard limit documented)
 - CrossRef: 50 req/sec (polite pool with email)
 - Zotero: follow Zotero API rate limit headers

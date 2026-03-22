@@ -89,14 +89,13 @@ Monitor usage at [openalex.org/settings/usage](https://openalex.org/settings/usa
 ## Semantic Scholar
 
 **Key type:** API Key
-**Required:** No (works without, at lower rate limits)
-**Rate plans:** Two tiers — 1 req/sec (unauthenticated) and higher with API key
+**Required:** No (works without, but recommended for stable access)
+**Rate limit:** 1 req/sec (standard key — same for unauthenticated and authenticated). Higher-tier keys may allow more; check your approval email.
 **Key inactivity:** Keys inactive for ~60 days may be revoked
 
 ### How to get your key
 
-1. First, verify you can make unauthenticated requests (the server works without a key at 1 req/sec)
-2. Go to the [Semantic Scholar API key request form](https://www.semanticscholar.org/product/api#api-key-form)
+1. Go to the [Semantic Scholar API key request form](https://www.semanticscholar.org/product/api#api-key-form)
 3. Fill out the form describing your use case and expected endpoints
 4. Complete the [API License Agreement](https://www.semanticscholar.org/product/api/license)
 5. You will receive an API key via email (may take a few business days)
@@ -279,7 +278,7 @@ If you use [Better BibTeX](https://retorque.re/zotero-better-bibtex/) for citati
 |---------|:---:|----------|-----------|------------|
 | PubMed | Recommended | API Key | Yes (unlimited) | 3/sec without key, 10/sec with key |
 | OpenAlex | Yes (free) | API Key | $1/day free | 100/sec, $1/day budget |
-| Semantic Scholar | No | API Key | Yes (1 req/sec) | 1 req/sec unauthenticated |
+| Semantic Scholar | No | API Key | Yes (1 req/sec) | 1 req/sec (standard key) |
 | Europe PMC | No | None | Yes (unlimited) | Fair use |
 | CrossRef | No | Email (polite pool) | Yes (unlimited) | Polite pool preferred |
 | Zotero | Yes | API Key + User ID | Yes (300MB storage) | Fair use |
@@ -296,7 +295,7 @@ NCBI_API_KEY=
 # OpenAlex (free API key required)
 OPENALEX_API_KEY=
 
-# Semantic Scholar (optional, for higher rate limits)
+# Semantic Scholar (optional, for authenticated access)
 S2_API_KEY=
 
 # CrossRef (email for polite pool)

@@ -7,6 +7,7 @@ Rate limits: 100 requests/sec, $1/day free budget.
 
 import logging
 import os
+from pathlib import Path
 from typing import Any
 
 import httpx
@@ -38,6 +39,22 @@ def _base_params() -> dict[str, str]:
     if OPENALEX_API_KEY:
         params["api_key"] = OPENALEX_API_KEY
     return params
+
+
+def _require_project_path(project_path: str | None) -> str:
+    """Validate and normalize project_path for persisted search operations."""
+    if not project_path or not project_path.strip():
+        raise ValueError(
+            "project_path is required. Provide the absolute path to the target project directory."
+        )
+
+    resolved = Path(project_path).expanduser().resolve()
+    if not resolved.exists() or not resolved.is_dir():
+        raise ValueError(
+            f"Invalid project_path: '{project_path}'. It must point to an existing project directory."
+        )
+
+    return str(resolved)
 
 
 async def _get(client: httpx.AsyncClient, path: str, params: dict[str, str]) -> dict[str, Any]:
@@ -99,7 +116,7 @@ async def search_works(
     filters: str | None = None,
     sort: str = "relevance_score:desc",
     per_page: int = 20,
-    project_path: str | None = None,
+    project_path: str,
 ) -> dict[str, Any]:
     """Search OpenAlex for academic works (articles, books, datasets, etc.).
 
@@ -113,13 +130,14 @@ async def search_works(
         sort: Sort order. Options: relevance_score:desc, cited_by_count:desc,
             publication_date:desc, publication_date:asc. Default: relevance_score:desc.
         per_page: Results per page (default 20, max 200).
-        project_path: Optional project directory path. When provided, results are
-            persisted to {project_path}/data/search_results.db for later analysis.
+        project_path: Project directory path. Results are persisted to
+            {project_path}/data/search_results.db for later analysis.
 
     Returns:
         Dictionary with 'total_count' and 'works' list.
     """
     per_page = min(per_page, 200)
+    resolved_project_path = _require_project_path(project_path)
     params = {**_base_params(), "search": query, "sort": sort, "per_page": str(per_page)}
     if filters:
         params["filter"] = filters
@@ -130,18 +148,14 @@ async def search_works(
     works = [_format_work(w) for w in data.get("results", [])]
     total_count = data.get("meta", {}).get("count", 0)
 
-    if project_path:
-        try:
-            _store_results(
-                project_path,
-                "openalex",
-                query,
-                works,
-                total_count=total_count,
-                parameters={"filters": filters, "sort": sort, "per_page": per_page},
-            )
-        except Exception:
-            logger.warning("Failed to store OpenAlex search results", exc_info=True)
+    _store_results(
+        resolved_project_path,
+        "openalex",
+        query,
+        works,
+        total_count=total_count,
+        parameters={"filters": filters, "sort": sort, "per_page": per_page},
+    )
 
     return {
         "total_count": total_count,
