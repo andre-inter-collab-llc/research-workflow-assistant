@@ -878,6 +878,144 @@ async def download_attachment(item_key: str) -> dict[str, Any]:
 
 
 @mcp.tool()
+async def upload_attachment(
+    item_key: str,
+    file_path: str,
+    content_type: str = "application/pdf",
+    title: str = "",
+) -> dict[str, Any]:
+    """Upload a local file as an attachment to an existing Zotero item.
+
+    Uses the Zotero Web API file-upload protocol:
+    1. Create an imported-file attachment child item.
+    2. Request upload authorization (provides S3 upload parameters).
+    3. Upload the file to S3 via multipart POST.
+    4. Register the upload with Zotero.
+
+    Args:
+        item_key: The parent Zotero item key to attach the file to.
+        file_path: Absolute path to the local file to upload.
+        content_type: MIME type of the file (default: application/pdf).
+        title: Display title for the attachment (defaults to filename).
+
+    Returns:
+        Dictionary with the new attachment key and upload status.
+    """
+    import hashlib
+    import time
+
+    resolved = Path(file_path).expanduser().resolve()
+    if not resolved.is_file():
+        return {"status": "error", "message": f"File not found: {file_path}"}
+
+    file_bytes = resolved.read_bytes()
+    filename = resolved.name
+    md5_hash = hashlib.md5(file_bytes).hexdigest()
+    file_size = len(file_bytes)
+    display_title = title or filename
+
+    async with httpx.AsyncClient(timeout=120.0) as client:
+        user_id = await _ensure_user_id(client)
+
+        # Step 1: Create the attachment child item
+        attachment_template = [
+            {
+                "itemType": "attachment",
+                "parentItem": item_key,
+                "linkMode": "imported_file",
+                "title": display_title,
+                "contentType": content_type,
+                "filename": filename,
+                "tags": [],
+                "relations": {},
+            }
+        ]
+        create_url = _user_url("items")
+        create_url = _canonicalize_user_url(create_url, user_id)
+        create_resp = await client.post(
+            create_url,
+            headers={**_headers(), "Content-Type": "application/json"},
+            json=attachment_template,
+        )
+        create_resp.raise_for_status()
+        create_data = create_resp.json()
+
+        # Extract the new attachment key
+        success_items = create_data.get("success", {})
+        if not success_items:
+            failed = create_data.get("failed", {})
+            return {"status": "error", "message": f"Failed to create attachment item: {failed}"}
+        attachment_key = success_items["0"]
+
+        # Step 2: Request upload authorization
+        auth_url = _user_url(f"items/{attachment_key}/file")
+        auth_url = _canonicalize_user_url(auth_url, user_id)
+        auth_headers = {
+            **_headers(),
+            "Content-Type": "application/x-www-form-urlencoded",
+            "If-None-Match": "*",
+        }
+        auth_body = f"md5={md5_hash}&filename={filename}&filesize={file_size}&mtime={int(time.time() * 1000)}"
+        auth_resp = await client.post(auth_url, headers=auth_headers, content=auth_body)
+        auth_resp.raise_for_status()
+        auth_data = auth_resp.json()
+
+        # If the file already exists on Zotero servers, no upload needed
+        if auth_data.get("exists"):
+            return {
+                "status": "success",
+                "attachment_key": attachment_key,
+                "filename": filename,
+                "message": "File already exists on server; attachment linked.",
+            }
+
+        # Step 3: Upload file to S3
+        upload_url = auth_data["url"]
+        prefix = auth_data.get("prefix", b"")
+        suffix = auth_data.get("suffix", b"")
+        s3_content_type = auth_data.get("contentType", content_type)
+
+        # Encode prefix/suffix if they are strings
+        if isinstance(prefix, str):
+            prefix = prefix.encode("latin-1")
+        if isinstance(suffix, str):
+            suffix = suffix.encode("latin-1")
+
+        upload_body = prefix + file_bytes + suffix
+        upload_resp = await client.post(
+            upload_url,
+            headers={"Content-Type": s3_content_type},
+            content=upload_body,
+        )
+        upload_resp.raise_for_status()
+
+        # Step 4: Register the upload with Zotero
+        upload_key = auth_data.get("uploadKey", "")
+        register_body = f"upload={upload_key}"
+        register_resp = await client.post(
+            auth_url,
+            headers={
+                **_headers(),
+                "Content-Type": "application/x-www-form-urlencoded",
+                "If-None-Match": "*",
+            },
+            content=register_body,
+        )
+        register_resp.raise_for_status()
+
+        return {
+            "status": "success",
+            "attachment_key": attachment_key,
+            "parent_item": item_key,
+            "filename": filename,
+            "content_type": content_type,
+            "size_bytes": file_size,
+            "md5": md5_hash,
+            "message": f"File '{filename}' uploaded and attached to item {item_key}.",
+        }
+
+
+@mcp.tool()
 async def search_notes(
     query: str, collection: str | None = None, limit: int = 25
 ) -> dict[str, Any]:
