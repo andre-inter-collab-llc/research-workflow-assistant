@@ -956,10 +956,7 @@ async def upload_attachment(
             "If-None-Match": "*",
         }
         mtime = int(time.time() * 1000)
-        auth_body = (
-            f"md5={md5_hash}&filename={filename}"
-            f"&filesize={file_size}&mtime={mtime}"
-        )
+        auth_body = f"md5={md5_hash}&filename={filename}&filesize={file_size}&mtime={mtime}"
         auth_resp = await client.post(auth_url, headers=auth_headers, content=auth_body)
         auth_resp.raise_for_status()
         auth_data = auth_resp.json()

@@ -215,7 +215,11 @@ Respect API rate limits for all external services:
   - **E501**: Break long lines using implicit string concatenation (parenthesized strings), intermediate variables, or line continuations.
   - **F541**: Do not use f-string prefixes on strings that contain no `{...}` placeholders. Use a plain string instead.
   - **F841**: Do not assign values to local variables that are never read. Remove the assignment or use the value.
-- Before considering a code change complete, mentally verify it would pass `ruff check` with the project settings.
+- **Formatting**: This project also enforces `ruff format`. CI runs `ruff format --check .` and will fail on any formatting deviation. Key formatting rules:
+  - Follow ruff's default formatting conventions (consistent quotes, trailing commas, parenthesization).
+  - Do not manually split lines that already fit within the 100-character limit; ruff format will collapse them and CI will fail.
+  - When in doubt about whether a manual line split is needed, prefer extracting a sub-expression to a local variable to shorten the line, rather than splitting with implicit concatenation.
+- Before considering a code change complete, mentally verify it would pass both `ruff check` and `ruff format --check` with the project settings.
 
 ### Posit / Quarto Standards
 
