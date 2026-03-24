@@ -207,6 +207,16 @@ Respect API rate limits for all external services:
   - **macOS/Linux:** `source .venv/bin/activate`
 - If an automated tool fails to detect the environment, fall back to explicit venv activation in the terminal. Never fall back to the global Python.
 
+### Code Style and Linting
+- This project enforces **ruff** for linting and formatting. The configuration lives in `pyproject.toml` under `[tool.ruff]`.
+- **Line length limit is 100 characters** (`line-length = 100`). All generated or edited Python code must respect this limit.
+- When writing or editing Python code, ensure compliance with the enabled ruff rule sets: `E` (pycodestyle errors), `F` (pyflakes), `I` (isort), `N` (pep8-naming), `W` (pycodestyle warnings), `UP` (pyupgrade).
+- Common pitfalls to avoid:
+  - **E501**: Break long lines using implicit string concatenation (parenthesized strings), intermediate variables, or line continuations.
+  - **F541**: Do not use f-string prefixes on strings that contain no `{...}` placeholders. Use a plain string instead.
+  - **F841**: Do not assign values to local variables that are never read. Remove the assignment or use the value.
+- Before considering a code change complete, mentally verify it would pass `ruff check` with the project settings.
+
 ### Posit / Quarto Standards
 
 [Quarto](https://quarto.org/) is the **default output layer** for the Research Workflow Assistant. All generated reports, manuscripts, protocols, analysis scripts, and dashboards use Quarto Markdown (`.qmd`). Quarto was chosen because it:

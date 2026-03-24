@@ -76,12 +76,11 @@ def upload_file_to_attachment(att_key: str, file_path: pathlib.Path) -> bool:
         )
         print(f"  Register status: {r4.status_code}")
         r4.raise_for_status()
-        print(f"  Success!")
+        print("  Success!")
         return True
 
 
 def create_and_upload(item_key: str, file_path: pathlib.Path) -> str | None:
-    file_bytes = file_path.read_bytes()
     fname = file_path.name
     print(f"\n=== {fname} -> parent {item_key} ===")
 
