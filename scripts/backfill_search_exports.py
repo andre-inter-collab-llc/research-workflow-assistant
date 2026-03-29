@@ -3,7 +3,6 @@
 
 This utility regenerates export files from the canonical SQLite store:
 - data/search_results.xlsx
-- data/search_results.csv
 
 Usage examples:
   python scripts/backfill_search_exports.py --project-path my_projects/my-project
@@ -17,7 +16,7 @@ import json
 from collections.abc import Iterable
 from pathlib import Path
 
-from rwa_result_store import export_results_csv, export_results_excel
+from rwa_result_store import export_results_excel
 
 
 def _candidate_projects_from_workspace(workspace_root: Path) -> list[Path]:
@@ -68,13 +67,11 @@ def _backfill_project(project_path: Path) -> dict[str, str | bool]:
         }
 
     excel_path = export_results_excel(str(project_path))
-    csv_path = export_results_csv(str(project_path))
 
     return {
         "project_path": str(project_path),
         "processed": True,
         "excel_path": excel_path,
-        "csv_path": csv_path,
     }
 
 
@@ -131,7 +128,6 @@ def main() -> int:
             if item.get("processed"):
                 print(f"{prefix} {item['project_path']}")
                 print(f"      xlsx: {item.get('excel_path', '')}")
-                print(f"      csv : {item.get('csv_path', '')}")
             else:
                 print(f"{prefix} {item['project_path']} ({item.get('reason', 'not processed')})")
 

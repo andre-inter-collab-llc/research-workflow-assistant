@@ -107,3 +107,20 @@ format:
 | Journal/Source | Issues Searched | Results |
 |---------------|----------------|---------|
 | | | |
+
+## Script-First Search Workflow
+
+All API-backed searches in this project follow a reproducible script-first workflow:
+
+1. A standalone Python script is generated in `scripts/` for each search.
+2. The researcher reviews the script (query, parameters, database) before execution.
+3. Results are stored in `data/search_results.db` (the canonical data source).
+4. An Excel file (`data/search_results.xlsx`) with clickable DOI/PMID hyperlinks is generated automatically for human review.
+
+**Key files:**
+
+| File | Purpose |
+|------|---------|
+| `scripts/search_*.py` | Generated search scripts (one per search execution) |
+| `data/search_results.db` | SQLite database: single source of truth for all search results |
+| `data/search_results.xlsx` | Excel export with hyperlinks for human review |

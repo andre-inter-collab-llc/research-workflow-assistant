@@ -364,7 +364,7 @@ def export_results_excel(
     Returns the output file path, or empty string if no results.
     """
     from openpyxl import Workbook
-    from openpyxl.styles import Font
+    from openpyxl.styles import Alignment, Font
     from openpyxl.utils import get_column_letter
     from openpyxl.worksheet.table import Table, TableStyleInfo
 
@@ -397,14 +397,33 @@ def export_results_excel(
     # --- Results sheet ---
     ws = wb.active
     ws.title = "All Results"
-    headers = list(results[0].keys())
-    ws.append(headers)
 
-    doi_col = headers.index("doi") + 1 if "doi" in headers else None
-    pmid_col = headers.index("pmid") + 1 if "pmid" in headers else None
+    # Prioritised column order for human review.  Any remaining columns
+    # from the result dicts are appended afterwards in their original order.
+    priority_cols = [
+        "title",
+        "authors_json",
+        "journal",
+        "year",
+        "doi",
+        "pmid",
+        "abstract",
+        "source",
+    ]
+    header_labels = {"authors_json": "Authors"}
+
+    raw_keys = list(results[0].keys())
+    ordered: list[str] = [c for c in priority_cols if c in raw_keys]
+    ordered += [k for k in raw_keys if k not in ordered]
+
+    display_headers = [header_labels.get(h, h) for h in ordered]
+    ws.append(display_headers)
+
+    doi_col = ordered.index("doi") + 1 if "doi" in ordered else None
+    pmid_col = ordered.index("pmid") + 1 if "pmid" in ordered else None
 
     for row in results:
-        ws.append([row.get(h, "") for h in headers])
+        ws.append([row.get(h, "") for h in ordered])
 
     # Add hyperlinks for DOI and PMID columns
     for row_cells in ws.iter_rows(min_row=2, max_row=ws.max_row):
@@ -421,9 +440,15 @@ def export_results_excel(
                 cell.hyperlink = _pmid_url(val)
                 cell.font = link_font
 
-    # Auto-width (capped at 60)
-    for col_idx, h in enumerate(headers, 1):
-        max_len = len(str(h))
+    # Auto-width (capped at 60; abstract uses text-wrap instead)
+    for col_idx, h in enumerate(ordered, 1):
+        if h == "abstract":
+            ws.column_dimensions[get_column_letter(col_idx)].width = 80
+            for row_cells in ws.iter_rows(min_row=2, min_col=col_idx, max_col=col_idx):
+                for cell in row_cells:
+                    cell.alignment = Alignment(wrap_text=True, vertical="top")
+            continue
+        max_len = len(str(display_headers[col_idx - 1]))
         for row in ws.iter_rows(min_row=2, min_col=col_idx, max_col=col_idx):
             for cell in row:
                 val_len = len(str(cell.value or ""))
@@ -432,7 +457,7 @@ def export_results_excel(
         ws.column_dimensions[get_column_letter(col_idx)].width = min(max_len + 2, 60)
 
     # Format as Excel Table with auto-filter
-    end_col = get_column_letter(len(headers))
+    end_col = get_column_letter(len(ordered))
     results_table = Table(
         displayName="Results",
         ref=f"A1:{end_col}{ws.max_row}",
@@ -489,24 +514,8 @@ _TEMPLATE_FUNCS: dict[str, str] = {
 }
 
 
-def generate_and_run_script(
-    project_path: str,
-    source: str,
-    query: str,
-    parameters: dict[str, Any],
-) -> tuple[list[dict[str, Any]], int, int, str] | None:
-    """Generate a standalone search script, execute it, and read results.
-
-    Args:
-        project_path: Absolute path to the project directory.
-        source: Search source identifier (e.g., ``"pubmed"``).
-        query: The search query string.
-        parameters: Dict of search parameters (passed to the template function).
-
-    Returns:
-        ``(results_list, total_count, search_id, script_path)`` on success,
-        or ``None`` if script generation/execution fails.
-    """
+def _get_template_func(source: str):  # noqa: ANN202
+    """Lazily import and return the script template function for *source*."""
     from rwa_result_store.script_templates import (  # lazy import
         crossref_script,
         europe_pmc_script,
@@ -522,8 +531,32 @@ def generate_and_run_script(
         "europe_pmc": europe_pmc_script,
         "crossref": crossref_script,
     }
+    return template_map.get(source)
 
-    func = template_map.get(source)
+
+def generate_search_script(
+    project_path: str,
+    source: str,
+    query: str,
+    parameters: dict[str, Any],
+) -> tuple[str, str] | None:
+    """Generate a standalone search script **without** executing it.
+
+    Use this for the *draft-then-approve* workflow: the agent presents
+    the script to the user for review before calling
+    :func:`execute_search_script`.
+
+    Args:
+        project_path: Absolute path to the project directory.
+        source: Search source identifier (e.g., ``"pubmed"``).
+        query: The search query string.
+        parameters: Dict of search parameters (forwarded to the template).
+
+    Returns:
+        ``(script_path, script_content)`` on success, or ``None`` if
+        template generation fails.
+    """
+    func = _get_template_func(source)
     if func is None:
         logger.warning("No script template for source: %s", source)
         return None
@@ -534,29 +567,53 @@ def generate_and_run_script(
         logger.warning("Failed to generate script for %s", source, exc_info=True)
         return None
 
-    # Write script
     ts = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
     scripts_dir = Path(project_path) / "scripts"
     scripts_dir.mkdir(parents=True, exist_ok=True)
     script_path = scripts_dir / f"search_{source}_{ts}.py"
     script_path.write_text(script_content, encoding="utf-8")
 
-    # Execute
+    return (str(script_path), script_content)
+
+
+def execute_search_script(
+    project_path: str,
+    script_path: str,
+) -> tuple[list[dict[str, Any]], int, int] | None:
+    """Execute a previously generated search script and return results.
+
+    The script is expected to print a ``search_id`` integer to stdout
+    (or ``NO_RESULTS``). Results are read back from the project's
+    SQLite database.
+
+    Args:
+        project_path: Absolute path to the project directory.
+        script_path: Absolute path to the search script to run.
+
+    Returns:
+        ``(results_list, total_count, search_id)`` on success,
+        or ``None`` if execution fails.
+    """
+    script_path_obj = Path(script_path)
+    if not script_path_obj.exists():
+        logger.warning("Script not found: %s", script_path)
+        return None
+
     try:
         result = subprocess.run(
-            [sys.executable, str(script_path)],
+            [sys.executable, str(script_path_obj)],
             capture_output=True,
             text=True,
             timeout=120,
         )
     except (subprocess.TimeoutExpired, OSError) as exc:
-        logger.warning("Script execution failed for %s: %s", source, exc)
+        logger.warning("Script execution failed: %s", exc)
         return None
 
     if result.returncode != 0:
         logger.warning(
             "Script %s exited with code %d. stderr: %s",
-            script_path.name,
+            script_path_obj.name,
             result.returncode,
             result.stderr[:500],
         )
@@ -564,7 +621,7 @@ def generate_and_run_script(
 
     stdout = result.stdout.strip()
     if not stdout or stdout == "NO_RESULTS":
-        return ([], 0, 0, str(script_path))
+        return ([], 0, 0)
 
     try:
         search_id = int(stdout)
@@ -572,7 +629,6 @@ def generate_and_run_script(
         logger.warning("Could not parse search_id from script output: %r", stdout)
         return None
 
-    # Read back results
     db = _db_path(project_path)
     if not db.exists():
         return None
@@ -590,7 +646,42 @@ def generate_and_run_script(
     finally:
         conn.close()
 
-    return (results, total_count, search_id, str(script_path))
+    return (results, total_count, search_id)
+
+
+def generate_and_run_script(
+    project_path: str,
+    source: str,
+    query: str,
+    parameters: dict[str, Any],
+) -> tuple[list[dict[str, Any]], int, int, str] | None:
+    """Generate a standalone search script, execute it, and read results.
+
+    This is a convenience wrapper that calls :func:`generate_search_script`
+    followed by :func:`execute_search_script`.
+
+    Args:
+        project_path: Absolute path to the project directory.
+        source: Search source identifier (e.g., ``"pubmed"``).
+        query: The search query string.
+        parameters: Dict of search parameters (passed to the template function).
+
+    Returns:
+        ``(results_list, total_count, search_id, script_path)`` on success,
+        or ``None`` if script generation/execution fails.
+    """
+    gen_result = generate_search_script(project_path, source, query, parameters)
+    if gen_result is None:
+        return None
+
+    script_path, _script_content = gen_result
+
+    exec_result = execute_search_script(project_path, script_path)
+    if exec_result is None:
+        return None
+
+    results, total_count, search_id = exec_result
+    return (results, total_count, search_id, script_path)
 
 
 # ---------------------------------------------------------------------------
@@ -1429,18 +1520,18 @@ def register_result_store_tools(mcp_instance: Any) -> None:
         output_path: str | None = None,
         deduplicated: bool = False,
     ) -> dict[str, str]:
-        """Export stored search results to a CSV file.
+        """Export stored search results to an Excel workbook with clickable DOI/PMID links.
 
         Args:
             project_path: Absolute path to the project directory.
             output_path: Optional custom output file path. Defaults to
-                {project_path}/data/search_results.csv.
+                {project_path}/data/search_results.xlsx.
             deduplicated: If True, export deduplicated results.
 
         Returns:
             Dictionary with export status and file path.
         """
-        path = export_results_csv(project_path, output_path, deduplicated)
+        path = export_results_excel(project_path, output_path, deduplicated)
         if path:
             return {"status": "exported", "file": path}
         return {"status": "no_results", "file": ""}

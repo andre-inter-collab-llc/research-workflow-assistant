@@ -174,6 +174,17 @@ If an expected tool or downstream workflow step fails:
 Example:
 `@troubleshooter Project [PROJECT_NAME] is blocked at stage [STAGE]. Please diagnose MCP/tool readiness and provide minimal recovery steps.`
 
+## Literature Search Protocol
+
+All formal literature searches (searches that contribute to a review's evidence base) must follow the **script-first** workflow:
+
+1. The agent drafts a Python search script using `draft_*_search` tools.
+2. The user reviews the script before execution.
+3. After approval, the agent executes using `run_search_script`.
+4. Results are stored in `{project_path}/data/search_results.db` (the single source of truth) and exported to Excel.
+
+Direct MCP search tools (`search_pubmed`, `search_works`, `search_papers`, `search_europepmc`) are only permitted for quick single-paper lookups, not formal searches. When handing off to `@systematic-reviewer`, explicitly note that the search phase uses the script-first workflow.
+
 ## Rules
 
 1. Do not execute specialist tasks directly when a dedicated agent exists; orchestrate and hand off.

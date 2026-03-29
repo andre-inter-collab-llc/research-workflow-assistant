@@ -13,6 +13,28 @@ All RWA outputs — manuscripts, protocols, reports, analysis scripts, dashboard
 
 > **Important:** Before using non-setup agents, you must accept the user disclaimer once via `@setup`.
 
+## Philosophy
+
+The question isn't which AI research tool to adopt. It's whether researchers have the right tech stack to build their own.
+
+RWA is a proof of concept for what becomes possible when researchers have a capable IDE, open-source tools, and access to a capable LLM. If your researchers already have VS Code, R, Python, Quarto, Markdown, and git, they have the building blocks. Give them LLM access, and someone on the team could build a custom, organization-compliant research workflow assistant in a few weeks, with MCP servers tailored to their specific needs.
+
+Any specific implementation is going to be opinionated. This one integrates with Zotero, enforces ICMJE authorship guidelines, and defaults to Quarto for reproducible documents. Your organization might make entirely different choices, and that's fine.
+
+What matters is **not locking researchers into a single platform**. Tools that sound impressive but limit you to one documentation system, one output format, one way of working are the kind of constraint that slows people down. The better path: meet researchers where they already are. Make their existing environment AI-capable. Don't replace their tools; connect them.
+
+The stack already exists:
+
+- **[Positron](https://positron.posit.co/) / [VS Code](https://code.visualstudio.com/)** for the IDE
+- **[R](https://www.r-project.org/) and [Python](https://www.python.org/)** for analysis
+- **[Quarto](https://quarto.org/) and Markdown** for reproducible documents
+- **[Git](https://git-scm.com/)** for version control and collaboration
+- **[MCP](https://modelcontextprotocol.io/)** for connecting LLMs to structured data sources
+
+The missing piece for most organizations isn't a new product. It's access to a capable LLM within the tools researchers already use, and permission to experiment.
+
+Read the [launch post on LinkedIn](https://www.linkedin.com/posts/andre-van-zyl_evidencesynthesis-systematicreview-publichealth-activity-7437474997612417024-yQ20) for the full backstory.
+
 ## Who Is This For?
 
 Any researcher who wants AI-assisted support without surrendering intellectual ownership:

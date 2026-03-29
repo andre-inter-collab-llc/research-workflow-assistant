@@ -82,21 +82,44 @@ Present the complete search strategy and ask the user to review and approve befo
 
 Document the strategy using `templates/systematic-review/search-strategy.qmd`.
 
-### Phase 4: Database Searching
+### Phase 4: Database Searching (Script-First Workflow)
 
-Execute searches using MCP server tools in the order specified by the user:
-1. Run each database search with a valid `project_path` and report the number of results
-   - For API-backed databases, prefer `*_scripted` tools when available (e.g., `search_pubmed_scripted`, `search_works_scripted`, `search_papers_scripted`, `search_europepmc_scripted`) to preserve reproducible scripts under `{project_path}/scripts/`.
-   - If using direct search tools, always pass `project_path` explicitly. Do not run searches without project context.
-2. Use `prisma-tracker` to record each search (database, query, date, result count)
-3. Download bibliographic records (title, authors, abstract, DOI, year, journal)
-4. Confirm results were persisted to `{project_path}/data/search_results.db` before moving to the next search
+Formal literature searches — searches that contribute to the review's evidence base — **must** follow the draft-then-approve workflow below. Direct MCP search tools (`search_pubmed`, `search_works`, `search_papers`, `search_europepmc`) are **only** permitted for quick single-paper lookups (verifying a DOI, fetching an abstract, checking citations).
+
+#### Mandatory Steps
+
+1. **Draft**: Call `draft_pubmed_search` / `draft_openalex_search` / `draft_semantic_scholar_search` / `draft_europepmc_search` / `draft_crossref_search` with the approved query and parameters. This generates a standalone Python script saved to `{project_path}/scripts/` and returns the script content.
+2. **Present**: Show the user the generated script: query string, parameters (max_results, date_range, filters), and the database being searched. Ask: *"Please review this search script. Shall I execute it?"*
+3. **Execute**: After the user approves, call `run_search_script` with the script path and project path. Results are stored in `{project_path}/data/search_results.db` and exported to `{project_path}/data/search_results.xlsx`.
+4. **Report**: Tell the user the result count, search_id, and the path to the Excel file. Point them to the Excel file for human review.
+5. **Record**: Call `record_search()` on the PRISMA tracker (database, query, date, result count).
+6. **Log**: Add an entry to `ai-contributions-log.md` with action category `DATABASE_SEARCH`.
+
+#### Allowed Direct MCP Tool Usage
+
+The following non-scripted tools may be used at any time without the script-first workflow:
+
+- `fetch_abstract`, `fetch_mesh_terms`, `suggest_mesh_terms`, `get_related_articles`, `build_search_query` (PubMed)
+- `get_work`, `get_author_works`, `get_cited_by`, `get_references` (OpenAlex)
+- `get_paper`, `get_citations`, `get_references`, `get_recommendations` (Semantic Scholar)
+- `get_full_text`, `get_citations`, `get_references`, `get_text_mined_terms` (Europe PMC)
+- `get_work_by_doi`, `check_doi`, `get_references_by_doi` (CrossRef)
+
+#### Non-API Databases
 
 For databases without API access (CINAHL, PsycINFO, Web of Science, Google Scholar, Cochrane Library):
 - Provide the database-specific query syntax
 - Instruct the user to run the search manually
 - Ask them to export results (RIS, BibTeX, or CSV)
 - Help import the exported results
+
+### Database as Source of Truth
+
+The project's `search_results.db` is the **single source of truth** for all literature search results.
+
+- When assisting with screening, data extraction, or synthesis, query the DB (via `get_stored_results` or `export_stored_results`) rather than making new API calls.
+- The Excel file at `{project_path}/data/search_results.xlsx` is the author's review copy. It is regenerated from the DB on each search and must always reflect the same data.
+- Never reference, cite, or include a paper in the review that is not recorded in the project's `search_results.db`, unless the author explicitly adds it.
 
 ### Phase 5: Deduplication
 

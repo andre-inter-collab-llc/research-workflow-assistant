@@ -199,6 +199,20 @@ Respect API rate limits for all external services:
 - If the `command` in `.vscode/mcp.json` is set to just `"python"` rather than the venv-specific path, advise the user to update it (see the `//` comment block in that file for correct paths).
 - If a workaround seems necessary (e.g., a server is broken and cannot be fixed quickly), propose it to the user as a **feature enhancement** and get explicit approval before proceeding. Do not implement one-off workarounds silently.
 
+### Literature Search Protocol
+All formal literature searches (searches that contribute to a review's evidence base) must follow the **script-first, DB-as-source-of-truth** workflow:
+
+1. **Draft**: The agent calls `draft_*_search` (e.g., `draft_pubmed_search`) to generate a standalone Python search script. The script is saved to `{project_path}/scripts/` but is **not** executed.
+2. **Review**: The agent presents the script content (query, parameters, database) to the user and asks for approval before execution.
+3. **Execute**: After user approval, the agent calls `run_search_script` with the script path. Results are stored in `{project_path}/data/search_results.db` (the single source of truth) and exported to `{project_path}/data/search_results.xlsx`.
+4. **Verify**: The agent reports the result count, search_id, and Excel file path. The user reviews results in the Excel file.
+
+**Restrictions**:
+- Direct MCP search tools (`search_pubmed`, `search_works`, `search_papers`, `search_europepmc`) are **only** permitted for quick single-paper lookups (verifying a DOI, fetching an abstract, checking citations). They must **not** be used for formal literature searches.
+- The project's `search_results.db` is the canonical data source. When assisting with screening, data extraction, or synthesis, agents must query the DB rather than making new API calls.
+- The Excel file is the author's review copy and is regenerated from the DB on each search.
+- Never reference or include a paper in the review that is not in the project's `search_results.db` unless the author explicitly adds it.
+
 ### Python Environment Safety
 - **NEVER install packages into or modify the global/system Python environment.** All Python work must use the project virtual environment.
 - The project venv is located at `.venv/` in the repository root.
