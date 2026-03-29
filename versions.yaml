@@ -25,3 +25,28 @@ releases:
       fixed: []
       removed: []
       security: []
+
+  - version: "2026.03.29"
+    date: "2026-03-29"
+    summary: "Script-first literature search workflow, Zotero attachment uploads, README Philosophy section, and infrastructure improvements"
+    changes:
+      added:
+        - "Script-first search workflow: draft_*_search and run_search_script tools added to all five database MCP servers (PubMed, OpenAlex, Semantic Scholar, Europe PMC, CrossRef)"
+        - "Shared search script engine: generate_search_script, execute_search_script, and generate_and_run_script in rwa_result_store"
+        - "Zotero attachment upload: upload_attachment tool in zotero-server"
+        - "PDF upload utility scripts: scripts/_upload_pdfs.py and scripts/_upload_pdfs2.py"
+        - "Search results backfill utility: scripts/backfill_search_exports.py"
+        - "Bug report issue template: .github/ISSUE_TEMPLATE/bug-report.yml"
+        - "README Philosophy section with LinkedIn launch post link"
+        - "Search strategy template update for script-first workflow"
+        - "Agent instructions for script-first workflow in systematic-reviewer, research-orchestrator, and global copilot-instructions"
+      changed:
+        - "Improved error messages and project path validation across all database MCP servers"
+        - "Updated API documentation in docs/api-setup-guide.md, docs/database-access.md, docs/getting-started.md"
+        - "Improved search_runners.py in shared library"
+      fixed:
+        - "Handle non-string content in thinking blocks for chat parser"
+      removed:
+        - "Obsolete search_results.db files from sample project directories"
+        - "Stale prisma-flow.json from sample project"
+      security: []

@@ -7,6 +7,38 @@ Same-day releases use a `.N` suffix (e.g., `2026.03.18.1`).
 
 A machine-readable mirror of this log is maintained in [versions.yaml](versions.yaml).
 
+## [2026.03.29] — 2026-03-29
+
+Script-first literature search workflow, Zotero attachment uploads, README Philosophy section, and infrastructure improvements.
+
+### Added
+
+- **Script-first search workflow**: `draft_*_search` and `run_search_script` tools added to all five database MCP servers (PubMed, OpenAlex, Semantic Scholar, Europe PMC, CrossRef). Formal literature searches now generate a standalone Python script for user review before execution, improving reproducibility and auditability.
+- **Shared search script engine**: `generate_search_script`, `execute_search_script`, and `generate_and_run_script` functions added to `rwa_result_store` shared library, powering the draft/run workflow across all servers.
+- **Zotero attachment upload**: `upload_attachment` tool added to zotero-server for uploading PDFs and other files to Zotero items via the Web API.
+- **PDF upload utility scripts**: `scripts/_upload_pdfs.py` and `scripts/_upload_pdfs2.py` for batch-uploading PDFs to Zotero library items.
+- **Search results backfill utility**: `scripts/backfill_search_exports.py` for regenerating Excel exports from existing `search_results.db` files.
+- **Bug report issue template**: `.github/ISSUE_TEMPLATE/bug-report.yml` for structured issue reporting.
+- **README Philosophy section**: Added project philosophy explaining RWA as a proof of concept, the case against platform lock-in, and the existing research tech stack, with a link to the LinkedIn launch post.
+- **Search strategy template update**: Added script-first workflow instructions to `templates/systematic-review/search-strategy.qmd`.
+- **Agent instructions for script-first workflow**: Updated `systematic-reviewer` and `research-orchestrator` agents with the mandatory draft-then-approve search protocol, including allowed direct MCP tool usage and DB-as-source-of-truth rules.
+- **Global copilot instructions**: Added Literature Search Protocol section enforcing the script-first, DB-as-source-of-truth workflow across all agents.
+
+### Changed
+
+- **MCP server project path handling**: Improved error messages and validation for `project_path` parameters across PubMed, OpenAlex, Semantic Scholar, Europe PMC, and CrossRef servers.
+- **API documentation**: Updated `docs/api-setup-guide.md`, `docs/database-access.md`, and `docs/getting-started.md` with clarified instructions.
+- **Search runners**: Improved `search_runners.py` in the shared library for better script execution handling.
+
+### Fixed
+
+- **Chat parser**: Handle non-string content in thinking blocks to prevent parsing errors in chat export.
+
+### Removed
+
+- Obsolete `search_results.db` files from sample project directories (data now lives in project-specific paths).
+- Stale `prisma-flow.json` from sample project (replaced by PRISMA tracker server workflow).
+
 ## [2026.03.18] — 2026-03-18
 
 Initial public release of the Research Workflow Assistant.
