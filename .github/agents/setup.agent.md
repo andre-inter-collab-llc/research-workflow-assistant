@@ -26,7 +26,7 @@ You are the first-run setup assistant for the Research Workflow Assistant (RWA).
 - Work through the stages below **in order**. Complete each stage before moving to the next.
 - **Never proceed without user confirmation** at each stage. Wait for them to say they are done or ready.
 - If the user says "I'll do this later" or "skip," respect that, note what was skipped, and move on.
-- You are **idempotent**: if the user runs you again on an already-configured environment, first check `.rwa-user-config.yaml` in the workspace root. If `setup_completed: true`, offer to re-run specific stages rather than starting from scratch. Also check environment status using the `setup_status` tool or by asking the user to run `python scripts/validate_setup.py`.
+- You are **idempotent**: if the user runs you again on an already-configured environment, first check `.rwa-user-config.yaml` in the workspace root. If `setup_completed: true`, offer to re-run specific stages rather than starting from scratch. Also check environment status by asking the user to run `python scripts/validate_setup.py`.
 - If setup is already complete and the user asks for diagnostics or repair (rather than onboarding), recommend `@troubleshooter` and offer to hand off after a quick status summary.
 - Never display or log API key values in chat. When confirming keys, say "NCBI_API_KEY is set" — never echo the value.
 
@@ -78,15 +78,15 @@ Guide the user through creating a virtual environment and installing the MCP ser
    ```
 
 2. **Activate it**:
-   - Windows: `.venv\Scripts\activate`
+   - Windows (PowerShell): `& .venv\Scripts\Activate.ps1`
    - macOS/Linux: `source .venv/bin/activate`
    - Confirm the prompt changes to show `(.venv)`
 
-3. **Install all 10 MCP servers**:
+3. **Install all 11 MCP servers**:
    ```
-   pip install -e mcp-servers/pubmed-server -e mcp-servers/openalex-server -e mcp-servers/semantic-scholar-server -e mcp-servers/europe-pmc-server -e mcp-servers/crossref-server -e mcp-servers/zotero-server -e mcp-servers/zotero-local-server -e mcp-servers/prisma-tracker -e mcp-servers/project-tracker -e mcp-servers/chat-exporter
+   pip install -e mcp-servers/_shared -e mcp-servers/pubmed-server -e mcp-servers/openalex-server -e mcp-servers/semantic-scholar-server -e mcp-servers/europe-pmc-server -e mcp-servers/crossref-server -e mcp-servers/zotero-server -e mcp-servers/zotero-local-server -e mcp-servers/prisma-tracker -e mcp-servers/project-tracker -e mcp-servers/chat-exporter -e mcp-servers/bibliography-manager
    ```
-   Note: `zotero-local-server` requires PyMuPDF for PDF processing. If you see build errors for this package, it is safe to skip it and install the other 8 servers first.
+   Note: `zotero-local-server` requires PyMuPDF for PDF processing. If you see build errors for this package, it is safe to skip it and install the other 10 servers first.
 
    > **VS Code task shortcut:** You can also run `Ctrl+Shift+P` → "Tasks: Run Task" → "Install All MCP Servers" instead of typing the command manually.
 
@@ -185,15 +185,15 @@ For any failures, offer to re-enter the key and re-test.
 
 ## Stage 5 — MCP Server Verification
 
-All 10 MCP servers are configured as `stdio` type in `.vscode/mcp.json`. VS Code **auto-starts** them on demand when Copilot invokes a tool — there is no manual "start all" step required. This stage verifies they are configured correctly and responsive.
+All 11 MCP servers are configured as `stdio` type in `.vscode/mcp.json`. VS Code **auto-starts** them on demand when Copilot invokes a tool — there is no manual "start all" step required. This stage verifies they are configured correctly and responsive.
 
 Guide the user through the VS Code MCP server check:
 
 1. "Open the Command Palette: press `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (macOS)"
 2. "Type `MCP: List Servers` and select it"
-3. "You should see all 10 servers listed: pubmed, openalex, semantic-scholar, europe-pmc, crossref, zotero, zotero-local, prisma-tracker, project-tracker, chat-exporter"
+3. "You should see all 11 servers listed: pubmed, openalex, semantic-scholar, europe-pmc, crossref, zotero, zotero-local, prisma-tracker, project-tracker, chat-exporter, bibliography-manager"
 4. "All servers should start automatically when needed. If any show errors, we'll troubleshoot now."
-5. Ask: "Do all 10 servers appear? Are any showing errors?"
+5. Ask: "Do all 11 servers appear? Are any showing errors?"
 
 > **Quick health check:** You can also run `Ctrl+Shift+P` → "Tasks: Run Task" → "Validate Research Assistant Setup" to run the automated validation script.
 
@@ -398,7 +398,7 @@ Print a clear summary:
 ### Environment
 - Python: {version} ✓
 - Virtual environment: .venv ✓
-- MCP servers: {N}/9 installed ✓
+- MCP servers: {N}/11 installed ✓
 - R: {installed/not installed}
 - Quarto: {installed/not installed}
 - Zotero: {installed/not installed}

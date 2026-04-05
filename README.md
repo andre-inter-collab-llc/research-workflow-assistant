@@ -52,7 +52,7 @@ No PhD required. If you do research, this tool is for you.
 | Capability | How |
 |---|---|
 | **Systematic literature reviews** | `@systematic-reviewer` agent guides PRISMA-compliant workflows: question refinement (PICO/PEO/SPIDER), search strategy development, database searching, screening, data extraction, risk of bias |
-| **Academic database access** | MCP servers for PubMed, OpenAlex, Semantic Scholar, Europe PMC, CrossRef, Scopus (institutional) |
+| **Academic database access** | MCP servers for PubMed, OpenAlex, Semantic Scholar, Europe PMC, and CrossRef |
 | **Reference management** | Zotero MCP server: search library, add items by DOI, tag, organize collections, export BibTeX |
 | **Data analysis** | `@data-analyst` agent generates reproducible R or Python analysis scripts in Quarto documents |
 | **Academic writing** | `@academic-writer` agent scaffolds IMRaD manuscripts, manages citations, enforces ICMJE AI disclosure |
@@ -227,11 +227,11 @@ code .
 # Create and activate a virtual environment
 python -m venv .venv
 # Windows:
-.venv\Scripts\activate
+& .venv\Scripts\Activate.ps1
 # macOS / Linux:
 # source .venv/bin/activate
 
-# Install all 10 MCP servers in development mode
+# Install all 11 MCP servers in development mode
 pip install -e mcp-servers/_shared \
             -e mcp-servers/pubmed-server \
             -e mcp-servers/openalex-server \
@@ -242,7 +242,8 @@ pip install -e mcp-servers/_shared \
             -e mcp-servers/zotero-local-server \
             -e mcp-servers/prisma-tracker \
             -e mcp-servers/project-tracker \
-            -e mcp-servers/chat-exporter
+            -e mcp-servers/chat-exporter \
+            -e mcp-servers/bibliography-manager
 
 # Install dev tools (linting, testing)
 pip install -e ".[dev]"
@@ -281,7 +282,7 @@ Need JSON for automation?
 python scripts/validate_setup.py --json
 ```
 
-Or in VS Code: **Ctrl+Shift+P** → "MCP: List Servers" — all 10 servers should appear.
+Or in VS Code: **Ctrl+Shift+P** → "MCP: List Servers" — all 11 servers should appear.
 
 ### Step 5 — Start using it
 
@@ -384,7 +385,7 @@ research-workflow-assistant/
 | Europe PMC | REST API | Free | None |
 | CrossRef | REST API | Free | Email (polite pool) |
 | Zotero | Web API v3 | Free | API key |
-| Scopus | Elsevier API | Institutional | API key |
+| Scopus | Elsevier API | Planned (institutional) | API key |
 
 Databases without APIs (CINAHL, PsycINFO, Web of Science, Google Scholar, Cochrane Library): the agents help you build database-specific queries, but you run the searches manually and import results.
 

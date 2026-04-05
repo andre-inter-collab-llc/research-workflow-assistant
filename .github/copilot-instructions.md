@@ -175,6 +175,7 @@ When tracking project progress or generating briefs:
 - **prisma-tracker**: Track PRISMA flow diagram data locally
 - **project-tracker**: Track project phases, milestones, tasks, decisions, meetings
 - **chat-exporter**: Export Copilot Chat sessions to QMD files for reproducibility audit trails
+- **bibliography-manager**: Local bibliography management for non-Zotero workflows (import/export BibTeX/RIS, notes, annotations, and CSL tools)
 
 ### Rate Limiting
 Respect API rate limits for all external services:
