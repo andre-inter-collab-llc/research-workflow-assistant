@@ -87,7 +87,7 @@ For reports, manuscripts, and protocols that include citations:
 - **Resolve the CSL citation style using this priority chain:**
   1. Project's `project-config.yaml` → `research_assistant.output_defaults.csl`
   2. User's `.rwa-user-config.yaml` → `default_citation_style` (+ `.csl` extension)
-  3. Fallback: `apa.csl`
+  3. Fallback: `vancouver-superscript.csl`
 - Verify the resolved `.csl` file exists in the project directory. If it does not, use `bib_copy_csl_to_project` to copy it from the shared `csl/` library.
 - Add an editable RWA disclosure in the Methods section when AI-assisted workflow details are relevant
 - Add an acknowledgments / AI-disclosure section with ICMJE-compliant language

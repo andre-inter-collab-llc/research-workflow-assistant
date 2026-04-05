@@ -270,7 +270,7 @@ If `default_author` already exists, show which fields are already set and ask be
 
 ## Stage 7.5 — Default Citation Style
 
-Ask the user to choose their preferred citation / referencing style. This becomes the default for all new projects (overridable per project).
+Ask the user what type of citation / referencing style they want to use. This becomes the default for all new projects (overridable per project).
 
 1. **List bundled styles**: Use the `bib_list_csl_styles` tool from the bibliography-manager MCP server to show the available styles. Present them in a clear table:
 
@@ -288,11 +288,11 @@ Ask the user to choose their preferred citation / referencing style. This become
    | `chicago-author-date-17th-edition` | Chicago 17th (author-date) | Author-date |
    | `chicago-fullnote-bibliography` | Chicago 18th (notes & bibliography) | Footnotes |
 
-2. **Ask**: "Which citation style do you prefer? Enter the style ID from the list above, or type a custom style ID from the [Zotero Style Repository](https://www.zotero.org/styles) (over 10 000 styles available). Press Enter to accept the default (APA)."
+2. **Ask**: "Which citation style do you prefer? Enter the style ID from the list above, or type a custom style ID from the [Zotero Style Repository](https://www.zotero.org/styles) (over 10 000 styles available). Press Enter to accept the default (Vancouver superscript)."
 
 3. **If the user enters a bundled style ID**: Confirm the selection.
 4. **If the user enters a custom style ID** not in the bundled list: Use the `bib_download_csl_style` tool to download it from the Zotero Style Repository. If the download fails (style not found), inform the user and ask them to try again or browse https://www.zotero.org/styles.
-5. **Default**: If the user presses Enter or says "default", use `apa`.
+5. **Default**: If the user presses Enter or says "default", use `vancouver-superscript`.
 
 Save the selection to `.rwa-user-config.yaml` under `default_citation_style`:
 
@@ -420,7 +420,7 @@ Print a clear summary:
 - ORCID: {configured/skipped}
 
 ### Default Citation Style
-- Style: {style title} ({style ID}) / not configured (defaults to APA)
+- Style: {style title} ({style ID}) / not configured (defaults to Vancouver superscript)
 
 ### First Project
 - {Project title} (created at {path}) / No project created yet

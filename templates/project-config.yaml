@@ -63,7 +63,7 @@ research_assistant:
   # Resolution chain (agents follow this order):
   #   1. This project's output_defaults.csl
   #   2. User default in .rwa-user-config.yaml → default_citation_style
-  #   3. Fallback: apa.csl
+  #   3. Fallback: vancouver-superscript.csl
   #
   # Bundled styles (in repo-root csl/):
   #   apa, vancouver, vancouver-superscript, american-medical-association,
@@ -73,7 +73,7 @@ research_assistant:
   # Browse 10 000+ additional styles: https://www.zotero.org/styles
   output_defaults:
     bibliography: references.bib
-    csl: apa.csl
+    csl: vancouver-superscript.csl
     include_rwa_methods_disclosure: true
     include_rwa_acknowledgments: true
 

@@ -267,7 +267,7 @@ Citation formatting uses **CSL (Citation Style Language)** files processed by Pa
 **Resolution chain** (agents must follow this priority order):
 1. **Project config** — `output_defaults.csl` in `project-config.yaml`
 2. **User config** — `default_citation_style` in `.rwa-user-config.yaml`
-3. **Fallback** — `apa` (APA 7th edition)
+3. **Fallback** — `vancouver-superscript` (Vancouver superscript numbered)
 
 **Rules for all agents:**
 - Each project directory gets its own copy of the `.csl` file (for portability). Use `bib_copy_csl_to_project` to copy from the shared library.

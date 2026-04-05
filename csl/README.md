@@ -40,7 +40,7 @@ Over 10,000 styles are available from the [Zotero Style Repository](https://www.
 
 - **User default**: Set `default_citation_style` in `.rwa-user-config.yaml` (configured during `@setup`).
 - **Per-project override**: Set `output_defaults.csl` in your project's `project-config.yaml`.
-- **Resolution chain**: Project config → User config → `apa` (fallback).
+- **Resolution chain**: Project config → User config → `vancouver-superscript` (fallback).
 
 ## License
 

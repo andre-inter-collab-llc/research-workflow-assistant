@@ -15,7 +15,7 @@ author:
     corresponding: true
 date: today
 bibliography: references.bib
-csl: apa.csl  # Default — agents replace with the project's configured style
+csl: vancouver-superscript.csl  # Default — agents replace with the project's configured style
 format:
   html:
     toc: true
@@ -26,7 +26,7 @@ format:
 ---
 
 <!-- If project-config.yaml defines research_assistant.authors or output_defaults, use those values in this front matter before rendering. -->
-<!-- CSL style resolution: project output_defaults.csl → user default_citation_style → apa.csl fallback. Agents substitute the correct style when instantiating this template. -->
+<!-- CSL style resolution: project output_defaults.csl → user default_citation_style → vancouver-superscript.csl fallback. Agents substitute the correct style when instantiating this template. -->
 <!-- If RWA is cited in this document, add the `vanzyl2026rwa` entry from templates/rwa-citation.bib to references.bib. -->
 <!-- CITATION FORMAT: All citations MUST use Pandoc citekeys (@key or [@key]), never plain-text author-year. Every cited work needs a BibTeX entry in references.bib. -->
 

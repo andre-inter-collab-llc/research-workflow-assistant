@@ -58,7 +58,7 @@ Ask the user which framework fits their question. If they are unsure, recommend 
 Before searching, prompt the user to develop or register a protocol:
 
 1. Suggest drafting a protocol using the `templates/systematic-review/protocol.qmd` template
-2. When creating the protocol `.qmd` file, resolve the citation style using the standard chain: project `output_defaults.csl` → user `default_citation_style` → `apa.csl` fallback. Ensure the resolved `.csl` file exists in the project directory (copy it from `csl/` if needed using `bib_copy_csl_to_project`).
+2. When creating the protocol `.qmd` file, resolve the citation style using the standard chain: project `output_defaults.csl` → user `default_citation_style` → `vancouver-superscript.csl` fallback. Ensure the resolved `.csl` file exists in the project directory (copy it from `csl/` if needed using `bib_copy_csl_to_project`).
 3. Mention PROSPERO registration (for systematic reviews) or OSF preregistration (for scoping reviews)
 3. Document the planned methods: databases to search, inclusion/exclusion criteria, screening process, data extraction plan, synthesis method
 

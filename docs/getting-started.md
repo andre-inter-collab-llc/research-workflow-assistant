@@ -222,7 +222,7 @@ research_assistant:
         country: "Country"
   output_defaults:
     bibliography: references.bib
-    csl: apa.csl   # Resolved via: project config → user config → apa fallback
+    csl: vancouver-superscript.csl   # Resolved via: project config → user config → vancouver-superscript fallback
     include_rwa_methods_disclosure: true
     include_rwa_acknowledgments: true
 ```
@@ -231,7 +231,7 @@ The `csl` field determines which citation style is used when rendering. RWA reso
 
 1. **Project config** — `output_defaults.csl` in the project's `project-config.yaml`
 2. **User config** — `default_citation_style` in `.rwa-user-config.yaml`
-3. **Fallback** — `apa` (APA 7th edition)
+3. **Fallback** — `vancouver-superscript` (Vancouver superscript numbered)
 
 The shared style library lives in `csl/` with 11 pre-bundled styles. Additional styles can be downloaded on demand from the [Zotero Style Repository](https://www.zotero.org/styles) using `@setup` or the `bib_download_csl_style` tool. Each project gets its own copy of the `.csl` file for portability. See `csl/README.md` for the full list of bundled styles.
 
