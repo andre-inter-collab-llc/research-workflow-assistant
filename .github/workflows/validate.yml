@@ -42,7 +42,8 @@ jobs:
                       -e mcp-servers/zotero-local-server \
                       -e mcp-servers/prisma-tracker \
                       -e mcp-servers/project-tracker \
-                      -e mcp-servers/chat-exporter
+                      -e mcp-servers/chat-exporter \
+                      -e mcp-servers/bibliography-manager
 
       - name: Install MCP servers (Windows)
         if: runner.os == 'Windows'
@@ -58,7 +59,8 @@ jobs:
                       -e mcp-servers/zotero-local-server `
                       -e mcp-servers/prisma-tracker `
                       -e mcp-servers/project-tracker `
-                      -e mcp-servers/chat-exporter
+                      -e mcp-servers/chat-exporter `
+                      -e mcp-servers/bibliography-manager
 
       - name: Run validation script (Unix)
         if: runner.os != 'Windows'
@@ -87,14 +89,40 @@ jobs:
           import prisma_tracker
           import project_tracker
           import chat_exporter
-          print('All 10 servers importable')
+          import bibliography_manager
+          print('All 11 servers importable')
           "
 
       - name: Verify server imports (Windows)
         if: runner.os == 'Windows'
         run: |
           .venv\Scripts\activate
-          python -c "import pubmed_server; import openalex_server; import semantic_scholar_server; import europe_pmc_server; import crossref_server; import zotero_server; import zotero_local_server; import prisma_tracker; import project_tracker; import chat_exporter; print('All 10 servers importable')"
+          python -c "import pubmed_server; import openalex_server; import semantic_scholar_server; import europe_pmc_server; import crossref_server; import zotero_server; import zotero_local_server; import prisma_tracker; import project_tracker; import chat_exporter; import bibliography_manager; print('All 11 servers importable')"
+
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Create virtual environment
+        run: python -m venv .venv
+
+      - name: Install test dependencies
+        run: |
+          source .venv/bin/activate
+          pip install -e ".[dev]" \
+                      -e mcp-servers/_shared \
+                      -e mcp-servers/zotero-server
+
+      - name: Run pytest
+        run: |
+          source .venv/bin/activate
+          pytest tests mcp-servers/zotero-server/tests
 
   lint:
     runs-on: ubuntu-latest
