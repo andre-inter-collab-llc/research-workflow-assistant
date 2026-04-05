@@ -51,7 +51,7 @@ def _check_server_importable(module_name: str) -> dict:
 
 
 def _check_servers() -> dict:
-    """Check all 10 MCP server packages."""
+    """Check all 11 MCP server packages."""
     servers = {
         "pubmed": "pubmed_server",
         "openalex": "openalex_server",
@@ -63,6 +63,7 @@ def _check_servers() -> dict:
         "prisma-tracker": "prisma_tracker",
         "project-tracker": "project_tracker",
         "chat-exporter": "chat_exporter",
+        "bibliography-manager": "bibliography_manager",
     }
     return {name: _check_server_importable(mod) for name, mod in servers.items()}
 
@@ -273,6 +274,8 @@ def _check_server_health(module_name: str, workspace_root: Path) -> dict:
         "zotero_local_server": "zotero-local-server",
         "prisma_tracker": "prisma-tracker",
         "project_tracker": "project-tracker",
+        "chat_exporter": "chat-exporter",
+        "bibliography_manager": "bibliography-manager",
     }
     dir_name = server_map.get(module_name, module_name)
     cwd = workspace_root / "mcp-servers" / dir_name / "src"
@@ -318,6 +321,8 @@ def _check_all_server_health(workspace_root: Path) -> dict:
         "zotero_local_server",
         "prisma_tracker",
         "project_tracker",
+        "chat_exporter",
+        "bibliography_manager",
     ]
     return {mod: _check_server_health(mod, workspace_root) for mod in modules}
 

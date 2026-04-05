@@ -21,6 +21,56 @@ import httpx
 
 from . import export_results_excel, store_results
 
+_RETRYABLE_STATUS_CODES = frozenset({408, 429, 500, 502, 503, 504})
+_DEFAULT_MAX_RETRIES = 3
+_DEFAULT_BASE_BACKOFF = 1.0
+
+
+def _parse_retry_after_seconds(response: httpx.Response) -> float | None:
+    """Parse Retry-After header (seconds) when available."""
+    header = response.headers.get("Retry-After", "").strip()
+    if not header:
+        return None
+    try:
+        return max(float(header), 0.0)
+    except ValueError:
+        return None
+
+
+def _request_with_retries(
+    client: httpx.Client,
+    method: str,
+    url: str,
+    *,
+    headers: dict[str, str] | None = None,
+    max_retries: int = _DEFAULT_MAX_RETRIES,
+    base_backoff: float = _DEFAULT_BASE_BACKOFF,
+    **kwargs: Any,
+) -> httpx.Response:
+    """Make an HTTP request with retry/backoff for transient failures."""
+    for attempt in range(max_retries + 1):
+        try:
+            response = client.request(method, url, headers=headers, **kwargs)
+        except httpx.RequestError:
+            if attempt == max_retries:
+                raise
+            time.sleep(base_backoff * (2**attempt))
+            continue
+
+        if response.status_code in _RETRYABLE_STATUS_CODES and attempt < max_retries:
+            wait = _parse_retry_after_seconds(response)
+            if wait is None:
+                wait = base_backoff * (2**attempt)
+            time.sleep(wait)
+            continue
+
+        response.raise_for_status()
+        return response
+
+    msg = f"Request retries exhausted for {method} {url}"
+    raise RuntimeError(msg)
+
+
 # ===================================================================
 # PubMed
 # ===================================================================
@@ -97,8 +147,12 @@ def run_pubmed(
             search_params["maxdate"] = parts[1]
             search_params["datetype"] = "pdat"
 
-        resp = client.get(f"{_EUTILS_BASE}/esearch.fcgi", params=search_params)
-        resp.raise_for_status()
+        resp = _request_with_retries(
+            client,
+            "GET",
+            f"{_EUTILS_BASE}/esearch.fcgi",
+            params=search_params,
+        )
         pmids, total_count = _parse_esearch_ids(resp.text)
 
         if not pmids:
@@ -109,8 +163,12 @@ def run_pubmed(
             "db": "pubmed",
             "id": ",".join(pmids),
         }
-        resp = client.get(f"{_EUTILS_BASE}/esummary.fcgi", params=summary_params)
-        resp.raise_for_status()
+        resp = _request_with_retries(
+            client,
+            "GET",
+            f"{_EUTILS_BASE}/esummary.fcgi",
+            params=summary_params,
+        )
         articles = _parse_esummary(resp.text)
 
     search_id = store_results(
@@ -187,8 +245,12 @@ def run_openalex(
         params["filter"] = filters
 
     with httpx.Client(timeout=30.0) as client:
-        resp = client.get(f"{_OPENALEX_BASE}/works", params=params)
-        resp.raise_for_status()
+        resp = _request_with_retries(
+            client,
+            "GET",
+            f"{_OPENALEX_BASE}/works",
+            params=params,
+        )
         data = resp.json()
 
     works = [_format_openalex_work(w) for w in data.get("results", [])]
@@ -254,7 +316,7 @@ def _request_with_backoff(
     url: str,
     **kwargs: Any,
 ) -> httpx.Response:
-    """Make an HTTP request with proactive throttling and exponential backoff on 429."""
+    """Make an HTTP request with S2 throttle and retry/backoff on transient failures."""
     global _s2_last_request_time
     for attempt in range(_S2_MAX_RETRIES + 1):
         # Proactive throttle: enforce _S2_MIN_REQUEST_INTERVAL between requests
@@ -263,12 +325,26 @@ def _request_with_backoff(
             time.sleep(_S2_MIN_REQUEST_INTERVAL - elapsed)
         _s2_last_request_time = time.monotonic()
 
-        resp = client.request(method, url, headers=_s2_headers(), **kwargs)
-        if resp.status_code != 429 or attempt == _S2_MAX_RETRIES:
+        try:
+            resp = client.request(method, url, headers=_s2_headers(), **kwargs)
+        except httpx.RequestError:
+            if attempt == _S2_MAX_RETRIES:
+                raise
+            wait = _S2_BASE_BACKOFF * (2**attempt)
+            time.sleep(wait)
+            continue
+
+        if resp.status_code in _RETRYABLE_STATUS_CODES and attempt < _S2_MAX_RETRIES:
+            wait = _parse_retry_after_seconds(resp)
+            if wait is None:
+                wait = _S2_BASE_BACKOFF * (2**attempt)
+            time.sleep(wait)
+            continue
+
+        if resp.status_code not in _RETRYABLE_STATUS_CODES or attempt == _S2_MAX_RETRIES:
             resp.raise_for_status()
             return resp
-        wait = _S2_BASE_BACKOFF * (2**attempt)
-        time.sleep(wait)
+
     return resp  # unreachable; satisfies type checker
 
 
@@ -378,6 +454,11 @@ def _format_epmc_result(r: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _is_epmc_version_only_response(data: dict[str, Any]) -> bool:
+    """Detect Europe PMC anomaly responses that only include API version metadata."""
+    return "version" in data and "resultList" not in data and "hitCount" not in data
+
+
 def run_europe_pmc(
     project_path: str,
     query: str,
@@ -408,9 +489,20 @@ def run_europe_pmc(
         params["sort"] = sort_value
 
     with httpx.Client(timeout=30.0) as client:
-        resp = client.get(f"{_EPMC_BASE}/search", params=params)
-        resp.raise_for_status()
+        resp = _request_with_retries(
+            client,
+            "GET",
+            f"{_EPMC_BASE}/search",
+            params=params,
+        )
         data = resp.json()
+
+    if _is_epmc_version_only_response(data):
+        msg = (
+            "Europe PMC returned a version-only response without search metadata. "
+            "Retry the search or adjust parameters."
+        )
+        raise RuntimeError(msg)
 
     result_list = data.get("resultList", {}).get("result", [])
     results = [_format_epmc_result(r) for r in result_list]
@@ -502,8 +594,12 @@ def run_crossref(
         params["filter"] = filters
 
     with httpx.Client(timeout=30.0) as client:
-        resp = client.get(f"{_CROSSREF_BASE}/works", params=params)
-        resp.raise_for_status()
+        resp = _request_with_retries(
+            client,
+            "GET",
+            f"{_CROSSREF_BASE}/works",
+            params=params,
+        )
         data = resp.json()
 
     message = data.get("message", {})

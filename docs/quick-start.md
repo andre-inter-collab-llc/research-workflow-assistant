@@ -29,7 +29,8 @@ source .venv/bin/activate
 ## 3. Install MCP servers
 
 ```bash
-pip install -e mcp-servers/pubmed-server \
+pip install -e mcp-servers/_shared \
+            -e mcp-servers/pubmed-server \
             -e mcp-servers/openalex-server \
             -e mcp-servers/semantic-scholar-server \
             -e mcp-servers/europe-pmc-server \
@@ -38,7 +39,8 @@ pip install -e mcp-servers/pubmed-server \
             -e mcp-servers/zotero-local-server \
             -e mcp-servers/prisma-tracker \
             -e mcp-servers/project-tracker \
-            -e mcp-servers/chat-exporter
+            -e mcp-servers/chat-exporter \
+            -e mcp-servers/bibliography-manager
 ```
 
 Or run VS Code task: `Install All MCP Servers`.
@@ -67,7 +69,7 @@ You can use `--json` with either script for machine-readable output.
 
 - Open Command Palette
 - Run `MCP: List Servers`
-- Confirm all 10 servers are available
+- Confirm all 11 servers are available
 
 ## 7. Start guided onboarding
 

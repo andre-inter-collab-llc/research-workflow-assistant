@@ -97,6 +97,28 @@
                 "PROJECT_DIR": "${workspaceFolder}",
                 "PROJECTS_ROOT": "${env:PROJECTS_ROOT}"
             }
+        },
+        "chat-exporter": {
+            "type": "stdio",
+            "command": "ASSISTANT_PATH/.venv/Scripts/python",
+            "args": [
+                "-m",
+                "chat_exporter"
+            ],
+            "cwd": "ASSISTANT_PATH/mcp-servers/chat-exporter/src",
+            "env": {
+                "PROJECT_DIR": "${workspaceFolder}",
+                "PROJECTS_ROOT": "${env:PROJECTS_ROOT}"
+            }
+        },
+        "bibliography-manager": {
+            "type": "stdio",
+            "command": "ASSISTANT_PATH/.venv/Scripts/python",
+            "args": [
+                "-m",
+                "bibliography_manager"
+            ],
+            "cwd": "ASSISTANT_PATH/mcp-servers/bibliography-manager/src"
         }
     }
 }

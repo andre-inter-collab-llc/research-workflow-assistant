@@ -55,7 +55,7 @@ python -m venv .venv
 
 # Activate it
 # Windows:
-.venv\Scripts\activate
+& .venv\Scripts\Activate.ps1
 # macOS/Linux:
 source .venv/bin/activate
 
@@ -71,6 +71,7 @@ pip install -e mcp-servers/zotero-local-server
 pip install -e mcp-servers/prisma-tracker
 pip install -e mcp-servers/project-tracker
 pip install -e mcp-servers/chat-exporter
+pip install -e mcp-servers/bibliography-manager
 ```
 
 > **VS Code task shortcut:** You can also run `Ctrl+Shift+P` → "Tasks: Run Task" → "Install All MCP Servers" to install everything with a single click.
@@ -120,7 +121,7 @@ Open the workspace in VS Code and check that MCP servers start properly:
 
 1. Open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`)
 2. Select "MCP: List Servers"
-3. All 10 servers should appear and show as available
+3. All 11 servers should appear and show as available
 
 You can also test individual servers from the terminal:
 
@@ -283,7 +284,7 @@ If you work in a separate VS Code workspace, you have two options:
 
 1. **Multi-root workspace** — add both the assistant repo and your project as workspace folders. Use the template at `templates/research-workspace.code-workspace.example`.
 
-2. **Portable MCP config** — copy `templates/portable-mcp-config.json` to your project's `.vscode/mcp.json` and update the paths. This gives your project access to all 10 MCP servers without needing the assistant repo open.
+2. **Portable MCP config** — copy `templates/portable-mcp-config.json` to your project's `.vscode/mcp.json` and update the paths. This gives your project access to all 11 MCP servers without needing the assistant repo open.
 
 ## Chat Session Export
 
@@ -442,13 +443,13 @@ The database contains two tables and one view:
 
 ### Script-First Search (Reproducible Scripts)
 
-Each search server also offers a `_scripted` variant tool (e.g., `search_pubmed_scripted`, `search_works_scripted`). When you use the scripted variant, or when the standard tool is called with a `project_path`, the server:
+Each search server also offers a `_scripted` variant tool (e.g., `search_pubmed_scripted`, `search_works_scripted`). When you use the scripted variant, the server:
 
 1. **Generates a standalone Python script** in `{project}/scripts/search_{source}_{timestamp}.py`
 2. **Executes the script** via subprocess
 3. **Reads back results** from the SQLite database
 
-The generated script is fully self-contained — it only requires `httpx` and the Python standard library. You can re-run it independently to reproduce the exact same search:
+The generated script is a thin runner stub that imports `rwa_result_store.search_runners`, so `rwa-shared` must be installed in the Python environment. You can re-run it independently to reproduce the exact same search:
 
 ```bash
 # Re-run a search script directly

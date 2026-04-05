@@ -412,9 +412,16 @@ async def run_search_script(
         Dictionary with total_count, search_id, result count, and Excel path.
     """
     resolved = _require_project_path(project_path)
-    result = _execute_search_script(resolved, script_path)
+    result = _execute_search_script(
+        resolved,
+        script_path,
+        include_error_details=True,
+    )
     if result is None:
         return {"error": f"Script execution failed: {script_path}"}
+    if isinstance(result, dict):
+        result.setdefault("error", f"Script execution failed: {script_path}")
+        return result
 
     results, total_count, search_id = result
     excel_path = str(Path(resolved) / "data" / "search_results.xlsx")
