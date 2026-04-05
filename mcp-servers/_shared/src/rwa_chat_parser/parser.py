@@ -17,7 +17,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from .models import ChatMessage, ChatSession, ThinkingBlock, ToolCall
+from .models import ChatMessage, ChatSession, ClarificationQA, ThinkingBlock, ToolCall
 
 logger = logging.getLogger(__name__)
 
@@ -190,6 +190,9 @@ def _parse_response_items(items: list[Any], msg: ChatMessage) -> None:
         elif item_kind == "toolInvocationSerialized":
             msg.tool_calls.append(_parse_tool_call(item))
 
+        elif item_kind == "questionCarousel":
+            msg.clarification_qas.extend(_parse_question_carousel(item))
+
         elif item_kind == "mcpServersStarting":
             # Internal housekeeping — skip
             continue
@@ -229,14 +232,22 @@ def _parse_tool_call(item: dict[str, Any]) -> ToolCall:
         past_tense_message=past_text,
         is_complete=bool(item.get("isComplete", True)),
         source_label=source_label,
+        is_error=bool(item.get("isError", False)),
     )
 
     # Verbose details from resultDetails (MCP tools)
     rd = item.get("resultDetails")
     if isinstance(rd, dict):
-        tc.is_error = bool(rd.get("isError", False))
+        tc.is_error = tc.is_error or bool(rd.get("isError", False))
         tc.result_input = _flatten_result(rd.get("input", ""))
         tc.result_output = _flatten_result(rd.get("output", ""))
+    elif isinstance(rd, list):
+        tc.is_error = tc.is_error or any(
+            isinstance(part, dict) and bool(part.get("isError", False)) for part in rd
+        )
+        tc.result_output = _flatten_result(rd)
+    elif rd:
+        tc.result_output = _flatten_result(rd)
 
     # Terminal tool details
     tsd = item.get("toolSpecificData")
@@ -249,24 +260,147 @@ def _parse_tool_call(item: dict[str, Any]) -> ToolCall:
             exit_code = state.get("exitCode") if isinstance(state, dict) else None
             output = tsd.get("terminalCommandOutput", {})
             out_text = output.get("text", "") if isinstance(output, dict) else ""
-            tc.result_input = cmd_text
-            tc.result_output = out_text
+            if cmd_text:
+                tc.result_input = cmd_text
+
+            output_parts = [part for part in [tc.result_output, out_text] if part]
             if exit_code is not None:
-                tc.result_output += f"\n[exit code: {exit_code}]"
+                output_parts.append(f"[exit code: {exit_code}]")
+                try:
+                    if int(exit_code) != 0:
+                        tc.is_error = True
+                except (TypeError, ValueError):
+                    # Preserve unknown exit code text while treating it as an error.
+                    tc.is_error = True
+
+            tc.result_output = "\n".join(output_parts)
 
     return tc
+
+
+def _parse_question_carousel(item: dict[str, Any]) -> list[ClarificationQA]:
+    """Parse clarification prompts and selected answers from questionCarousel items."""
+    questions = item.get("questions")
+    if not isinstance(questions, list):
+        return []
+
+    answers = item.get("data", {})
+    if not isinstance(answers, dict):
+        answers = {}
+
+    qas: list[ClarificationQA] = []
+    for question in questions:
+        if not isinstance(question, dict):
+            continue
+
+        prompt = _resolve_question_prompt(question)
+        if not prompt:
+            continue
+
+        question_id_raw = question.get("id")
+        question_id = str(question_id_raw).strip() if question_id_raw is not None else ""
+        selected = answers.get(question_id) if question_id else None
+        answer = _resolve_selected_answer(selected, question)
+
+        qas.append(ClarificationQA(question=prompt, answer=answer))
+
+    return qas
+
+
+def _resolve_question_prompt(question: dict[str, Any]) -> str:
+    """Resolve the most descriptive prompt text for a clarification question."""
+    candidates = [question.get("message"), question.get("title"), question.get("question")]
+    for candidate in candidates:
+        if isinstance(candidate, str) and candidate.strip():
+            return candidate.strip()
+        if isinstance(candidate, dict):
+            value = candidate.get("value")
+            if isinstance(value, str) and value.strip():
+                return value.strip()
+    return ""
+
+
+def _resolve_selected_answer(selected: Any, question: dict[str, Any]) -> str:
+    """Resolve selected answer text, preferring option labels with descriptive text."""
+    selected_values: list[str] = []
+    if isinstance(selected, str) and selected.strip():
+        selected_values.append(selected.strip())
+    elif isinstance(selected, dict):
+        selected_values.extend(_extract_selected_values(selected))
+
+    options = question.get("options", [])
+    resolved_values = [
+        _resolve_option_label(value, options) for value in selected_values if value
+    ]
+
+    if resolved_values:
+        return "; ".join(resolved_values)
+
+    return ""
+
+
+def _extract_selected_values(selected: dict[str, Any]) -> list[str]:
+    """Extract one or more selected values from a question response payload."""
+    values: list[str] = []
+    candidate_keys = ["selectedValue", "value", "text", "answer", "freeformValue"]
+    for key in candidate_keys:
+        value = selected.get(key)
+        if isinstance(value, str) and value.strip():
+            values.append(value.strip())
+
+    selected_values = selected.get("selectedValues")
+    if isinstance(selected_values, list):
+        for value in selected_values:
+            if isinstance(value, str) and value.strip():
+                values.append(value.strip())
+
+    # Preserve insertion order while de-duplicating
+    deduped = list(dict.fromkeys(values))
+    return deduped
+
+
+def _resolve_option_label(value: str, options: Any) -> str:
+    """Map a selected option value/id to its display label when available."""
+    if not isinstance(options, list):
+        return value
+
+    normalized_value = value.strip().lower()
+    for option in options:
+        if not isinstance(option, dict):
+            continue
+
+        candidates = [option.get("id"), option.get("value"), option.get("label")]
+        normalized_candidates = {
+            str(candidate).strip().lower()
+            for candidate in candidates
+            if isinstance(candidate, str) and candidate.strip()
+        }
+
+        if normalized_value in normalized_candidates:
+            label = option.get("label") or option.get("value") or option.get("id")
+            if isinstance(label, str) and label.strip():
+                return label.strip()
+
+    return value
 
 
 def _flatten_result(value: Any) -> str:
     """Flatten a result value to a string."""
     if isinstance(value, str):
         return value
+    if isinstance(value, dict):
+        if "value" in value:
+            embedded = value.get("value")
+            if isinstance(embedded, str):
+                return embedded
+            return _flatten_result(embedded)
+        try:
+            return json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True)
+        except TypeError:
+            return str(value)
     if isinstance(value, list):
-        parts = []
-        for item in value:
-            if isinstance(item, dict):
-                parts.append(item.get("value", str(item)))
-            else:
-                parts.append(str(item))
+        parts = [_flatten_result(item) for item in value]
         return "\n".join(parts)
-    return str(value) if value else ""
+    if value is None:
+        return ""
+    return str(value)

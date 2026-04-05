@@ -186,7 +186,7 @@ def export_session(
     session_id: str,
     project_path: str | None = None,
     output_path: str | None = None,
-    detail_level: str = "summary",
+    detail_level: str = "full",
     include_thinking: bool = True,
 ) -> str:
     """Export a VS Code Copilot Chat session to a QMD file.
@@ -201,7 +201,7 @@ def export_session(
     output_path:
         Explicit output file path. Overrides project_path if both given.
     detail_level:
-        ``"summary"`` (default) or ``"full"`` for tool call details.
+        ``"full"`` (default) or ``"summary"`` for compact tool call labels.
     include_thinking:
         Include model thinking blocks in collapsible sections. Default True.
     """
@@ -250,7 +250,7 @@ def export_session(
 @mcp.tool()
 def export_latest(
     project_path: str,
-    detail_level: str = "summary",
+    detail_level: str = "full",
     include_thinking: bool = True,
 ) -> str:
     """Export the most recent chat session to a QMD file.
@@ -260,7 +260,7 @@ def export_latest(
     project_path:
         Target project directory. Output goes to ``<project>/chat-logs/``.
     detail_level:
-        ``"summary"`` (default) or ``"full"`` for tool call details.
+        ``"full"`` (default) or ``"summary"`` for compact tool call labels.
     include_thinking:
         Include model thinking blocks in collapsible sections. Default True.
     """

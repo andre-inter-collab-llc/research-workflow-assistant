@@ -16,7 +16,8 @@ Options:
     --session-id ID     Export a specific session by ID.
     --project PATH      Target project directory (output goes to chat-logs/).
     --output PATH       Explicit output file path (overrides --project).
-    --verbose           Include full tool call inputs/outputs.
+    --summary           Export compact summary mode (tool labels only).
+    --verbose           Deprecated alias for full-detail mode (now default).
     --no-thinking       Exclude model thinking/reasoning blocks.
     --workspace PATH    Override workspace root for session discovery.
     --json              Output session list as JSON (with --list).
@@ -202,7 +203,17 @@ def main() -> int:
 
     parser.add_argument("--project", help="Target project directory (output to chat-logs/)")
     parser.add_argument("--output", help="Explicit output file path")
-    parser.add_argument("--verbose", action="store_true", help="Include full tool details")
+    detail_group = parser.add_mutually_exclusive_group()
+    detail_group.add_argument(
+        "--summary",
+        action="store_true",
+        help="Export compact summary mode (tool labels only)",
+    )
+    detail_group.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Deprecated alias for full-detail mode (default)",
+    )
     parser.add_argument("--no-thinking", action="store_true", help="Exclude thinking blocks")
     parser.add_argument("--workspace", help="Override workspace root path")
     parser.add_argument("--json", action="store_true", help="JSON output (with --list)")
@@ -264,7 +275,7 @@ def main() -> int:
         print("Error: Specify --project or --output for export destination.", file=sys.stderr)
         return 1
 
-    detail_level = "full" if args.verbose else "summary"
+    detail_level = "summary" if args.summary else "full"
     include_thinking = not args.no_thinking
 
     result = _export_session(

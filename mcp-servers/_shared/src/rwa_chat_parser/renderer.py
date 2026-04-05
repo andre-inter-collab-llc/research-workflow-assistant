@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from textwrap import dedent
 
-from .models import ChatMessage, ChatSession, ThinkingBlock, ToolCall
+from .models import ChatMessage, ChatSession, ClarificationQA, ThinkingBlock, ToolCall
 
 # ANSI escape sequence stripper
 _ANSI_RE = re.compile(r"\x1b\[[0-9;]*[a-zA-Z]|\x1b\[\?[0-9]*[a-zA-Z]")
@@ -15,7 +15,7 @@ def render_qmd(
     session: ChatSession,
     *,
     include_thinking: bool = True,
-    detail_level: str = "summary",
+    detail_level: str = "full",
 ) -> str:
     """Render a ChatSession to a QMD string.
 
@@ -27,7 +27,7 @@ def render_qmd(
         If True (default), include model thinking blocks in collapsible
         ``<details>`` sections. If False, omit them entirely.
     detail_level:
-        ``"summary"`` (default) shows only tool invocation labels.
+        ``"summary"`` shows only tool invocation labels.
         ``"full"`` includes tool inputs and outputs.
     """
     parts: list[str] = []
@@ -133,6 +133,11 @@ def _render_message(
         parts.append(_render_tool_calls(msg.tool_calls, detail_level=detail_level))
         parts.append("")
 
+    # Clarification Q/A blocks collected from questionCarousel prompts
+    if msg.clarification_qas:
+        parts.append(_render_clarification_qas(msg.clarification_qas))
+        parts.append("")
+
     # Response text
     if msg.response_text.strip():
         parts.append(msg.response_text.strip())
@@ -170,9 +175,13 @@ def _render_tool_calls(calls: list[ToolCall], *, detail_level: str) -> str:
             label = tc.tool_id
 
         source_tag = f" *({tc.source_label})*" if tc.source_label else ""
-        parts.append(f"- {label}{source_tag}")
+        error_tag = " **(error)**" if tc.is_error else ""
+        parts.append(f"- {label}{source_tag}{error_tag}")
 
-        if detail_level == "full" and (tc.result_input or tc.result_output):
+        show_details = detail_level == "full" and (
+            tc.result_input or tc.result_output or tc.is_error
+        )
+        if show_details:
             parts.append("")
             parts.append("  <details>")
             parts.append(f"  <summary>Details: {tc.tool_id}</summary>")
@@ -183,17 +192,32 @@ def _render_tool_calls(calls: list[ToolCall], *, detail_level: str) -> str:
                 parts.append(f"  ```\n  {clean_input}\n  ```")
             if tc.result_output:
                 clean_output = _strip_ansi(tc.result_output)
-                # Truncate very large outputs
-                if len(clean_output) > 2000:
-                    clean_output = clean_output[:2000] + "\n  ... (truncated)"
                 parts.append("  **Output:**")
                 parts.append(f"  ```\n  {clean_output}\n  ```")
+            if not tc.result_input and not tc.result_output:
+                parts.append("  *(No input/output captured)*")
             if tc.is_error:
                 parts.append("  **Status:** Error")
             parts.append("")
             parts.append("  </details>")
 
     return "\n".join(parts)
+
+
+def _render_clarification_qas(qas: list[ClarificationQA]) -> str:
+    """Render explicit clarification questions and user-selected responses."""
+    parts: list[str] = []
+    parts.append("**Clarification Q/A:**")
+    parts.append("")
+
+    for qa in qas:
+        question = qa.question.strip()
+        answer = qa.answer.strip() if qa.answer.strip() else "(no response captured)"
+        parts.append(f"Q: {question}")
+        parts.append(f"A: {answer}")
+        parts.append("")
+
+    return "\n".join(parts).rstrip()
 
 
 def _strip_ansi(text: str) -> str:

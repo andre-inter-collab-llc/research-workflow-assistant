@@ -22,6 +22,14 @@ class ToolCall:
 
 
 @dataclass
+class ClarificationQA:
+    """A clarification prompt and selected answer captured from questionCarousel."""
+
+    question: str = ""
+    answer: str = ""
+
+
+@dataclass
 class ThinkingBlock:
     """An internal reasoning / thinking trace from the model."""
 
@@ -41,6 +49,7 @@ class ChatMessage:
     response_text: str = ""
     thinking_blocks: list[ThinkingBlock] = field(default_factory=list)
     tool_calls: list[ToolCall] = field(default_factory=list)
+    clarification_qas: list[ClarificationQA] = field(default_factory=list)
 
 
 @dataclass
