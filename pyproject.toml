@@ -10,7 +10,7 @@ readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.11"
 authors = [
-    {name = "André van Zyl", email = "andrevanzyl@intersectcollaborations.com"},
+    {name = "André van Zyl"},
 ]
 keywords = ["research", "systematic-review", "mcp", "pubmed", "zotero", "quarto", "icmje"]
 classifiers = [
@@ -45,7 +45,11 @@ dev = [
 Homepage = "https://github.com/andre-inter-collab-llc/research-workflow-assistant"
 Repository = "https://github.com/andre-inter-collab-llc/research-workflow-assistant"
 Issues = "https://github.com/andre-inter-collab-llc/research-workflow-assistant/issues"
+Discussions = "https://github.com/andre-inter-collab-llc/research-workflow-assistant/discussions"
 Changelog = "https://github.com/andre-inter-collab-llc/research-workflow-assistant/blob/master/CHANGELOG.md"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/research_workflow_assistant"]
 
 [tool.ruff]
 target-version = "py311"

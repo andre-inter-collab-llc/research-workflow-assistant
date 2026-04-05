@@ -15,7 +15,9 @@ If you discover a security vulnerability in the Research Workflow Assistant, ple
 
 ### How to Report
 
-**Email**: andrevanzyl@intersectcollaborations.com
+Use GitHub's private vulnerability reporting channel:
+
+**Security Advisories**: https://github.com/andre-inter-collab-llc/research-workflow-assistant/security/advisories/new
 
 **Subject line**: `[SECURITY] RWA - Brief description`
 

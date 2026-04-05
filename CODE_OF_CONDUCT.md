@@ -59,8 +59,9 @@ representative at an online or offline event.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the community leaders responsible for enforcement at
-**andrevanzyl@intersectcollaborations.com**.
+reported to the community leaders responsible for enforcement through GitHub:
+- Issues (use the appropriate template): https://github.com/andre-inter-collab-llc/research-workflow-assistant/issues/new/choose
+- Discussions: https://github.com/andre-inter-collab-llc/research-workflow-assistant/discussions
 
 All complaints will be reviewed and investigated promptly and fairly.
 

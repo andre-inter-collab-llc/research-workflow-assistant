@@ -17,7 +17,7 @@ Thank you for your interest in contributing to the Research Workflow Assistant (
 
 ## Code of Conduct
 
-This project follows the [Contributor Covenant v2.1](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to andrevanzyl@intersectcollaborations.com.
+This project follows the [Contributor Covenant v2.1](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior through GitHub Issues using a template: https://github.com/andre-inter-collab-llc/research-workflow-assistant/issues/new/choose or via GitHub Discussions: https://github.com/andre-inter-collab-llc/research-workflow-assistant/discussions.
 
 ## Getting Started
 

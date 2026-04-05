@@ -55,8 +55,7 @@ def _write_minimal_session(path: Path) -> None:
                                     "id": "q1",
                                     "title": "What type of output are you envisioning?",
                                     "message": (
-                                        "What type of output are you envisioning for this "
-                                        "project?"
+                                        "What type of output are you envisioning for this project?"
                                     ),
                                     "options": [
                                         {

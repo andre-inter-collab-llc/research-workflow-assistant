@@ -329,9 +329,7 @@ def _resolve_selected_answer(selected: Any, question: dict[str, Any]) -> str:
         selected_values.extend(_extract_selected_values(selected))
 
     options = question.get("options", [])
-    resolved_values = [
-        _resolve_option_label(value, options) for value in selected_values if value
-    ]
+    resolved_values = [_resolve_option_label(value, options) for value in selected_values if value]
 
     if resolved_values:
         return "; ".join(resolved_values)
