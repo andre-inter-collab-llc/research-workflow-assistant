@@ -81,6 +81,10 @@ coverage.xml
 my_projects/
 !my_projects/.gitkeep
 
+# Guard against accidental generated project artifacts inside MCP server src trees
+mcp-servers/*/src/my_projects/
+mcp-servers/*/src/my_projects/**
+
 # Private admin workspace (local-only)
 admin/
 
