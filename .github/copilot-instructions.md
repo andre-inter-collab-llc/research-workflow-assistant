@@ -235,6 +235,13 @@ All formal literature searches (searches that contribute to a review's evidence 
   - When in doubt about whether a manual line split is needed, prefer extracting a sub-expression to a local variable to shorten the line, rather than splitting with implicit concatenation.
 - Before considering a code change complete, mentally verify it would pass both `ruff check` and `ruff format --check` with the project settings.
 
+### Script Placement
+- The repository-level `scripts/` directory is reserved for **generalizable RWA utilities** that work across all projects and users (e.g., `validate_setup.py`, `mcp_smoke_check.py`, `release.py`).
+- **Project-specific scripts** (one-off data cleaning, extraction helpers, project-hardcoded analysis code) belong in `my_projects/<project>/scripts/`, not in the repository-level `scripts/` directory.
+- Any script that contains a hardcoded path like `my_projects/<project-name>` or references project-specific data files, study names, or PMIDs is project-specific by definition and must not be placed in `scripts/`.
+- When generating a utility script for a user's research project, always place it in `my_projects/<project>/scripts/`.
+- Changes to RWA core files (`.github/`, `scripts/`, `templates/`, `docs/`, `mcp-servers/`, `analysis-templates/`) must be generalizable to all projects and users. If a change only benefits one project, it does not belong in core.
+
 ### Posit / Quarto Standards
 
 [Quarto](https://quarto.org/) is the **default output layer** for the Research Workflow Assistant. All generated reports, manuscripts, protocols, analysis scripts, and dashboards use Quarto Markdown (`.qmd`). Quarto was chosen because it:
@@ -267,6 +274,23 @@ Citation formatting uses **CSL (Citation Style Language)** files processed by Pa
 - Never hardcode a path back to the repo-root `csl/` directory in project documents — always use a local copy.
 - If the resolved style is not in the shared library, download it first with `bib_download_csl_style`.
 - See `csl/README.md` for the full list of bundled styles and instructions for adding more.
+
+### Quarto Citekey Format (Non-Negotiable)
+
+Every citation in a `.qmd` file **must** use Pandoc/Quarto citekeys. Plain-text author-year citations (e.g., "Smith et al. (2024)") are **never acceptable** in QMD output because they bypass Pandoc citeproc, breaking hover previews, clickable navigation, and automatic reference list population.
+
+**Required format:**
+- Parenthetical: `[@smith2024]` or multiple `[@smith2024; @jones2023]`
+- Narrative (in-text): `@smith2024` renders as "Smith (2024)" with a live link
+- With locator: `[@smith2024, p. 42]`
+
+**Workflow when drafting QMD that cites studies:**
+1. Before writing any citation, ensure a BibTeX entry exists in the project's `references.bib`. If it does not, create it first using MCP tools (`crossref_get_work` by DOI, `search_pubmed` by PMID, or Zotero export) to fetch verified metadata.
+2. Use the citekey from `references.bib` in all citation positions.
+3. Never leave a plain-text author-year citation as a placeholder "to fix later." The citekey must be correct at the time of writing.
+4. When generating a QMD file that references multiple studies, batch-create all needed BibTeX entries at the start of the drafting process, not as an afterthought.
+
+**This rule applies to every agent generating QMD content**, including but not limited to: academic-writer, systematic-reviewer, data-analyst, research-planner, and critical-reviewer.
 
 ### Diagram and Table Defaults
 

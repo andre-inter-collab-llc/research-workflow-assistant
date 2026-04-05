@@ -7,11 +7,11 @@ and batch Zotero import.
 import os
 import sqlite3
 import sys
+from pathlib import Path
 
-PROJECT = (
-    r"C:\Users\andre\Documents\research-workflow-assistant"
-    r"\sample_projects\chw-maternal-mental-health"
-)
+# Resolve project path relative to the repo root
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+PROJECT = str(_REPO_ROOT / "sample_projects" / "chw-maternal-mental-health")
 DB_PATH = os.path.join(PROJECT, "data", "search_results.db")
 
 

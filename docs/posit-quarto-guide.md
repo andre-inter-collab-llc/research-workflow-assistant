@@ -147,6 +147,8 @@ Quarto uses Pandoc's citeproc for citations. The workflow:
 3. **Cite in text** — `[@smith2024]`, `[@smith2024; @jones2023]`, or `@smith2024`
 4. **Apply a style** — `csl: apa.csl` (or any [CSL style](https://www.zotero.org/styles))
 
+> **Important:** Always use Pandoc citekeys in QMD files. Never use plain-text author-year citations (e.g., "Smith et al. (2024)"). Plain-text citations bypass citeproc and will not appear in the rendered reference list, will not have hover previews, and will not be clickable. If a citekey does not exist in `references.bib`, create the BibTeX entry first (using Zotero export, CrossRef DOI lookup, or PubMed), then cite with the key.
+
 ### Configuring Citation Styles
 
 RWA ships a shared CSL style library in `csl/` with 11 pre-bundled styles (APA, Vancouver, Vancouver Superscript, AMA, BMJ, Nature, NLM, IEEE, Harvard, Chicago Author-Date, Chicago Fullnote). Additional styles can be downloaded on demand from the [Zotero Style Repository](https://www.zotero.org/styles) (10,000+ styles) via the `bib_download_csl_style` tool.

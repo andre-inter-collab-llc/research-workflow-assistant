@@ -120,6 +120,7 @@ The project's `search_results.db` is the **single source of truth** for all lite
 - When assisting with screening, data extraction, or synthesis, query the DB (via `get_stored_results` or `export_stored_results`) rather than making new API calls.
 - The Excel file at `{project_path}/data/search_results.xlsx` is the author's review copy. It is regenerated from the DB on each search and must always reflect the same data.
 - Never reference, cite, or include a paper in the review that is not recorded in the project's `search_results.db`, unless the author explicitly adds it.
+- All citations in QMD outputs (protocols, synthesis documents, reports) MUST use Pandoc citekeys (`@key` or `[@key]`), never plain-text author-year. Ensure every cited work has a BibTeX entry in `references.bib` before citing it.
 
 ### Phase 5: Deduplication
 

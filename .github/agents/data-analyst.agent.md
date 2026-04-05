@@ -106,9 +106,10 @@ Create publication-quality figures:
    - **Python**: Use the citation helper from `analysis-templates/python/cite-python-packages.qmd` to generate BibTeX entries via `importlib.metadata`. Major scientific packages (numpy, scipy, pandas, scikit-learn, matplotlib, statsmodels, seaborn, lifelines, pingouin) have preferred citations with DOIs; others fall back to `@Manual{}` entries.
    - Statistical and domain-specific packages should always be cited (per [FORCE11 Software Citation Principles](https://doi.org/10.7717/peerj-cs.86)). General-purpose packages are also worth citing.
    - Include an example Methods paragraph showing how to report software versions in-text, e.g., "All analyses were performed using R Statistical Software (v4.x.x; R Core Team, 2025)."
-6. **Never hardcode file paths.** Use relative paths or configuration variables.
-6. **Handle missing data explicitly.** Document the approach (complete case, imputation, etc.) and get user approval.
-7. **Present results as output**, not as interpretive text. "The model estimates X" not "This shows that Y causes Z."
+6. **Use Pandoc citekeys for all citations.** In analysis QMDs, cite packages and referenced papers using `@citekey` or `[@citekey]`, never plain-text author-year. Ensure a BibTeX entry exists in the project's `references.bib` or a generated `packages.bib` for every cited work.
+7. **Never hardcode file paths.** Use relative paths or configuration variables.
+8. **Handle missing data explicitly.** Document the approach (complete case, imputation, etc.) and get user approval.
+9. **Present results as output**, not as interpretive text. "The model estimates X" not "This shows that Y causes Z."
 
 ### After Code Generation
 

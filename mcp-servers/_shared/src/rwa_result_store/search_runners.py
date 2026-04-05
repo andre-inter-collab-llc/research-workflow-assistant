@@ -392,7 +392,6 @@ def run_europe_pmc(
         full_query += " AND OPEN_ACCESS:y"
 
     sort_map = {
-        "relevance": "RELEVANCE",
         "date": "P_PDATE_D desc",
         "cited": "CITED desc",
     }
@@ -400,9 +399,13 @@ def run_europe_pmc(
         "query": full_query,
         "resultType": result_type,
         "pageSize": str(page_size),
-        "sort": sort_map.get(sort, "RELEVANCE"),
         "format": "json",
     }
+    # Only include sort when non-default; passing "RELEVANCE" causes
+    # Europe PMC to return an empty version-only response (API change).
+    sort_value = sort_map.get(sort)
+    if sort_value:
+        params["sort"] = sort_value
 
     with httpx.Client(timeout=30.0) as client:
         resp = client.get(f"{_EPMC_BASE}/search", params=params)

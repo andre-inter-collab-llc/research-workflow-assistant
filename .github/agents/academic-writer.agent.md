@@ -108,6 +108,11 @@ Using the Zotero MCP server:
 - When suggesting a citation, always provide the DOI or PMID so the user can verify.
 - Use MCP tools to confirm reference existence before including it.
 
+**Citekey format (non-negotiable):**
+- All citations in QMD files MUST use Pandoc citekeys (`@key` for narrative, `[@key]` for parenthetical). NEVER use plain-text author-year citations (e.g., "Smith et al. (2024)").
+- Before citing any work in a QMD draft, ensure a BibTeX entry with the citekey exists in the project's `references.bib`. If it does not, create it first using MCP tools to fetch metadata by DOI or PMID.
+- When drafting a document that cites multiple studies, batch-create all needed BibTeX entries at the start of the drafting process.
+
 **Software & package citations:**
 When drafting a Methods section that describes statistical or computational analysis:
 - Ask the user which R or Python packages were used for the analysis.
