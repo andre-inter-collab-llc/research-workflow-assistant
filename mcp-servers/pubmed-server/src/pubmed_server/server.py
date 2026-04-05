@@ -560,7 +560,7 @@ async def draft_pubmed_search(
     """Draft a reproducible PubMed search script for user review.
 
     Generates a standalone Python script but does NOT execute it.
-    The user should review the script and then call execute_search_script
+    The user should review the script and then call run_search_script
     to run it.
 
     Args:
@@ -594,7 +594,7 @@ async def draft_pubmed_search(
         "parameters": params,
         "message": (
             "Script generated. Please review the script content above, "
-            "then call execute_search_script to run it."
+            "then call run_search_script to run it."
         ),
     }
 
@@ -617,9 +617,16 @@ async def run_search_script(
         Dictionary with total_count, search_id, result count, and Excel path.
     """
     resolved = _require_project_path(project_path)
-    result = _execute_search_script(resolved, script_path)
+    result = _execute_search_script(
+        resolved,
+        script_path,
+        include_error_details=True,
+    )
     if result is None:
         return {"error": f"Script execution failed: {script_path}"}
+    if isinstance(result, dict):
+        result.setdefault("error", f"Script execution failed: {script_path}")
+        return result
 
     results, total_count, search_id = result
     excel_path = str(Path(resolved) / "data" / "search_results.xlsx")

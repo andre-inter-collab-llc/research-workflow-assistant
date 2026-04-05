@@ -576,10 +576,43 @@ def generate_search_script(
     return (str(script_path), script_content)
 
 
+def _script_execution_error(
+    script_path: Path,
+    error: str,
+    *,
+    returncode: int | None = None,
+    stdout: str = "",
+    stderr: str = "",
+    timeout_seconds: int | None = None,
+    exception_type: str | None = None,
+) -> dict[str, Any]:
+    """Build a normalized error payload for failed script execution."""
+    payload: dict[str, Any] = {
+        "error": error,
+        "script_path": str(script_path),
+    }
+    if returncode is not None:
+        payload["returncode"] = returncode
+    if timeout_seconds is not None:
+        payload["timeout_seconds"] = timeout_seconds
+    if exception_type:
+        payload["exception_type"] = exception_type
+
+    stdout = stdout.strip()
+    stderr = stderr.strip()
+    if stdout:
+        payload["stdout"] = stdout[:500]
+    if stderr:
+        payload["stderr"] = stderr[:500]
+
+    return payload
+
+
 def execute_search_script(
     project_path: str,
     script_path: str,
-) -> tuple[list[dict[str, Any]], int, int] | None:
+    include_error_details: bool = False,
+) -> tuple[list[dict[str, Any]], int, int] | dict[str, Any] | None:
     """Execute a previously generated search script and return results.
 
     The script is expected to print a ``search_id`` integer to stdout
@@ -589,14 +622,20 @@ def execute_search_script(
     Args:
         project_path: Absolute path to the project directory.
         script_path: Absolute path to the search script to run.
+        include_error_details: When True, return a structured error payload
+            instead of ``None`` for script execution failures.
 
     Returns:
         ``(results_list, total_count, search_id)`` on success,
-        or ``None`` if execution fails.
+        ``([], 0, 0)`` for no results,
+        a structured error payload when ``include_error_details=True``,
+        or ``None`` if execution fails and error details are disabled.
     """
     script_path_obj = Path(script_path)
     if not script_path_obj.exists():
         logger.warning("Script not found: %s", script_path)
+        if include_error_details:
+            return _script_execution_error(script_path_obj, "Script not found.")
         return None
 
     try:
@@ -606,8 +645,26 @@ def execute_search_script(
             text=True,
             timeout=120,
         )
-    except (subprocess.TimeoutExpired, OSError) as exc:
+    except subprocess.TimeoutExpired as exc:
         logger.warning("Script execution failed: %s", exc)
+        if include_error_details:
+            return _script_execution_error(
+                script_path_obj,
+                "Script execution timed out.",
+                stdout=exc.stdout or "",
+                stderr=exc.stderr or "",
+                timeout_seconds=120,
+                exception_type=type(exc).__name__,
+            )
+        return None
+    except OSError as exc:
+        logger.warning("Script execution failed: %s", exc)
+        if include_error_details:
+            return _script_execution_error(
+                script_path_obj,
+                "Script could not be executed.",
+                exception_type=type(exc).__name__,
+            )
         return None
 
     if result.returncode != 0:
@@ -617,6 +674,14 @@ def execute_search_script(
             result.returncode,
             result.stderr[:500],
         )
+        if include_error_details:
+            return _script_execution_error(
+                script_path_obj,
+                "Script exited with non-zero status.",
+                returncode=result.returncode,
+                stdout=result.stdout,
+                stderr=result.stderr,
+            )
         return None
 
     stdout = result.stdout.strip()
@@ -627,10 +692,24 @@ def execute_search_script(
         search_id = int(stdout)
     except ValueError:
         logger.warning("Could not parse search_id from script output: %r", stdout)
+        if include_error_details:
+            return _script_execution_error(
+                script_path_obj,
+                "Could not parse search_id from script output.",
+                stdout=result.stdout,
+                stderr=result.stderr,
+            )
         return None
 
     db = _db_path(project_path)
     if not db.exists():
+        if include_error_details:
+            return _script_execution_error(
+                script_path_obj,
+                "Search database was not found after script execution.",
+                stdout=result.stdout,
+                stderr=result.stderr,
+            )
         return None
 
     conn = init_db(project_path)
@@ -677,7 +756,7 @@ def generate_and_run_script(
     script_path, _script_content = gen_result
 
     exec_result = execute_search_script(project_path, script_path)
-    if exec_result is None:
+    if exec_result is None or isinstance(exec_result, dict):
         return None
 
     results, total_count, search_id = exec_result
