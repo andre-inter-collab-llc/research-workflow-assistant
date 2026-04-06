@@ -19,6 +19,7 @@ This document describes the technical architecture of the research-workflow-assi
 │  │  └────────────────┘  │  │ academic-writer     │  │ │   │
 │  │                       │  │ research-planner    │  │ │   │
 │  │                       │  │ project-manager     │  │ │   │
+│  │                       │  │ verification-coord. │  │ │   │
 │  │                       │  └────────────────────┘  │ │   │
 │  │                       └──────────────────────────┘ │   │
 │  └──────────────┬───────────────────────────────────┘   │
@@ -69,6 +70,7 @@ Each agent encodes a specialized research workflow:
 | `academic-writer` | Manuscript drafting with ICMJE compliance | zotero, crossref |
 | `research-planner` | Protocol development and registration | pubmed (for preliminary searches) |
 | `project-manager` | Progress tracking and reporting | project-tracker |
+| `verification-coordinator` | Verification workbook design and reproducibility execution support | project-tracker, prisma-tracker |
 | `troubleshooter` | Diagnostics, repair guidance, and how-to support | pubmed, openalex, semantic-scholar, europe-pmc, crossref, zotero, zotero-local, prisma-tracker, project-tracker |
 
 Agents inherit global instructions and add role-specific behavior, tool restrictions, and workflow sequences.

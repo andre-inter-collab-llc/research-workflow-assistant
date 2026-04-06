@@ -1,0 +1,215 @@
+---
+title: "Verification Workbook"
+subtitle: "Human and LLM executable reproducibility workbook"
+date: today
+format:
+  html:
+    toc: true
+    self-contained: true
+    code-fold: true
+---
+
+## Purpose
+
+Use this workbook to verify reproducibility for:
+
+`[PROJECT_PATH]`
+
+This workbook supports:
+
+- human-led verification
+- LLM-led verification
+- paired verification (LLM executes deterministic checks, human signs judgment gates)
+
+## Run Configuration
+
+- Verification mode: `[artifact-locked | live-replay]`
+- Execution lead: `[human-led | llm-led | paired]`
+- Final authority: `[human-final | delegated]`
+- Preferences file: `verification/verifier-preferences.yaml`
+- LLM contract file: `verification/llm-execution-contract.yaml`
+- Instruction tracker: `verification/verification-instructions-tracker.qmd`
+
+## Step Contract
+
+Each step must produce:
+
+1. `verification/logs/<step-id>.log`
+2. `verification/checkpoints/<step-id>.json`
+3. Human signoff when `gate_type == "judgment-required"`
+
+Blocking policy defaults:
+
+- `deterministic`: blocking
+- `judgment-required`: blocking until human decision is recorded
+- `advisory`: non-blocking unless verifier preferences override
+
+If a step fails or is low-value for the current verifier, record it in:
+
+`verification/verification-instructions-tracker.qmd`
+
+## Step Register
+
+| Step ID | Goal | Gate Type | Blocking | Status |
+|---|---|---|---|---|
+| 00 | Initialize verification workspace | deterministic | Yes | NOT-RUN |
+| 01 | Environment and MCP readiness | advisory | No (default) | NOT-RUN |
+| 02 | Freeze baseline artifacts | deterministic | Yes | NOT-RUN |
+| 03+ | Project-specific assertions | deterministic / judgment-required | Configurable | NOT-RUN |
+
+## Step 0: Initialize Verification Workspace
+
+```{python}
+import json
+from pathlib import Path
+
+project = Path("[PROJECT_PATH]")
+verify = project / "verification"
+logs_dir = verify / "logs"
+ckpt_dir = verify / "checkpoints"
+artifacts_dir = verify / "artifacts"
+
+for path in (logs_dir, ckpt_dir, artifacts_dir):
+    path.mkdir(parents=True, exist_ok=True)
+
+checkpoint = {
+    "step_id": "00-init-workspace",
+    "status": "PASS",
+    "gate_type": "deterministic",
+    "blocking": True,
+    "paths_created": [str(logs_dir), str(ckpt_dir), str(artifacts_dir)],
+}
+
+(logs_dir / "00-init.log").write_text(json.dumps(checkpoint, indent=2), encoding="utf-8")
+(ckpt_dir / "00-init-workspace.json").write_text(json.dumps(checkpoint, indent=2), encoding="utf-8")
+print(json.dumps(checkpoint, indent=2))
+```
+
+## Step 1: Environment and MCP Readiness
+
+```{python}
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+project = Path("[PROJECT_PATH]")
+logs_dir = project / "verification" / "logs"
+ckpt_dir = project / "verification" / "checkpoints"
+
+commands = [
+    (
+        "validate_setup",
+        [sys.executable, "scripts/validate_setup.py", "--json"],
+        logs_dir / "01-validate-setup.log",
+    ),
+    (
+        "mcp_smoke",
+        [sys.executable, "scripts/mcp_smoke_check.py", "--json"],
+        logs_dir / "01-mcp-smoke.log",
+    ),
+]
+
+results = {}
+for name, cmd, log_path in commands:
+    proc = subprocess.run(cmd, capture_output=True, text=True)
+    log_path.write_text((proc.stdout or "") + "\n" + (proc.stderr or ""), encoding="utf-8")
+    results[name] = {
+        "return_code": proc.returncode,
+        "log_file": str(log_path),
+    }
+
+status = "PASS" if all(r["return_code"] == 0 for r in results.values()) else "FAIL"
+checkpoint = {
+    "step_id": "01-environment-readiness",
+    "status": status,
+    "gate_type": "advisory",
+    "blocking": False,
+    "results": results,
+}
+
+out_path = ckpt_dir / "01-environment-readiness.json"
+out_path.write_text(json.dumps(checkpoint, indent=2), encoding="utf-8")
+print(json.dumps({"status": status, "output": str(out_path)}, indent=2))
+```
+
+## Step 2: Freeze Baseline Artifacts
+
+```{python}
+import hashlib
+import json
+from pathlib import Path
+
+project = Path("[PROJECT_PATH]")
+artifacts_dir = project / "verification" / "artifacts"
+logs_dir = project / "verification" / "logs"
+ckpt_dir = project / "verification" / "checkpoints"
+
+patterns = [
+    "data/**/*",
+    "figures/**/*",
+    "*.qmd",
+    "*.html",
+    "references.bib",
+]
+
+files = []
+for pattern in patterns:
+    for path in project.glob(pattern):
+        if path.is_file():
+            files.append(path)
+
+hashes = []
+for path in sorted(set(files)):
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    hashes.append({"path": str(path).replace("\\", "/"), "sha256": digest})
+
+out_path = artifacts_dir / "02-baseline-hashes.json"
+out_path.write_text(json.dumps(hashes, indent=2), encoding="utf-8")
+
+checkpoint = {
+    "step_id": "02-baseline-hashes",
+    "status": "PASS" if hashes else "FAIL",
+    "gate_type": "deterministic",
+    "blocking": True,
+    "count": len(hashes),
+    "output": str(out_path),
+}
+
+(logs_dir / "02-baseline-hashes.log").write_text(json.dumps(checkpoint, indent=2), encoding="utf-8")
+(ckpt_dir / "02-baseline-hashes.json").write_text(json.dumps(checkpoint, indent=2), encoding="utf-8")
+print(json.dumps(checkpoint, indent=2))
+```
+
+## Project-Specific Verification Steps
+
+Add project-specific deterministic checks and judgment gates below.
+
+For each additional step, include:
+
+- goal
+- executable code or command
+- expected artifacts
+- gate type
+- blocking policy
+
+## LLM Execution Handoff
+
+When another LLM executes this workbook, include these files in the handoff:
+
+- `verification/verification-workbook.qmd`
+- `verification/verifier-preferences.yaml`
+- `verification/llm-execution-contract.yaml`
+- latest `verification/checkpoints/*.json`
+- latest `verification/logs/*.log`
+
+## Final Verdict
+
+Use this logic:
+
+1. Fail if any blocking deterministic step is `FAIL`.
+2. Fail if any judgment-required step lacks human approval.
+3. Warn on advisory failures unless preferences mark them blocking.
+4. Record unresolved tracker items in the verdict summary.
+
+Please review the final verdict and confirm whether this verification run is accepted.

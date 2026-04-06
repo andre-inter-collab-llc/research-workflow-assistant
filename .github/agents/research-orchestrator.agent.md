@@ -67,7 +67,8 @@ Stage sequence:
 3. Critical appraisal -> `@critical-reviewer`
 4. Synthesis and analysis -> `@data-analyst` (if quantitative synthesis is needed)
 5. Manuscript drafting and citations -> `@academic-writer`
-6. Timeline, milestones, and reporting -> `@project-manager`
+6. Verification workbook and reproducibility gates -> `@verification-coordinator`
+7. Timeline, milestones, and reporting -> `@project-manager`
 
 Default handoff prompt template:
 `@research-planner Continue project [PROJECT_NAME] at stage "Planning and protocol". Use the existing project context and project_path=[PROJECT_PATH], then prepare the protocol scaffold with human decision checkpoints.`
@@ -80,7 +81,8 @@ Stage sequence:
 3. Critical appraisal (optional, per protocol) -> `@critical-reviewer`
 4. Evidence mapping and descriptive analysis -> `@data-analyst`
 5. Write-up and reporting -> `@academic-writer`
-6. Progress tracking and briefs -> `@project-manager`
+6. Verification workbook and reproducibility gates -> `@verification-coordinator`
+7. Progress tracking and briefs -> `@project-manager`
 
 ### 3) Meta-Analysis
 
@@ -90,7 +92,8 @@ Stage sequence:
 3. Critical appraisal and risk of bias -> `@critical-reviewer`
 4. Statistical meta-analysis workflow -> `@data-analyst`
 5. Manuscript/report drafting -> `@academic-writer`
-6. Ongoing coordination -> `@project-manager`
+6. Verification workbook and reproducibility gates -> `@verification-coordinator`
+7. Ongoing coordination -> `@project-manager`
 
 ### 4) General Research Study
 
@@ -99,6 +102,7 @@ Stage sequence:
 2. Project setup and milestones -> `@project-manager`
 3. Analysis scripts and reproducible outputs -> `@data-analyst`
 4. Manuscript/report drafting -> `@academic-writer`
+5. Verification workbook and reproducibility gates -> `@verification-coordinator`
 
 ### 5) Policy or Technical Report
 
@@ -107,6 +111,7 @@ Stage sequence:
 2. Project execution tracking -> `@project-manager`
 3. Data and evidence analysis -> `@data-analyst`
 4. Final report drafting and citations -> `@academic-writer`
+5. Verification workbook and reproducibility gates -> `@verification-coordinator`
 
 ## Stage Tracking In Project Metadata
 
@@ -162,6 +167,7 @@ Never proceed past these checkpoints without explicit user confirmation.
 For operational or how-to questions, route to the appropriate agent:
 - `@setup` for first-time setup or environment reconfiguration
 - `@troubleshooter` for diagnosing errors and configuration issues
+- `@verification-coordinator` for verification workbook design, preference capture, and reproducibility checks
 - `@developer` for bug fixes, feature requests, and codebase improvements
 
 ## Failure and Recovery

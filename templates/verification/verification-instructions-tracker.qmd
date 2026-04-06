@@ -1,0 +1,42 @@
+---
+title: "Verification Instructions Tracker"
+subtitle: "Human and LLM feedback log for verification-step usefulness and reliability"
+date: today
+format:
+  html:
+    toc: true
+    self-contained: true
+---
+
+## Purpose
+
+Track which verification instructions are helpful, which fail, and which should be revised.
+Use this file during verification runs to record step-level feedback and decisions.
+
+## Update Rules
+
+1. Add one row per issue or improvement request.
+2. Include whether the issue came from a human verifier, an LLM verifier, or paired execution.
+3. Mark a step as `SKIP` only when it is non-blocking for the selected run mode.
+4. Keep unresolved items in the open table until the workbook is updated and re-tested.
+
+## Status Legend
+
+| Status | Meaning |
+|---|---|
+| PASS | Step worked and was useful |
+| FAIL | Step failed technically |
+| SKIP | Step intentionally skipped for this run mode |
+| DEFERRED | Improvement acknowledged but not yet implemented |
+
+## Open Items
+
+| Date | Step | Run Mode | Status | Helpful | Issue Summary | Decision / Next Action | Owner | Resolved |
+|---|---|---|---|---|---|---|---|---|
+| [YYYY-MM-DD] | [Step ID and title] | [Human/LLM/Paired] | [FAIL/SKIP/DEFERRED] | [Yes/No] | [What failed or added friction?] | [Smallest accepted next action] | [Name] | No |
+
+## Resolved Items
+
+| Date Resolved | Step | Change Implemented | Verified By | Notes |
+|---|---|---|---|---|
+|  |  |  |  |  |

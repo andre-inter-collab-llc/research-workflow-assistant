@@ -7,6 +7,30 @@ Same-day releases use a `.N` suffix (e.g., `2026.03.18.1`).
 
 A machine-readable mirror of this log is maintained in [versions.yaml](versions.yaml).
 
+## [Unreleased]
+
+### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [2026.04.06] — 2026-04-06
+
+Verification coordinator agent, reusable verification templates, and workflow integration for end-to-end reproducibility checks.
+
+### Added
+
+- **Verification coordinator agent**: Added `.github/agents/verification-coordinator.agent.md` for human-friendly and LLM-executable verification workflows, including verifier preference capture and execution contract requirements.
+- **Verification template set**: Added `templates/verification/verification-workbook.qmd`, `templates/verification/verifier-preferences.yaml`, `templates/verification/llm-execution-contract.yaml`, and `templates/verification/verification-instructions-tracker.qmd`.
+
+### Changed
+
+- **Orchestration stage flow**: Updated `research-orchestrator` to include a dedicated verification stage routed to `@verification-coordinator` across supported workflow types.
+- **User and contributor docs**: Updated `README.md`, `docs/getting-started.md`, `docs/architecture.md`, and `CONTRIBUTING.md` to document the new verification workflow capability.
+
 ## [2026.03.29] — 2026-03-29
 
 Script-first literature search workflow, Zotero attachment uploads, README Philosophy section, and infrastructure improvements.

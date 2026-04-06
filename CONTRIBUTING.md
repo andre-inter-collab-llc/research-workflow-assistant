@@ -237,6 +237,8 @@ If you're contributing a new custom Copilot agent:
 3. Include ICMJE compliance guardrails if the agent interacts with research content
 4. Document which MCP server tools the agent uses
 5. Add the agent to the README's feature table
+6. If the agent introduces reusable artifacts, add matching templates under `templates/`
+7. If the agent supports verification workflows, include a verifier preference schema and an LLM execution contract template
 
 ### New Templates
 
@@ -246,6 +248,7 @@ If you're contributing a new Quarto template:
 2. Use `.qmd` format with standard YAML front matter
 3. Include placeholder text that guides users on what to fill in
 4. Add CSL citation style support if the template includes references
+5. For verification templates, include both human-readable guidance and machine-readable checkpoint expectations
 
 ## ICMJE Compliance Note
 

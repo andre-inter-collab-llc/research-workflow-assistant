@@ -50,3 +50,17 @@ releases:
         - "Obsolete search_results.db files from sample project directories"
         - "Stale prisma-flow.json from sample project"
       security: []
+
+  - version: "2026.04.06"
+    date: "2026-04-06"
+    summary: "Verification coordinator agent, reusable verification templates, and reproducibility-stage orchestration updates"
+    changes:
+      added:
+        - "New verification-coordinator custom agent for human-friendly and LLM-executable verification workflows"
+        - "New verification templates: verification-workbook.qmd, verifier-preferences.yaml, llm-execution-contract.yaml, and verification-instructions-tracker.qmd"
+      changed:
+        - "research-orchestrator stage routing updated to include dedicated verification workflow stage"
+        - "README, docs/getting-started, docs/architecture, and CONTRIBUTING updated for verification workflow documentation"
+      fixed: []
+      removed: []
+      security: []

@@ -1,0 +1,70 @@
+version: 1
+contract_id: "verification-[YYYYMMDD]-001"
+created_on: "[YYYY-MM-DD]"
+project_path: "[PROJECT_PATH]"
+
+run_configuration:
+  verification_mode: "artifact-locked"
+  execution_lead: "llm-led"
+  final_authority: "human-final"
+
+objective:
+  - "Execute verification workbook steps in order."
+  - "Produce machine-readable checkpoints and human-readable logs."
+  - "Escalate judgment-required gates for human approval."
+
+blocking_policy:
+  deterministic: "block"
+  advisory: "warn"
+  judgment-required: "human-approval-required"
+
+required_inputs:
+  - "verification/verification-workbook.qmd"
+  - "verification/verifier-preferences.yaml"
+
+required_outputs:
+  logs_dir: "verification/logs"
+  checkpoints_dir: "verification/checkpoints"
+  artifacts_dir: "verification/artifacts"
+  final_summary_file: "verification/artifacts/final-verdict.json"
+
+checkpoint_schema:
+  required_keys:
+    - "step_id"
+    - "status"
+    - "gate_type"
+    - "blocking"
+    - "timestamp_utc"
+    - "artifacts"
+    - "notes"
+  status_values:
+    - "PASS"
+    - "FAIL"
+    - "WARN"
+
+failure_escalation:
+  on_blocking_failure:
+    - "stop execution"
+    - "write checkpoint with status FAIL"
+    - "write summary note with remediation suggestion"
+  on_advisory_failure:
+    - "continue execution"
+    - "record warning"
+    - "add or update instruction tracker entry"
+
+resume_rules:
+  allow_resume: true
+  require_last_checkpoint: true
+  restart_on_schema_mismatch: true
+
+final_report_contract:
+  required_sections:
+    - "deterministic_gate_summary"
+    - "judgment_required_decisions"
+    - "advisory_warnings"
+    - "open_instruction_tracker_items"
+    - "recommended_next_action"
+  verdict_values:
+    - "PASS"
+    - "PASS_WITH_WARNINGS"
+    - "FAIL"

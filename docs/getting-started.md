@@ -338,6 +338,7 @@ The `chat-exporter` MCP server exposes the same functionality as tools in Copilo
    - `@academic-writer` for manuscript drafting
    - `@research-planner` for protocol and planning
    - `@project-manager` for progress tracking
+  - `@verification-coordinator` for verification workbook design, execution support, and verifier preference logging
   - `@troubleshooter` for diagnosing errors, fixing environment issues, and usage support
   - `@developer` for bug fixes, feature requests, and codebase improvements
 

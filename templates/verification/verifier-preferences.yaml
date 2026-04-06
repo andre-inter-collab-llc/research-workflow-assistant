@@ -1,0 +1,52 @@
+version: 1
+last_updated: "[YYYY-MM-DD]"
+project_path: "[PROJECT_PATH]"
+active_profile: "default"
+
+profiles:
+  default:
+    verifier:
+      name: "[Verifier Name]"
+      role: "[human|llm|paired]"
+      authority: "human-final"
+
+    identity_role:
+      execution_lead: "human-led"
+      collaborators: []
+      decision_accountable_person: "[Name]"
+
+    instruction_style:
+      detail_level: "concise"
+      tone: "direct"
+      step_granularity: "single-step"
+      include_examples: true
+      require_step_recap: true
+
+    execution_style:
+      verification_mode: "artifact-locked"
+      command_preference: "python-first"
+      allow_shell_wrapper: true
+      pacing: "checkpoint-per-step"
+      retry_policy:
+        max_retries_per_step: 1
+        stop_on_blocking_failure: true
+
+    evidence_format:
+      checkpoint_format: "json"
+      log_format: "text"
+      summary_format: "table"
+      include_artifact_hashes: true
+
+    risk_thresholds:
+      fail_on_missing_artifacts: true
+      fail_on_missing_human_judgment: true
+      advisory_step_policy: "warn"
+      max_unresolved_open_items: 0
+
+    accessibility_needs:
+      plain_language: true
+      color_independent_status_labels: true
+      screen_reader_friendly_tables: true
+      preferred_session_length_minutes: 60
+
+    notes: ""
