@@ -20,6 +20,7 @@ from typing import Any
 import httpx
 
 from . import export_results_excel, store_results
+from .bibliography_sync import normalize_author_name
 
 _RETRYABLE_STATUS_CODES = frozenset({408, 429, 500, 502, 503, 504})
 _DEFAULT_MAX_RETRIES = 3
@@ -116,7 +117,12 @@ def _parse_esummary(xml_text: str) -> list[dict[str, Any]]:
             ):
                 article[name.lower()] = item.text or ""
             elif name == "AuthorList":
-                authors = [a.text for a in item.findall("Item") if a.text]
+                authors = []
+                for author_item in item.findall("Item"):
+                    if not author_item.text:
+                        continue
+                    normalized, _status = normalize_author_name(author_item.text)
+                    authors.append(normalized or author_item.text)
                 article["authors"] = authors
         articles.append(article)
     return articles

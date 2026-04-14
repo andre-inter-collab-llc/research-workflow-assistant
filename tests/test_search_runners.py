@@ -86,3 +86,22 @@ def test_run_europe_pmc_raises_on_version_only_payload(
             project_path=str(tmp_path),
             query="latent syphilis",
         )
+
+
+def test_pubmed_esummary_author_names_are_normalized() -> None:
+    xml_text = """
+    <eSummaryResult>
+        <DocSum>
+            <Id>1</Id>
+            <Item Name="Title" Type="String">Example Title</Item>
+            <Item Name="AuthorList" Type="List">
+                <Item Name="Author" Type="String">Tripathi A</Item>
+                <Item Name="Author" Type="String">Khan SJ</Item>
+            </Item>
+        </DocSum>
+    </eSummaryResult>
+    """
+
+    parsed = search_runners._parse_esummary(xml_text)
+
+    assert parsed[0]["authors"] == ["Tripathi, A", "Khan, S J"]

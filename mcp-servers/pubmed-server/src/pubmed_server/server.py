@@ -23,6 +23,7 @@ from rwa_result_store import (
 from rwa_result_store import (
     store_results as _store_results,
 )
+from rwa_result_store.bibliography_sync import normalize_author_name
 
 logger = logging.getLogger(__name__)
 
@@ -102,7 +103,12 @@ def _parse_esummary(xml_text: str) -> list[dict[str, Any]]:
             ):
                 article[name.lower()] = item.text or ""
             elif name == "AuthorList":
-                authors = [a.text for a in item.findall("Item") if a.text]
+                authors = []
+                for author_item in item.findall("Item"):
+                    if not author_item.text:
+                        continue
+                    normalized, _status = normalize_author_name(author_item.text)
+                    authors.append(normalized or author_item.text)
                 article["authors"] = authors
         articles.append(article)
     return articles
@@ -142,10 +148,10 @@ def _parse_efetch_abstracts(xml_text: str) -> list[dict[str, Any]]:
             last = author.find("LastName")
             fore = author.find("ForeName")
             if last is not None and last.text:
-                name = last.text
-                if fore is not None and fore.text:
-                    name = f"{last.text} {fore.text}"
-                authors.append(name)
+                given = fore.text if fore is not None and fore.text else ""
+                raw_name = f"{last.text} {given}".strip()
+                normalized, _status = normalize_author_name(raw_name)
+                authors.append(normalized or raw_name)
         record["authors"] = authors
 
         # Journal
