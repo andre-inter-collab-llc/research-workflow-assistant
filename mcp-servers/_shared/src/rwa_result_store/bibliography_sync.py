@@ -802,8 +802,7 @@ def sync_project_bibliography(
             new_bib = generated_block
 
         id_to_citekey = {
-            str(int(row["result_id"])): citekeys[int(row["result_id"])]
-            for row in rows
+            str(int(row["result_id"])): citekeys[int(row["result_id"])] for row in rows
         }
         subgroups = _build_subgroups(rows, citekeys)
 
